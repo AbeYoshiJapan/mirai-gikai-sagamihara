@@ -69,6 +69,8 @@ export const metadata: Metadata = {
     "解説",
     operatorName,
   ],
+  // Google Search Console の所有確認（URLプレフィックス https://mirai-gikai-sumida.gorisan.info/）
+  verification: { google: "xez4doSGT7ghVpuhpc-SlhisGqN5KEdtQmToel2eOmE" },
   authors: [{ name: operatorName, url: operatorUrl }],
   creator: operatorName,
   icons: {
