@@ -4,12 +4,18 @@ import { createAdminClient } from "../shared/helper";
  * 区議会サイトの「会議日程」ページを council_meetings に取り込む。
  *
  * 使い方：pnpm --filter @mirai-gikai/seed import:meetings [URL]
- * URL を省くと令和8年度のページを読む。同じ議会年度の行は消してから入れ直す。
+ * URL を省くと今の議会年度（5月〜翌4月）のページを読む。同じ議会年度の行は入れ替える。
+ * 新しい行を入れてから古い行を消すので、途中で失敗しても予定が空にならない。
  * 区サイトの表は日付の列が rowspan で複数行にまたがるので、それを展開して読む。
  */
 
-const DEFAULT_URL =
-  "https://www.city.sumida.lg.jp/kugikai/kaigi_info/nittei/r8nittei.html";
+/** 今の議会年度（5月始まり）の会議日程ページ。令和8年度なら r8nittei.html。 */
+function defaultUrl(now = new Date()): string {
+  const jst = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  const councilYear =
+    jst.getMonth() + 1 >= 5 ? jst.getFullYear() : jst.getFullYear() - 1;
+  return `https://www.city.sumida.lg.jp/kugikai/kaigi_info/nittei/r${councilYear - 2018}nittei.html`;
+}
 
 type Category = "plenary" | "standing" | "special" | "steering" | "other";
 
@@ -182,7 +188,7 @@ function parseSchedulePage(html: string, sourceUrl: string): Meeting[] {
 }
 
 async function main() {
-  const url = process.argv[2] ?? DEFAULT_URL;
+  const url = process.argv[2] ?? defaultUrl();
   const res = await fetch(url);
   if (!res.ok) throw new Error(`取得に失敗しました: ${res.status} ${url}`);
   const meetings = parseSchedulePage(await res.text(), url);
@@ -190,19 +196,36 @@ async function main() {
 
   const years = [...new Set(meetings.map((m) => m.council_year))];
   const supabase = createAdminClient();
-  const { error: delError } = await supabase
+  const { data: oldRows, error: readError } = await supabase
     .from("council_meetings")
-    .delete()
+    .select("id")
     .in("council_year", years);
-  if (delError) throw new Error(`削除: ${delError.message}`);
+  if (readError) throw new Error(`読込: ${readError.message}`);
+  // 区サイトの作りが変わって読み取りが崩れたときに、予定を大きく減らさない
+  if (oldRows.length > 0 && meetings.length < oldRows.length * 0.5) {
+    throw new Error(
+      `読めた会議が${meetings.length}件で、今の${oldRows.length}件の半分未満です。区サイトの表の形が変わっていないか確認してください`
+    );
+  }
+
   const { error } = await supabase.from("council_meetings").insert(meetings);
   if (error) throw new Error(`登録: ${error.message}`);
+  const oldIds = oldRows.map((r) => r.id);
+  for (let i = 0; i < oldIds.length; i += 200) {
+    const { error: delError } = await supabase
+      .from("council_meetings")
+      .delete()
+      .in("id", oldIds.slice(i, i + 200));
+    if (delError) throw new Error(`古い行の削除: ${delError.message}`);
+  }
 
   const byCategory = meetings.reduce<Record<string, number>>((acc, m) => {
     acc[m.category] = (acc[m.category] ?? 0) + 1;
     return acc;
   }, {});
-  console.log(`✅ ${meetings.length}件を取り込みました（議会年度 ${years}）`);
+  console.log(
+    `✅ ${meetings.length}件を取り込みました（議会年度 ${years}、前回 ${oldRows.length}件）`
+  );
   console.log(byCategory);
 }
 

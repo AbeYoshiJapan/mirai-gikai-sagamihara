@@ -5,42 +5,26 @@ import {
   bicycleInterview,
   bicycleQuestions,
 } from "./data-plans";
+import { tablesToLists } from "./markdown";
 
 /**
- * 議案本文の描画は GFM 非対応のため、Markdown の表を箇条書きに直す。
- * 1列目を太字の見出しにし、残りの列を「／」でつなぐ。
+ * 墨田区版のデータを入れ直す。既存データはすべて消える。
+ * 公開後は AIインタビューの回答も消えるので使わない。議案の追加・更新は sync.ts（sync:sumida）で行う。
  */
-function tablesToLists(markdown: string): string {
-  const cells = (line: string) =>
-    line
-      .trim()
-      .replace(/^\||\|$/g, "")
-      .split("|")
-      .map((c) => c.trim());
-  const out: string[] = [];
-  const lines = markdown.split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const isTable =
-      lines[i].trim().startsWith("|") &&
-      /^\|?\s*-{3,}/.test(lines[i + 1]?.trim() ?? "");
-    if (!isTable) {
-      out.push(lines[i]);
-      continue;
-    }
-    i += 2; // 見出し行と区切り行は読み飛ばす
-    while (i < lines.length && lines[i].trim().startsWith("|")) {
-      const [head, ...rest] = cells(lines[i]);
-      out.push(`- **${head}**：${rest.join(" ／ ")}`);
-      i++;
-    }
-    i--;
-  }
-  return out.join("\n");
-}
-
-/** 墨田区版（試作）のデータを入れ直す。既存データはすべて消える。 */
 async function seedSumida() {
   const supabase = createAdminClient();
+
+  // 公開後の誤操作で回答を消さないよう、インタビューの記録があれば止める
+  const { count, error: countError } = await supabase
+    .from("interview_sessions")
+    .select("id", { count: "exact", head: true });
+  if (countError) throw new Error(`インタビュー記録の確認: ${countError.message}`);
+  if ((count ?? 0) > 0 && !process.argv.includes("--force")) {
+    throw new Error(
+      `インタビューの記録が${count}件あります。消さずに足すときは sync:sumida を使ってください（どうしても消すときだけ --force）`
+    );
+  }
+
   await clearAllData(supabase);
 
   const { data: insertedSessions, error: sessionError } = await supabase
