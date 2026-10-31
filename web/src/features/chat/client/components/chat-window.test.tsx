@@ -181,13 +181,13 @@ describe("ChatWindow", () => {
       name: "モバイルAIチャット",
     });
     expect(dialog).toHaveStyle({ maxHeight: "640px" });
-    expect(screen.getAllByRole("button", { name: /何|法案/ })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /何|議案/ })).toHaveLength(3);
 
     await user.click(
-      screen.getByRole("button", { name: "みらい議会って何？" })
+      screen.getByRole("button", { name: "みらい議会@墨田区って何？" })
     );
     expect(sendMessage).toHaveBeenCalledWith({
-      text: "みらい議会って何？",
+      text: "みらい議会@墨田区って何？",
       metadata: {
         billContext: undefined,
         difficultyLevel: "normal",
@@ -244,7 +244,7 @@ describe("ChatWindow", () => {
 
     expect(
       await screen.findByRole("region", {
-        name: "国会や法案についてAIに質問する",
+        name: "区議会や議案についてAIに質問する",
       })
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -266,7 +266,7 @@ describe("ChatWindow", () => {
 
     await screen.findByRole("dialog");
     expect(testState.mobileDialogProps?.style).toBeUndefined();
-    expect(screen.getAllByRole("button", { name: /法案/ })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /議案/ })).toHaveLength(2);
     expect(screen.getByTestId("user-user-1")).toBeInTheDocument();
     expect(screen.getByTestId("system-assistant-1")).toHaveAttribute(
       "data-streaming",
@@ -275,7 +275,7 @@ describe("ChatWindow", () => {
     expect(screen.getByText("回答確認の注意")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "送信" })).toBeDisabled();
     expect(
-      screen.getByRole("button", { name: "この法案のポイントは？" })
+      screen.getByRole("button", { name: "この議案のポイントは？" })
     ).toBeDisabled();
     await waitFor(() => expect(testState.scrollToBottom).toHaveBeenCalled());
 

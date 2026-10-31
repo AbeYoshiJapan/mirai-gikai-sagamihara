@@ -15,7 +15,7 @@ describe("toBillStatusGroup", () => {
     expect(toBillStatusGroup("in_receiving_house")).toBe("deliberating");
   });
 
-  // 既存の getCardStatusLabel が introduced を「国会審議中」に含めるため、
+  // 既存の getCardStatusLabel が introduced を「区議会審議中」に含めるため、
   // ここで「審議待ち」に落とすとバッジとタブが食い違う。
   it("提出済みは既存バッジに合わせて「審議中」に含める", () => {
     expect(toBillStatusGroup("introduced")).toBe("deliberating");
@@ -61,6 +61,9 @@ describe("countByStatusGroup", () => {
       waiting: 1,
       enacted: 1,
       rejected: 1,
+      reported: 0,
+      plan: 0,
+      special_committee: 0,
     });
   });
 
@@ -71,6 +74,9 @@ describe("countByStatusGroup", () => {
       waiting: 0,
       enacted: 0,
       rejected: 0,
+      reported: 0,
+      plan: 0,
+      special_committee: 0,
     });
   });
 });

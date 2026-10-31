@@ -74,9 +74,9 @@ describe("buildSummarySystemPrompt", () => {
       messages: [{ role: "user", content: "テスト" }],
     });
 
-    expect(result).toContain("- 法案名: \n");
-    expect(result).toContain("- 法案タイトル: \n");
-    expect(result).toContain("- 法案要約: \n");
+    expect(result).toContain("- 議案・計画名: \n");
+    expect(result).toContain("- 議案・計画タイトル: \n");
+    expect(result).toContain("- 議案・計画要約: \n");
   });
 
   it("テーマ未設定の場合「（テーマ未設定）」が含まれる", () => {

@@ -15,12 +15,12 @@ const BASE_STEPS = [
 ] as const;
 
 describe("getStatusMessage", () => {
-  test("preparing の場合は '法案提出前' を返す", () => {
-    expect(getStatusMessage("preparing", null)).toBe("法案提出前");
+  test("preparing の場合は '議案提出前' を返す", () => {
+    expect(getStatusMessage("preparing", null)).toBe("議案提出前");
   });
 
-  test("preparing の場合は statusNote があっても '法案提出前' を返す", () => {
-    expect(getStatusMessage("preparing", "審議中メモ")).toBe("法案提出前");
+  test("preparing の場合は statusNote があっても '議案提出前' を返す", () => {
+    expect(getStatusMessage("preparing", "審議中メモ")).toBe("議案提出前");
   });
 
   test("preparing 以外で statusNote がある場合はそれを返す", () => {

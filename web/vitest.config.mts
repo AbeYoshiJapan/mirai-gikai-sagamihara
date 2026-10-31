@@ -9,6 +9,11 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    // Node 25 以降はグローバルに localStorage（Web Storage）があり、jsdom の localStorage を隠してしまうため切る
+    poolOptions: {
+      forks: { execArgv: ["--no-experimental-webstorage"] },
+      threads: { execArgv: ["--no-experimental-webstorage"] },
+    },
     exclude: ["**/*.integration.test.ts", "**/node_modules/**"],
     coverage: {
       provider: "v8",

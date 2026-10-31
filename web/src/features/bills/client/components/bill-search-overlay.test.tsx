@@ -31,7 +31,7 @@ const bills = [
 async function open() {
   const user = userEvent.setup();
   render(<BillSearchOverlay tags={tags} bills={bills} />);
-  await user.click(screen.getByRole("button", { name: /法案を検索する/ }));
+  await user.click(screen.getByRole("button", { name: /議案を検索する/ }));
   return user;
 }
 
@@ -57,7 +57,7 @@ describe("BillSearchOverlay", () => {
     await open();
 
     expect(screen.getByText("テーマから探す")).toBeInTheDocument();
-    expect(screen.queryByText(/法案\s*\d+件/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/議案\s*\d+件/)).not.toBeInTheDocument();
   });
 
   /*
@@ -68,7 +68,7 @@ describe("BillSearchOverlay", () => {
     await open();
 
     expect(screen.getByRole("dialog")).toHaveAccessibleDescription(
-      "キーワードやテーマから法案を探せます。"
+      "キーワードやテーマから議案を探せます。"
     );
   });
 
@@ -77,7 +77,7 @@ describe("BillSearchOverlay", () => {
 
     await user.type(screen.getByRole("searchbox"), "ガソリン");
 
-    expect(screen.getByText(/法案\s*1件/)).toBeInTheDocument();
+    expect(screen.getByText(/議案\s*1件/)).toBeInTheDocument();
 
     const links = linkTo("/bills/bill-gasoline");
     expect(links).toHaveLength(1);
@@ -102,7 +102,7 @@ describe("BillSearchOverlay", () => {
     expect(
       screen.getByText(/「宇宙」に一致する候補はありません/)
     ).toBeInTheDocument();
-    expect(screen.queryByText(/法案\s*\d+件/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/議案\s*\d+件/)).not.toBeInTheDocument();
   });
 
   it("送信すると前後の空白を落として一覧へ渡す", async () => {
