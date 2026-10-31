@@ -79,7 +79,7 @@ export async function ReportCompletePage({
 
           {/* 活用メッセージ */}
           <p className="text-sm text-gray-800">
-            いただいた声は政策検討に最大限活用します
+            いただいた声は、井上ひろきが区議会での質問などの参考にします
           </p>
         </div>
       </div>

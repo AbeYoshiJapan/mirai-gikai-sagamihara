@@ -51,7 +51,7 @@ export function createBackfill(sourceLabel: string) {
   const sourceNote = `---
 
 **出典**：墨田区議会 会議録（${sourceLabel}）。
-この解説は会議録をもとにAIで整理した試作版です。正確な内容は会議録・議案の原文をご確認ください。`;
+この解説は会議録をもとにAIで整理したものです。正確な内容は会議録・議案の原文をご確認ください。`;
 
   function add(s: BillSpec) {
     bills.push({

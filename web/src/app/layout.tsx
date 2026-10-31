@@ -26,9 +26,9 @@ const notoSerifJP = Noto_Serif_JP({
 
 const isDev = process.env.NODE_ENV === "development";
 const isStaging = process.env.VERCEL_TARGET_ENV === "staging";
-const siteTitle = "みらい議会@墨田区（試作版）";
+const siteTitle = "みらい議会@墨田区";
 const siteDescription =
-  "墨田区議会で今どんな議案が審議されているか、わかりやすく伝える試作サイト";
+  "墨田区議会で今どんな議案が審議されているか、わかりやすく伝えるサイト";
 const siteName = "みらい議会@墨田区";
 const ogImage = {
   url: "/ogp.jpg",

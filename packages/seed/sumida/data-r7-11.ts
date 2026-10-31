@@ -39,7 +39,7 @@ function enacted(note: string, submitted: string) {
 const SOURCE_NOTE = `---
 
 **出典**：墨田区議会 会議録（令和7年度定例会11月議会）。本会議 11月28日・12月10日、所管委員会の記録。
-この解説は会議録をもとにAIで整理した試作版です。正確な内容は会議録・議案の原文をご確認ください。`;
+この解説は会議録をもとにAIで整理したものです。正確な内容は会議録・議案の原文をご確認ください。`;
 
 const results = (committee: string, plenary: string) => `## 結果
 
