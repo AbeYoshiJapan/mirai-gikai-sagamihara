@@ -28,8 +28,27 @@ const isDev = process.env.NODE_ENV === "development";
 const isStaging = process.env.VERCEL_TARGET_ENV === "staging";
 const siteTitle = "みらい議会@墨田区";
 const siteDescription =
-  "墨田区議会で今どんな議案が審議されているか、わかりやすく伝えるサイト";
+  "墨田区議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。運営：墨田区議会議員 井上ひろき";
 const siteName = "みらい議会@墨田区";
+const operatorName = "井上ひろき";
+const operatorUrl = "https://www.gorisan.tech/";
+
+/** 検索エンジン向けの構造化データ。運営者を区の公式と取り違えないよう個人として示す。 */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteName,
+  url: env.webUrl,
+  description: siteDescription,
+  inLanguage: "ja",
+  publisher: {
+    "@type": "Person",
+    name: operatorName,
+    jobTitle: "墨田区議会議員",
+    url: operatorUrl,
+    sameAs: [operatorUrl, "https://x.com/gorisan_it"],
+  },
+};
 const ogImage = {
   url: "/ogp.jpg",
   width: 1200,
@@ -41,7 +60,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: siteTitle,
   description: siteDescription,
-  keywords: [siteName, "議案", "政治", "日本", "政策", "解説", "墨田区議会"],
+  keywords: [
+    siteName,
+    "墨田区議会",
+    "墨田区",
+    "議案",
+    "政策",
+    "解説",
+    operatorName,
+  ],
+  authors: [{ name: operatorName, url: operatorUrl }],
+  creator: operatorName,
   icons: {
     icon: isDev
       ? "/icons/pwa/icon_dev_192_v3.png"
@@ -58,6 +87,8 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [ogImage],
     siteName,
+    locale: "ja_JP",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
@@ -96,6 +127,10 @@ export default function RootLayout({
         className={`${notoSansJP.variable} ${lexendGiga.variable} ${notoSerifJP.variable} font-sans antialiased bg-mirai-surface-light`}
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
       </body>
     </html>

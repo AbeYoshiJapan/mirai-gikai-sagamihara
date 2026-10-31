@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/layouts/container";
 import { About } from "@/components/top/about";
 import { ComingSoonSection } from "@/components/top/coming-soon-section";
@@ -25,6 +26,11 @@ import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/
 import { takeFirstDays } from "@/features/council-meetings/shared/utils/council-period";
 import { getCurrentDietSession } from "@/features/diet-sessions/server/loaders/get-current-diet-session";
 import { getJapanTime } from "@/lib/utils/date";
+
+/** トップは本番URLを正規のURLとして示す（vercel.app などとの重複を避ける）。 */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /** トップの「これからの会議」に出す日数。同じ日の会議はまとめて出す。 */
 const UPCOMING_MEETING_DAYS = 3;
