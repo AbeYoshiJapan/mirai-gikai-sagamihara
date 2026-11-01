@@ -6,7 +6,7 @@ import {
   Github,
   ScrollText,
 } from "lucide-react";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layouts/container";
 import { routes } from "@/lib/routes";
@@ -135,7 +135,7 @@ export default async function DevelopersPage() {
                   <LinkRowBody external {...item} />
                 </a>
               ) : (
-                <Link key={href} href={href} className={rowClassName}>
+                <Link key={href} href={href as Route} className={rowClassName}>
                   <LinkRowBody external={false} {...item} />
                 </Link>
               )

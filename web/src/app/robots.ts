@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getSiteSettings, getSiteUrl } from "@/lib/site-settings/loader";
 
+// サイト設定（公開状態・noindex）を反映するため、ビルド時に固定しない
+export const dynamic = "force-dynamic";
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const [settings, siteUrl] = await Promise.all([
     getSiteSettings(),

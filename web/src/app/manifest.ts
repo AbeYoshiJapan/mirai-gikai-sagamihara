@@ -2,6 +2,9 @@ import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import type { MetadataRoute } from "next";
 import { getSiteSettings } from "@/lib/site-settings/loader";
 
+// サイト名・テーマ色はサイト設定から読むため、ビルド時に固定しない
+export const dynamic = "force-dynamic";
+
 /** PWA マニフェスト。名前・色・アイコンはサイト設定から */
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const { site, brand } = await getSiteSettings();

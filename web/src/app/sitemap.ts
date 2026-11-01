@@ -3,6 +3,9 @@ import { getBills } from "@/features/bills/server/loaders/get-bills";
 import { routes } from "@/lib/routes";
 import { getSiteSettings, getSiteUrl } from "@/lib/site-settings/loader";
 
+// 議案の増減とサイト設定を 10 分ごとに反映する（ビルド時だけの生成にしない）
+export const revalidate = 600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // デプロイごとの仮URL（VERCEL_URL）ではなく本番URL（サイト設定）を載せる
   const [settings, baseUrl] = await Promise.all([
