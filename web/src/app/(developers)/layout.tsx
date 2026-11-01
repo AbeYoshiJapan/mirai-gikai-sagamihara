@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Header } from "@/components/header";
 import { AuthGate } from "@/components/layouts/auth-gate";
 import { Footer } from "@/components/layouts/footer/footer";
+import { PublishGate } from "@/components/layouts/publish-gate";
 import { env } from "@/lib/env";
 
 /**
@@ -16,13 +17,13 @@ export default function DevelopersGroupLayout({
   children: ReactNode;
 }>) {
   return (
-    <>
+    <PublishGate>
       <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
       <AuthGate />
       <Header />
-      {/* Team Mirai デザインシステム準拠: 白を基調のキャンバスにする */}
+      {/* 白を基調のキャンバスにする */}
       <main className="min-h-dvh bg-white pt-24">{children}</main>
       <Footer />
-    </>
+    </PublishGate>
   );
 }
