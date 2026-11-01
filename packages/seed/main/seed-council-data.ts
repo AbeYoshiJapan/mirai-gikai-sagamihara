@@ -8,6 +8,8 @@ import {
   factions,
   memberVotes,
   members,
+  readerOpinions,
+  readerQuestions,
 } from "./council-data";
 import { bills } from "./data";
 
@@ -144,4 +146,31 @@ export async function seedCouncilData(
     throw new Error(`Failed to insert council meetings: ${meetingsError.message}`);
   }
   console.log(`✅ Inserted ${councilMeetings.length} council meetings`);
+
+  console.log("✉️  Inserting reader opinions and questions...");
+  const opinionRows = readerOpinions.flatMap(({ bill_name, ...row }) => {
+    const billId = billIdByName.get(bill_name);
+    return billId ? [{ ...row, bill_id: billId }] : [];
+  });
+  if (opinionRows.length > 0) {
+    const { error } = await supabase.from("reader_opinions").insert(opinionRows);
+    if (error) {
+      throw new Error(`Failed to insert reader opinions: ${error.message}`);
+    }
+  }
+  const questionRows = readerQuestions.map(({ bill_name, ...row }) => ({
+    ...row,
+    bill_id: bill_name ? (billIdByName.get(bill_name) ?? null) : null,
+  }));
+  if (questionRows.length > 0) {
+    const { error } = await supabase
+      .from("reader_questions")
+      .insert(questionRows);
+    if (error) {
+      throw new Error(`Failed to insert reader questions: ${error.message}`);
+    }
+  }
+  console.log(
+    `✅ Inserted ${opinionRows.length} reader opinions, ${questionRows.length} reader questions`
+  );
 }

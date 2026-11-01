@@ -47,6 +47,9 @@ export function buildPolicyLinks(
     { label: "プライバシーポリシー", href: routes.privacy() },
     { label: "議会に正式に届けるには", href: routes.petitionGuide() },
   ];
+  if (settings.features.question_form) {
+    links.push({ label: "質問と回答", href: routes.questions() });
+  }
   if (settings.features.open_data_api) {
     links.push({ label: "開発者向け", href: routes.developers() });
   }

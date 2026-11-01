@@ -1312,6 +1312,127 @@ export type Database = {
           },
         ]
       }
+      reader_opinions: {
+        Row: {
+          attributes: Json
+          bill_id: string
+          body: string
+          consent_to_publish: boolean
+          created_at: string
+          display_name: string
+          id: string
+          ip_hash: string | null
+          published_at: string | null
+          reply_md: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          stance: Database["public"]["Enums"]["reader_opinion_stance"]
+          status: Database["public"]["Enums"]["reader_opinion_status"]
+          updated_at: string
+        }
+        Insert: {
+          attributes?: Json
+          bill_id: string
+          body: string
+          consent_to_publish?: boolean
+          created_at?: string
+          display_name?: string
+          id?: string
+          ip_hash?: string | null
+          published_at?: string | null
+          reply_md?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          stance: Database["public"]["Enums"]["reader_opinion_stance"]
+          status?: Database["public"]["Enums"]["reader_opinion_status"]
+          updated_at?: string
+        }
+        Update: {
+          attributes?: Json
+          bill_id?: string
+          body?: string
+          consent_to_publish?: boolean
+          created_at?: string
+          display_name?: string
+          id?: string
+          ip_hash?: string | null
+          published_at?: string | null
+          reply_md?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          stance?: Database["public"]["Enums"]["reader_opinion_stance"]
+          status?: Database["public"]["Enums"]["reader_opinion_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reader_opinions_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reader_questions: {
+        Row: {
+          answer_md: string
+          answered_at: string | null
+          answered_by: string | null
+          bill_id: string | null
+          body: string
+          consent_to_publish: boolean
+          contact: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          published_at: string | null
+          question_summary: string
+          status: Database["public"]["Enums"]["reader_question_status"]
+          updated_at: string
+        }
+        Insert: {
+          answer_md?: string
+          answered_at?: string | null
+          answered_by?: string | null
+          bill_id?: string | null
+          body: string
+          consent_to_publish?: boolean
+          contact?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          published_at?: string | null
+          question_summary?: string
+          status?: Database["public"]["Enums"]["reader_question_status"]
+          updated_at?: string
+        }
+        Update: {
+          answer_md?: string
+          answered_at?: string | null
+          answered_by?: string | null
+          bill_id?: string | null
+          body?: string
+          consent_to_publish?: boolean
+          contact?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          published_at?: string | null
+          question_summary?: string
+          status?: Database["public"]["Enums"]["reader_question_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reader_questions_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_reactions: {
         Row: {
           created_at: string
@@ -2121,6 +2242,9 @@ export type Database = {
         | "general_citizen"
       interview_role_enum: "assistant" | "user"
       moderation_status_enum: "ok" | "warning" | "ng"
+      reader_opinion_stance: "for" | "against" | "neutral" | "unsure"
+      reader_opinion_status: "received" | "published" | "rejected"
+      reader_question_status: "received" | "answered" | "published" | "closed"
       stance_type_enum:
         | "for"
         | "against"

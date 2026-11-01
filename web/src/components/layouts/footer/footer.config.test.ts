@@ -16,6 +16,24 @@ describe("footer.config", () => {
     expect(hrefs).toContain(routes.developers());
   });
 
+  it("question_form が有効なときだけ質問と回答ページを出す", () => {
+    const enabled = {
+      ...base,
+      features: { ...base.features, question_form: true },
+    };
+    expect(buildPolicyLinks(enabled).map((link) => link.href)).toContain(
+      routes.questions()
+    );
+
+    const disabled = {
+      ...base,
+      features: { ...base.features, question_form: false },
+    };
+    expect(buildPolicyLinks(disabled).map((link) => link.href)).not.toContain(
+      routes.questions()
+    );
+  });
+
   it("open_data_api が無効なら開発者向けページを出さない", () => {
     const settings = {
       ...base,
@@ -47,6 +65,7 @@ describe("footer.config", () => {
       routes.terms(),
       routes.privacy(),
       routes.petitionGuide(),
+      routes.questions(),
       routes.developers(),
     ]);
 

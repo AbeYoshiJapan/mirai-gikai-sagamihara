@@ -64,6 +64,12 @@ export const env = {
   sitePreviewSecret:
     process.env.SITE_PREVIEW_SECRET || process.env.REVALIDATE_SECRET,
   articleReportSlackWebhookUrl: process.env.ARTICLE_REPORT_SLACK_WEBHOOK_URL,
+  /** 意見・質問フォームの通知先。未設定なら誤り報告と同じ Webhook を使う */
+  readerPostSlackWebhookUrl:
+    process.env.READER_POST_SLACK_WEBHOOK_URL ||
+    process.env.ARTICLE_REPORT_SLACK_WEBHOOK_URL,
+  /** 投稿の連投対策で IP をハッシュ化するときの salt。未設定なら IP ハッシュを保存しない */
+  ipHashSalt: process.env.IP_HASH_SALT || process.env.REVALIDATE_SECRET,
   analytics: {
     gaTrackingId: process.env.NEXT_PUBLIC_GA_TRACKING_ID,
   },

@@ -19,6 +19,8 @@ export const routes = {
   interviews: () => "/interviews" as const,
   interviewOpinionBackfill: () => "/interview-opinion-backfill" as const,
   userTopicAnalysisAll: () => "/user-topic-analysis" as const,
+  readerOpinions: () => "/reader-opinions" as const,
+  readerQuestions: () => "/reader-questions" as const,
   settings: () => "/settings" as const,
   setup: () => "/setup" as const,
 

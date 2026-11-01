@@ -140,6 +140,10 @@
       "types": "./src/bill-sources/labels.ts",
       "default": "./src/bill-sources/labels.ts"
     },
+    "./reader-posts/labels": {
+      "types": "./src/reader-posts/labels.ts",
+      "default": "./src/reader-posts/labels.ts"
+    },
     "./bill-stage/labels": {
       "types": "./src/bill-stage/labels.ts",
       "default": "./src/bill-stage/labels.ts"

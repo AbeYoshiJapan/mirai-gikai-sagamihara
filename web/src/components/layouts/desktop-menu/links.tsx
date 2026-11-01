@@ -15,7 +15,7 @@ type FooterLinkItem = {
  * デスクトップメニュー: フッターリンク（サイドバー内）
  */
 export function DesktopMenuLinks() {
-  const { links: siteLinks, operator } = useSiteSettings();
+  const { links: siteLinks, operator, features } = useSiteSettings();
   const links: FooterLinkItem[] = [
     { label: "利用規約", href: routes.terms(), external: false },
     { label: "プライバシーポリシー", href: routes.privacy(), external: false },
@@ -25,6 +25,13 @@ export function DesktopMenuLinks() {
       external: false,
     },
   ];
+  if (features.question_form) {
+    links.push({
+      label: "質問と回答",
+      href: routes.questions(),
+      external: false,
+    });
+  }
   if (siteLinks.original_service) {
     links.push({
       label: "本家「みらい議会」（チームみらい）",

@@ -11,6 +11,8 @@ export function createAdminClient() {
 }
 
 const TABLES_TO_CLEAR = [
+  "reader_opinions",
+  "reader_questions",
   "vote_records",
   "bill_sources",
   "members",

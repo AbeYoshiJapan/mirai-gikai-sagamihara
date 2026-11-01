@@ -6,6 +6,7 @@ import {
   FileText,
   Flag,
   type LucideIcon,
+  Mail,
   MessageCircle,
   MoreVertical,
   Sparkles,
@@ -92,6 +93,14 @@ export function BillActionsMenu({ billId, billName }: BillActionsMenuProps) {
             icon={Flag}
           >
             誤り報告
+          </BillActionMenuLink>
+          <BillActionMenuLink
+            href={
+              `${routes.readerOpinions()}?status=all&billId=${billId}` as Route
+            }
+            icon={Mail}
+          >
+            意見・質問
           </BillActionMenuLink>
           <div className="my-1 border-t" />
           <DuplicateBillButton billId={billId} billName={billName} />

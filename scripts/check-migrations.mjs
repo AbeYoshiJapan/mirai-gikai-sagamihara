@@ -173,6 +173,76 @@ expect(
   { is_published: false }
 );
 
+// 意見・質問フォーム（reader_opinions / reader_questions）
+const [op] = await q(
+  `insert into reader_opinions (bill_id, stance, body) values ($1,'for','賛成') returning status, consent_to_publish, published_at, reviewed_at`,
+  [ord.id]
+);
+expect("意見は既定で非公開（received）", op, {
+  status: "received",
+  consent_to_publish: false,
+  published_at: null,
+  reviewed_at: null,
+});
+const [opRow] = await q(`select id from reader_opinions where bill_id=$1`, [ord.id]);
+await expectError(
+  "公開に同意のない意見は公開できない",
+  () => q(`update reader_opinions set status='published' where id=$1`, [opRow.id]),
+  "reader_opinions_publish_requires_consent"
+);
+expect(
+  "同意があれば公開でき published_at / reviewed_at が入る",
+  (await q(
+    `update reader_opinions set consent_to_publish=true, status='published', reviewed_by=$2 where id=$1 returning (published_at is not null) as has_published_at, (reviewed_at is not null) as has_reviewed_at`,
+    [opRow.id, user.id]
+  ))[0],
+  { has_published_at: true, has_reviewed_at: true }
+);
+expect(
+  "未対応に戻すと公開日時と確認記録が消える",
+  (await q(
+    `update reader_opinions set status='received' where id=$1 returning published_at, reviewed_at, reviewed_by`,
+    [opRow.id]
+  ))[0],
+  { published_at: null, reviewed_at: null, reviewed_by: null }
+);
+
+const [qu] = await q(
+  `insert into reader_questions (body, consent_to_publish) values ('一般の質問', true) returning id, status, bill_id`
+);
+expect("議案に紐づかない質問を受け付け、既定は未回答", { status: qu.status, bill_id: qu.bill_id }, {
+  status: "received",
+  bill_id: null,
+});
+await expectError(
+  "回答のない質問は公開できない",
+  () => q(`update reader_questions set status='published' where id=$1`, [qu.id]),
+  "reader_questions_publish_requires_answer"
+);
+expect(
+  "回答を付ければ公開でき answered_at / published_at が入る",
+  (await q(
+    `update reader_questions set answer_md='回答です', status='published', answered_by=$2 where id=$1 returning (answered_at is not null) as has_answered_at, (published_at is not null) as has_published_at`,
+    [qu.id, user.id]
+  ))[0],
+  { has_answered_at: true, has_published_at: true }
+);
+await expectError(
+  "同意のない質問は回答があっても公開できない",
+  () => q(`insert into reader_questions (body, answer_md, status) values ('q','a','published')`),
+  "reader_questions_publish_requires_consent"
+);
+expect(
+  "議案を消しても質問は残り bill_id が null になる",
+  (await (async () => {
+    const [b] = await q(`insert into bills (name) values ('q-bill') returning id`);
+    const [qq] = await q(`insert into reader_questions (bill_id, body) values ($1,'議案の質問') returning id`, [b.id]);
+    await q(`delete from bills where id=$1`, [b.id]);
+    return q(`select bill_id from reader_questions where id=$1`, [qq.id]);
+  })())[0],
+  { bill_id: null }
+);
+
 if (failures > 0) {
   console.error(`❌ ${failures} 件の確認に失敗しました`);
   process.exit(1);

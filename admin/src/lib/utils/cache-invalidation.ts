@@ -11,6 +11,7 @@ export const WEB_CACHE_TAGS = {
   INTERVIEW_CONFIGS: "interview-configs",
   PUBLIC_INTERVIEW_REPORTS: "public-interview-reports",
   SITE_SETTINGS: "site-settings",
+  READER_POSTS: "reader-posts",
 } as const;
 
 export type WebCacheTag = (typeof WEB_CACHE_TAGS)[keyof typeof WEB_CACHE_TAGS];

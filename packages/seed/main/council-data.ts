@@ -198,3 +198,88 @@ export const councilMeetings: CouncilMeetingInsert[] = [
     is_published: false,
   },
 ];
+
+// ── 読者からの意見・質問（意見フォーム・質問フォームの開発用データ）──
+// 公開中（published）のものは web の議案詳細に出る。未対応（received）は管理画面の受信箱にだけ出る。
+export const readerOpinions: {
+  bill_name: string;
+  stance: Database["public"]["Enums"]["reader_opinion_stance"];
+  body: string;
+  display_name: string;
+  attributes: { residence?: "inside" | "outside" | "unknown"; age_group?: string };
+  consent_to_publish: boolean;
+  status: Database["public"]["Enums"]["reader_opinion_status"];
+  reply_md: string;
+}[] = [
+  {
+    bill_name: "相模原市公共交通燃料費支援条例",
+    stance: "for",
+    body: "バス路線の減便が続いているので、燃料費の支援で路線が守られるなら賛成です。支援の効果がどれくらい運行本数に反映されるのか、議会で確かめてほしいです。",
+    display_name: "橋本在住",
+    attributes: { residence: "inside", age_group: "40s" },
+    consent_to_publish: true,
+    status: "published",
+    reply_md:
+      "ご意見ありがとうございます。支援の効果（運行本数・路線の維持）を事業者に報告してもらう仕組みを、委員会で確認します。",
+  },
+  {
+    bill_name: "相模原市公共交通燃料費支援条例",
+    stance: "against",
+    body: "事業者への補助だけで利用者が増えるとは思えません。デマンド交通など別の手段も含めて検討してほしい。",
+    display_name: "",
+    attributes: { residence: "inside" },
+    consent_to_publish: true,
+    status: "published",
+    reply_md: "",
+  },
+  {
+    bill_name: "相模原市学校給食費無償化条例",
+    stance: "unsure",
+    body: "財源が続くのか心配です。何年先まで見通しがあるのか知りたい。",
+    display_name: "小学生の保護者",
+    attributes: { residence: "inside", age_group: "30s" },
+    consent_to_publish: false,
+    status: "received",
+    reply_md: "",
+  },
+];
+
+export const readerQuestions: {
+  bill_name: string | null;
+  body: string;
+  contact: string;
+  consent_to_publish: boolean;
+  status: Database["public"]["Enums"]["reader_question_status"];
+  question_summary: string;
+  answer_md: string;
+}[] = [
+  {
+    bill_name: "相模原市公共交通燃料費支援条例",
+    body: "この条例ができると、バスの運賃は下がりますか？",
+    contact: "",
+    consent_to_publish: true,
+    status: "published",
+    question_summary: "この条例で、バスの運賃は下がりますか？",
+    answer_md:
+      "運賃を直接下げる条例ではありません。燃料費の一部を市が支援することで、路線の廃止や減便を防ぐことが目的です。運賃の改定は事業者が別に決めます。",
+  },
+  {
+    bill_name: null,
+    body: "請願と陳情はどう違うのですか？このサイトから出せますか？",
+    contact: "",
+    consent_to_publish: true,
+    status: "published",
+    question_summary: "",
+    answer_md:
+      "請願は議員の紹介が必要で、陳情は紹介議員なしで出せます。どちらも議会に正式に届ける手続きで、このサイトからは提出できません。提出方法は「議会に正式に届けるには」のページをご覧ください。",
+  },
+  {
+    bill_name: "相模原市学校給食費無償化条例",
+    body: "中学校の給食も対象になりますか？",
+    contact: "example@example.com",
+    consent_to_publish: true,
+    status: "received",
+    question_summary: "",
+    answer_md: "",
+  },
+];

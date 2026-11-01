@@ -3,6 +3,10 @@ import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/type
 import { InterviewLandingSection } from "@/features/interview-config/client/components/interview-landing-section";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getPublicReportsByBillId } from "@/features/interview-report/server/loaders/get-public-reports-by-bill-id";
+import { BillReaderOpinionsSection } from "@/features/reader-posts/server/components/bill-reader-opinions-section";
+import { BillReaderQuestionsSection } from "@/features/reader-posts/server/components/bill-reader-questions-section";
+import { getPublishedReaderOpinions } from "@/features/reader-posts/server/loaders/get-published-reader-opinions";
+import { getPublishedReaderQuestionsByBillId } from "@/features/reader-posts/server/loaders/get-published-reader-questions";
 import { BillTopicsPreviewSection } from "@/features/user-topic-analysis/server/components/bill-topics-preview-section";
 import { getPublicTopicAnalysis } from "@/features/user-topic-analysis/server/loaders/get-public-topic-analysis";
 import { getSiteSettings } from "@/lib/site-settings/loader";
@@ -29,16 +33,23 @@ export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
-  const { features, council } = await getSiteSettings();
-  // 利用者向け AI 機能（インタビュー・トピック分析）は機能フラグが立っているときだけ読む
-  const [interviewConfig, publicReportsResult, topicAnalysis] =
-    await Promise.all([
-      features.ai_interview ? getInterviewConfig(bill.id) : null,
-      features.topic_analysis
-        ? getPublicReportsByBillId(bill.id)
-        : { totalCount: 0 },
-      features.topic_analysis ? getPublicTopicAnalysis(bill.id) : null,
-    ]);
+  const { features, council, operator } = await getSiteSettings();
+  // 利用者向け AI 機能（インタビュー・トピック分析）と意見・質問は機能フラグが立っているときだけ読む
+  const [
+    interviewConfig,
+    publicReportsResult,
+    topicAnalysis,
+    readerOpinions,
+    readerQuestions,
+  ] = await Promise.all([
+    features.ai_interview ? getInterviewConfig(bill.id) : null,
+    features.topic_analysis
+      ? getPublicReportsByBillId(bill.id)
+      : { totalCount: 0 },
+    features.topic_analysis ? getPublicTopicAnalysis(bill.id) : null,
+    features.opinion_form ? getPublishedReaderOpinions(bill.id) : [],
+    features.question_form ? getPublishedReaderQuestionsByBillId(bill.id) : [],
+  ]);
 
   // 行政計画は自治体のパブコメ期間で段階が変わる。AIインタビューは「意見募集中」の間だけ出す
   const isPlan = bill.bill_kind === "plan";
@@ -114,6 +125,31 @@ export async function BillDetailLayout({
               votes={bill.votes}
               showFactions={features.faction_votes}
               showMembers={features.member_votes}
+            />
+          </div>
+        )}
+
+        {/* 意見フォーム：公開済みの意見と投稿フォーム（機能フラグ）。投稿は管理者が確認するまで公開されない */}
+        {features.opinion_form && (
+          <div className="my-8">
+            <BillReaderOpinionsSection
+              billId={bill.id}
+              opinions={readerOpinions}
+              municipality={council.municipality}
+              councilName={council.name}
+              operatorName={operator.name}
+            />
+          </div>
+        )}
+
+        {/* 質問フォーム：公開済みの質問と回答、投稿フォーム（機能フラグ） */}
+        {features.question_form && (
+          <div className="my-8">
+            <BillReaderQuestionsSection
+              billId={bill.id}
+              questions={readerQuestions}
+              councilName={council.name}
+              operatorName={operator.name}
             />
           </div>
         )}

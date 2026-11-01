@@ -25,6 +25,8 @@ const tables = [
   "interview_sessions",
   "interview_messages",
   "interview_report",
+  "reader_opinions",
+  "reader_questions",
 ] as const;
 
 describe("RLS default deny（全テーブル共通）", () => {
@@ -59,6 +61,14 @@ describe("RLS default deny（全テーブル共通）", () => {
         start_date: "2025-01-01",
         end_date: "2025-06-30",
         slug: "rls-test",
+      });
+      expect(error).not.toBeNull();
+    });
+
+    // 意見・質問フォームは Server Action（admin client）経由でだけ書ける
+    it("reader_questions: INSERT が拒否される", async () => {
+      const { error } = await anon.from("reader_questions").insert({
+        body: "不正な挿入テスト",
       });
       expect(error).not.toBeNull();
     });
