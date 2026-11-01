@@ -127,6 +127,30 @@
     "./og/assets": {
       "types": "./src/og/og-assets.ts",
       "default": "./src/og/og-assets.ts"
+    },
+    "./site-settings/schema": {
+      "types": "./src/site-settings/schema.ts",
+      "default": "./src/site-settings/schema.ts"
+    },
+    "./site-settings/defaults": {
+      "types": "./src/site-settings/defaults.ts",
+      "default": "./src/site-settings/defaults.ts"
+    },
+    "./site-settings/resolve": {
+      "types": "./src/site-settings/resolve.ts",
+      "default": "./src/site-settings/resolve.ts"
+    },
+    "./site-settings/public": {
+      "types": "./src/site-settings/public.ts",
+      "default": "./src/site-settings/public.ts"
+    },
+    "./site-settings/templates": {
+      "types": "./src/site-settings/templates.ts",
+      "default": "./src/site-settings/templates.ts"
+    },
+    "./site-settings/presets": {
+      "types": "./src/site-settings/presets/sagamihara.ts",
+      "default": "./src/site-settings/presets/sagamihara.ts"
     }
   },
   "dependencies": {

@@ -933,6 +933,51 @@ export type Database = {
           },
         ]
       }
+      site_setting_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: number
+          key: string
+          value: Json
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: number
+          key: string
+          value: Json
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: number
+          key?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           created_at: string
