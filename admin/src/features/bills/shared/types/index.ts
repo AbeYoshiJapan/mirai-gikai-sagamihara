@@ -49,6 +49,9 @@ export const BILL_STATUS_ORDER: Record<BillStatus, number> = {
   in_originating_house: 3,
   introduced: 4,
   preparing: 5,
+  reported: 6,
+  plan: 7,
+  special_committee: 8,
 };
 
 // House display mapping
@@ -87,6 +90,12 @@ export function getBillStatusLabel(
       return "成立";
     case "rejected":
       return "否決";
+    case "reported":
+      return "委員会報告";
+    case "plan":
+      return "行政計画";
+    case "special_committee":
+      return "特別委員会";
     default:
       return status;
   }

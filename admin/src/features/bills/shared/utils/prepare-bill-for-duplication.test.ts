@@ -29,6 +29,9 @@ const baseBill: Bill = {
   thumbnail_url: null,
   knowledge_source: null,
   use_knowledge_source_in_chat: false,
+  public_comment_start: null,
+  public_comment_end: null,
+  public_comment_url: null,
 };
 
 describe("prepareBillForDuplication", () => {

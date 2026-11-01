@@ -1,9 +1,12 @@
 import {
   AlertCircle,
+  BookOpen,
   CheckCircle,
+  ClipboardList,
   Clock,
   FileText,
   Settings,
+  Users,
   XCircle,
 } from "lucide-react";
 import type { ElementType } from "react";
@@ -38,5 +41,18 @@ export const BILL_STATUS_CONFIG: Record<
   rejected: {
     icon: XCircle,
     color: "text-red-600 bg-red-50",
+  },
+  // 墨田区版で追加した区分（議案ではなく「掲載」として扱う）
+  reported: {
+    icon: ClipboardList,
+    color: "text-purple-600 bg-purple-50",
+  },
+  plan: {
+    icon: BookOpen,
+    color: "text-teal-600 bg-teal-50",
+  },
+  special_committee: {
+    icon: Users,
+    color: "text-indigo-600 bg-indigo-50",
   },
 };

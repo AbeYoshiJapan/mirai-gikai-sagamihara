@@ -41,6 +41,9 @@ const BILL_STATUS_OPTIONS: Array<{ value: BillStatus; label: string }> = [
   { value: "in_receiving_house", label: "審議中（送付院）" },
   { value: "enacted", label: "成立" },
   { value: "rejected", label: "否決" },
+  { value: "reported", label: "委員会報告" },
+  { value: "plan", label: "行政計画" },
+  { value: "special_committee", label: "特別委員会" },
 ];
 
 const ORIGINATING_HOUSE_OPTIONS = Object.entries(HOUSE_LABELS).map(
