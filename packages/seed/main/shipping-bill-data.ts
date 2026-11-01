@@ -11,7 +11,7 @@ type InterviewMessageInsert =
 type InterviewReportInsert =
   Database["public"]["Tables"]["interview_report"]["Insert"];
 
-const SHIPPING_BILL_NAME = "船荷証券の電子化に関する法律案";
+const SHIPPING_BILL_NAME = "相模原市行政手続のデジタル化推進条例";
 
 /**
  * 船荷証券法案のインタビュー設定を作成
@@ -468,7 +468,7 @@ export function createShippingBillMessages(
       interview_session_id: sessionId,
       role: "assistant",
       content:
-        "こんにちは！船荷証券の電子化に関する法律案についてお話を伺います。まず、この法案に賛成ですか？反対ですか？",
+        "こんにちは！相模原市行政手続のデジタル化推進条例についてお話を伺います。まず、この法案に賛成ですか？反対ですか？",
     });
     messages.push({
       interview_session_id: sessionId,

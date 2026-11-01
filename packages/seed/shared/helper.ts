@@ -11,6 +11,11 @@ export function createAdminClient() {
 }
 
 const TABLES_TO_CLEAR = [
+  "vote_records",
+  "bill_sources",
+  "members",
+  "factions",
+  "council_meetings",
   "interview_report",
   "interview_messages",
   "interview_sessions",
@@ -23,6 +28,7 @@ const TABLES_TO_CLEAR = [
   "bills",
   "tags",
   "diet_sessions",
+  "committees",
 ] as const;
 
 export async function clearAllData(supabase: AdminClient) {

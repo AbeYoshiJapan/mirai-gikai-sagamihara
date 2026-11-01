@@ -35,6 +35,7 @@ import {
 import { createAdminClient, clearAllData } from "../shared/helper";
 import { seedLocalAdminUser } from "../shared/admin-user";
 import { seedSiteSettings } from "../shared/site-settings";
+import { seedCouncilData } from "./seed-council-data";
 
 async function seedDatabase() {
   const supabase = createAdminClient();
@@ -100,42 +101,46 @@ async function seedDatabase() {
 
     console.log(`✅ Inserted ${insertedBills.length} bills`);
 
-    // Link first 3 bills to the 219 diet session (current session)
-    const session219Id = insertedDietSessions[0]?.id;
-    if (session219Id) {
-      const billsToLink = insertedBills.slice(0, 3);
-      for (const bill of billsToLink) {
+    // 今年度（令和8年度）の会期：今年度に提出した議案を紐づける
+    const currentSessionId = insertedDietSessions[0]?.id;
+    const previousSessionId = insertedDietSessions[1]?.id;
+    if (currentSessionId && previousSessionId) {
+      let currentCount = 0;
+      let previousCount = 0;
+      for (const bill of insertedBills) {
+        const source = bills.find((b) => b.name === bill.name);
+        const isCurrent = (source?.submitted_date ?? "") >= "2026-04-01";
         await supabase
           .from("bills")
-          .update({ diet_session_id: session219Id })
+          .update({
+            diet_session_id: isCurrent ? currentSessionId : previousSessionId,
+          })
           .eq("id", bill.id);
+        if (isCurrent) currentCount += 1;
+        else previousCount += 1;
       }
-      console.log(`🔗 Linked ${billsToLink.length} bills to 219 diet session`);
+      console.log(
+        `🔗 Linked ${currentCount} bills to the current session, ${previousCount} to the previous session`
+      );
+      await supabase
+        .from("diet_sessions")
+        .update({ is_active: true })
+        .eq("id", currentSessionId);
     }
 
-    // Link last 5 bills to the 218 diet session (previous session)
-    const session218Id = insertedDietSessions[1]?.id;
-    if (session218Id) {
-      const bills218 = insertedBills.slice(-5);
-      for (const bill of bills218) {
-        await supabase
-          .from("bills")
-          .update({ diet_session_id: session218Id })
-          .eq("id", bill.id);
-      }
-      console.log(`🔗 Linked ${bills218.length} bills to 218 diet session`);
-    }
+    // 委員会・会派・議員・賛否・一次資料・会議予定（地方議会向けのデータ）
+    await seedCouncilData(supabase, insertedBills);
 
     const knowledgeSourceByBillName: Record<
       string,
       { knowledge_source: string; use_knowledge_source_in_chat: boolean }
     > = {
-      "ガソリン税暫定税率廃止法案": {
+      "相模原市公共交通燃料費支援条例": {
         knowledge_source:
           "この法案についてあなたの意見を聞かせてください。",
         use_knowledge_source_in_chat: true,
       },
-      "船荷証券の電子化に関する法律案": {
+      "相模原市行政手続のデジタル化推進条例": {
         knowledge_source:
           "船荷証券（B/L）の電子化に関する法律案について、あなたの意見を聞かせてください。",
         use_knowledge_source_in_chat: true,

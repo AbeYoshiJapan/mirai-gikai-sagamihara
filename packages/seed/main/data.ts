@@ -18,23 +18,27 @@ type InterviewMessageInsert =
 type InterviewReportInsert =
   Database["public"]["Tables"]["interview_report"]["Insert"];
 
-// 国会会期データ
+// 会期データ（相模原市議会は通年議会。議会年度ごとに 1 会期）
 export const dietSessions: DietSessionInsert[] = [
   {
-    name: "第219回国会（臨時会）",
-    slug: "219-rinji",
-    shugiin_url:
-      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
-    start_date: "2025-10-21",
-    end_date: "2025-12-17",
+    name: "令和8年度（通年議会）",
+    slug: "r8",
+    shugiin_url: "https://www.sagamihara-shigikai.jp/doc/2013120900011/",
+    start_date: "2026-04-01",
+    end_date: "2027-03-31",
+    meeting_periods: [
+      { name: "6月定例会議", start_date: "2026-05-28", end_date: "2026-06-26" },
+      { name: "9月定例会議", start_date: "2026-08-27", end_date: "2026-10-02" },
+      { name: "12月定例会議", start_date: "2026-11-26", end_date: "2026-12-18" },
+    ],
   },
   {
-    name: "第218回国会（臨時会）",
-    slug: "218-rinji",
-    shugiin_url:
-      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
-    start_date: "2025-08-01",
-    end_date: "2025-08-05",
+    name: "令和7年度（通年議会）",
+    slug: "r7",
+    shugiin_url: "https://www.sagamihara-shigikai.jp/doc/2013120900011/",
+    start_date: "2025-04-01",
+    end_date: "2026-03-31",
+    meeting_periods: [],
   },
 ];
 
@@ -42,118 +46,161 @@ export const dietSessions: DietSessionInsert[] = [
 export const tags: TagInsert[] = [
   {
     label: "エネルギー・環境",
-    description: "エネルギー政策、環境保護、気候変動対策に関する法案",
+    description: "エネルギー政策、環境保護、気候変動対策に関する議案",
     featured_priority: 1,
   },
   {
     label: "子育て・教育",
-    description: "子育て支援、教育政策、若者支援に関する法案",
+    description: "子育て支援、教育政策、若者支援に関する議案",
     featured_priority: 2,
   },
   {
     label: "選挙・政治改革",
-    description: "選挙制度、政治改革、民主主義の強化に関する法案",
+    description: "選挙制度、政治改革、市民参加に関する議案",
     featured_priority: 3,
   },
 ];
 
+/** 公開ゲートを通すための確認記録（開発用。本番では管理画面の操作で入る） */
+const reviewed = {
+  is_review_completed: true,
+  reviewed_at: "2026-10-01T00:00:00+09:00",
+} as const;
+
 export const bills: BillInsert[] = [
   {
-    name: "ガソリン税暫定税率廃止法案",
-    originating_house: "HR",
-    status: "in_originating_house",
-    status_note: "衆議院で審議中",
-    submitted_date: "2025-08-01T09:00:00+09:00",
+    name: "相模原市公共交通燃料費支援条例",
+    bill_number: "議案第98号",
+    bill_kind: "ordinance",
+    proposer_kind: "mayor",
+    stage: "in_committee",
+    status_note: "総務委員会で審査中",
+    submitted_date: "2026-08-27T09:00:00+09:00",
     publish_status: "published",
     is_featured: true,
     thumbnail_url: "https://placehold.co/600x400.png",
+    bill_document_url: "https://www.sagamihara-shigikai.jp/doc/2013120900011/",
+    ...reviewed,
   },
   {
-    name: "こども家庭庁予算大幅増額法案",
-    originating_house: "HC",
-    status: "enacted",
-    status_note: "両院で可決、成立",
-    submitted_date: "2025-01-20T10:00:00+09:00",
+    name: "令和8年度相模原市一般会計補正予算（子育て支援）",
+    bill_number: "議案第99号",
+    bill_kind: "budget",
+    proposer_kind: "mayor",
+    stage: "decided",
+    result: "passed",
+    vote_outcome: "majority",
+    decided_on: "2026-10-02",
+    status_note: "本会議で可決",
+    submitted_date: "2026-08-27T10:00:00+09:00",
     publish_status: "published",
     is_featured: true,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   },
   {
-    name: "18歳選挙権完全実施法案",
-    originating_house: "HR",
-    status: "rejected",
-    status_note: "衆議院で否決",
-    submitted_date: "2025-02-01T09:00:00+09:00",
+    name: "相模原市若者の市政参加推進条例",
+    bill_number: "議員提出議案第3号",
+    bill_kind: "member_bill",
+    proposer_kind: "member",
+    stage: "decided",
+    result: "rejected",
+    vote_outcome: "minority",
+    decided_on: "2026-06-26",
+    status_note: "本会議で否決",
+    submitted_date: "2026-05-28T09:00:00+09:00",
     publish_status: "published",
     is_featured: false,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   },
   {
-    name: "学校給食無償化促進法案",
-    originating_house: "HC",
-    status: "enacted",
-    status_note: "両院で可決、4月から実施",
-    submitted_date: "2025-01-10T09:00:00+09:00",
+    name: "相模原市学校給食費無償化条例",
+    bill_number: "議案第40号",
+    bill_kind: "ordinance",
+    proposer_kind: "mayor",
+    stage: "decided",
+    result: "passed",
+    vote_outcome: "unanimous",
+    decided_on: "2025-12-19",
+    status_note: "全会一致で可決、4月から実施",
+    submitted_date: "2025-11-27T09:00:00+09:00",
     publish_status: "published",
     is_featured: false,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   },
-  // 第218回国会用の追加法案（デザイン確認用）- ループで生成
+  // 前年度用の追加議案（デザイン確認用）- ループで生成
   ...Array.from({ length: 4 }, (_, i) => ({
-    name: `学校給食無償化促進法案（第${i + 2}号）`,
-    originating_house: (i % 2 === 0 ? "HR" : "HC") as "HR" | "HC",
-    status: (i % 2 === 0 ? "enacted" : "in_originating_house") as
-      | "enacted"
-      | "in_originating_house",
-    status_note: i % 2 === 0 ? "両院で可決、成立" : "参議院で審議中",
-    submitted_date: `2025-08-0${i + 1}T09:00:00+09:00`,
+    name: `相模原市学校給食費無償化条例（第${i + 2}号）`,
+    bill_number: `議案第${41 + i}号`,
+    bill_kind: "ordinance" as const,
+    proposer_kind: "mayor" as const,
+    stage: (i % 2 === 0 ? "decided" : "in_committee") as
+      | "decided"
+      | "in_committee",
+    result: i % 2 === 0 ? ("passed" as const) : null,
+    vote_outcome: i % 2 === 0 ? ("majority" as const) : null,
+    decided_on: i % 2 === 0 ? "2025-12-19" : null,
+    status_note: i % 2 === 0 ? "本会議で可決" : "委員会で審査中",
+    submitted_date: `2025-09-0${i + 1}T09:00:00+09:00`,
     publish_status: "published" as const,
     is_featured: false,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   })),
   {
-    name: "船荷証券の電子化に関する法律案",
-    originating_house: "HR",
-    status: "in_originating_house",
-    status_note: "衆議院で審議中",
-    submitted_date: "2025-09-15T09:00:00+09:00",
+    name: "相模原市行政手続のデジタル化推進条例",
+    bill_number: "議案第100号",
+    bill_kind: "ordinance",
+    proposer_kind: "mayor",
+    stage: "in_committee",
+    status_note: "総務委員会で審査中",
+    submitted_date: "2026-08-27T09:00:00+09:00",
     publish_status: "published",
     is_featured: false,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   },
   {
-    name: "中学生・高校生向けプログラミング教育必修化法案",
-    originating_house: "HR",
-    status: "rejected",
-    status_note: "衆議院本会議で否決",
-    submitted_date: "2024-11-15T10:00:00+09:00",
+    name: "相模原市立中学校プログラミング教育推進条例",
+    bill_number: "議員提出議案第1号",
+    bill_kind: "member_bill",
+    proposer_kind: "member",
+    stage: "decided",
+    result: "rejected",
+    vote_outcome: "minority",
+    decided_on: "2025-12-19",
+    status_note: "本会議で否決",
+    submitted_date: "2025-11-27T10:00:00+09:00",
     publish_status: "published",
     is_featured: false,
     thumbnail_url: "https://placehold.co/600x400.png",
+    ...reviewed,
   },
 ];
 
 // 議案とタグの関連付け
-// billsの順番: [ガソリン税, こども家庭庁, 18歳選挙権, 学校給食, プログラミング教育]
+// billsの順番: [燃料費支援, 補正予算, 若者参加, 給食無償化, …, デジタル化, プログラミング教育]
 // tagsの順番: [エネルギー・環境, 子育て・教育, 選挙・政治改革]
 export function createBillsTags(
   insertedBills: { id: string; name: string }[],
   insertedTags: { id: string; label: string }[]
 ): Omit<BillsTagsInsert, "id" | "created_at">[] {
   const billTagMap: { [billName: string]: string[] } = {
-    "ガソリン税暫定税率廃止法案": ["エネルギー・環境"],
-    "こども家庭庁予算大幅増額法案": ["子育て・教育"],
-    "18歳選挙権完全実施法案": ["選挙・政治改革"],
-    "学校給食無償化促進法案": ["子育て・教育"],
-    // 第218回国会用の追加法案（デザイン確認用）
+    "相模原市公共交通燃料費支援条例": ["エネルギー・環境"],
+    "令和8年度相模原市一般会計補正予算（子育て支援）": ["子育て・教育"],
+    "相模原市若者の市政参加推進条例": ["選挙・政治改革"],
+    "相模原市学校給食費無償化条例": ["子育て・教育"],
+    // 前年度用の追加議案（デザイン確認用）
     ...Object.fromEntries(
       Array.from({ length: 4 }, (_, i) => [
-        `学校給食無償化促進法案（第${i + 2}号）`,
+        `相模原市学校給食費無償化条例（第${i + 2}号）`,
         ["子育て・教育"],
       ])
     ),
-    "船荷証券の電子化に関する法律案": ["エネルギー・環境"],
-    "中学生・高校生向けプログラミング教育必修化法案": ["子育て・教育"],
+    "相模原市行政手続のデジタル化推進条例": ["エネルギー・環境"],
+    "相模原市立中学校プログラミング教育推進条例": ["子育て・教育"],
   };
 
   const billsTags: Omit<BillsTagsInsert, "id" | "created_at">[] = [];
@@ -176,7 +223,7 @@ export function createBillsTags(
 
 const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
   {
-    // ガソリン税暫定税率廃止法案に対する見解
+    // 相模原市公共交通燃料費支援条例に対する見解
     type: "for",
     comment: `私たちは、家計の負担を軽くするこの法案に賛成します。
 
@@ -185,28 +232,28 @@ const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
 電気自動車の普及促進など、環境に優しい対策もセットで進めるべきです。`,
   },
   {
-    // こども家庭庁予算大幅増額法案に対する見解
+    // 令和8年度相模原市一般会計補正予算（子育て支援）に対する見解
     type: "for",
     comment: `少子化対策は国の最重要課題の一つです。この法案による児童手当の増額と保育の無償化は、子育て世代の経済的負担を大幅に軽減します。
 
 特に第3子以降への手厚い支援は、出生率向上に効果的だと考えます。財源確保についても企業の子ども支援金など、社会全体で支える仕組みが評価できます。`,
   },
   {
-    // 18歳選挙権完全実施法案に対する見解
+    // 相模原市若者の市政参加推進条例に対する見解
     type: "for",
     comment: `18歳選挙権が導入されても、若者の投票率が低いままでは意味がありません。
 
 この法案による主権者教育の充実と投票環境の改善は、民主主義の質を高める重要な取り組みです。デジタルネイティブ世代に合わせた情報提供の現代化も評価できます。`,
   },
   {
-    // 学校給食無償化促進法案に対する見解
+    // 相模原市学校給食費無償化条例に対する見解
     type: "for",
     comment: `学校給食の無償化は、子育て支援と教育の充実を同時に実現する重要な政策です。
 
 全ての子どもが質の高い食事を平等に受けられることは、健康格差の解消にもつながります。地産地消の推進により地域経済の活性化も期待できます。`,
   },
   {
-    // 船荷証券の電子化に関する法律案に対する見解
+    // 相模原市行政手続のデジタル化推進条例に対する見解
     type: "conditional_for",
     comment: `国際海運のデジタル化は避けられない潮流であり、電子船荷証券の法整備は重要です。
 
@@ -238,7 +285,7 @@ const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
       { title: "採決結果", body: "" },
     ],
   },
-  // 第218回国会用の追加法案（デザイン確認用）- 同じ見解を4件追加
+  // 前年度用の追加議案（デザイン確認用）- 同じ見解を4件追加
   ...Array.from({ length: 4 }, () => ({
     type: "for" as const,
     comment: `学校給食の無償化は、子育て支援と教育の充実を同時に実現する重要な政策です。

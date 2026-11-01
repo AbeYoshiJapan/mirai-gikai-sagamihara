@@ -10,9 +10,9 @@ interface BillContentWithBillName {
 
 // 議案コンテンツのデータ（bill_nameで参照）
 export const billContentsWithBillName: BillContentWithBillName[] = [
-  // ===== ガソリン税暫定税率廃止法案 =====
+  // ===== 相模原市公共交通燃料費支援条例 =====
   {
-    bill_name: "ガソリン税暫定税率廃止法案",
+    bill_name: "相模原市公共交通燃料費支援条例",
     difficulty_level: "normal",
     title: "ガソリン税を安くする法案",
     summary:
@@ -83,7 +83,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 この法案は、家計を助ける一方で、財源や環境の問題もあります。みなさんも、どちらがよいか考えてみてください。`,
   },
   {
-    bill_name: "ガソリン税暫定税率廃止法案",
+    bill_name: "相模原市公共交通燃料費支援条例",
     difficulty_level: "hard",
     title: "揮発油税等の暫定税率廃止法案",
     summary:
@@ -178,9 +178,9 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 本法案は、50年にわたる暫定措置の是非を問う重要な政策転換点となる。財政健全性、環境政策、地域経済支援のトリレンマの中で、政治的決断が求められている。`,
   },
 
-  // ===== こども家庭庁予算大幅増額法案 =====
+  // ===== 令和8年度相模原市一般会計補正予算（子育て支援） =====
   {
-    bill_name: "こども家庭庁予算大幅増額法案",
+    bill_name: "令和8年度相模原市一般会計補正予算（子育て支援）",
     difficulty_level: "normal",
     title: "子育て支援を拡充する予算法案",
     summary:
@@ -256,7 +256,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 この法案は、日本の未来を左右する重要な投資です。子育て世代の負担を社会全体で支え、持続可能な社会を実現することが目標です。`,
   },
   {
-    bill_name: "こども家庭庁予算大幅増額法案",
+    bill_name: "令和8年度相模原市一般会計補正予算（子育て支援）",
     difficulty_level: "hard",
     title: "こども家庭庁関係予算の抜本的拡充に関する法案",
     summary:
@@ -358,9 +358,9 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 成否は、財源の持続可能性と実施体制の実効性にかかっており、継続的なモニタリングと柔軟な制度改善が不可欠である。`,
   },
 
-  // ===== 18歳選挙権完全実施法案 =====
+  // ===== 相模原市若者の市政参加推進条例 =====
   {
-    bill_name: "18歳選挙権完全実施法案",
+    bill_name: "相模原市若者の市政参加推進条例",
     difficulty_level: "normal",
     title: "若者の政治参加を促進する法案",
     summary:
@@ -438,7 +438,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 この法案は、形骸化した18歳選挙権を実質化し、若者の政治参加を促進する重要な取り組みです。教育と環境整備の両輪で、持続可能な民主主義を実現することが目標です。`,
   },
   {
-    bill_name: "18歳選挙権完全実施法案",
+    bill_name: "相模原市若者の市政参加推進条例",
     difficulty_level: "hard",
     title: "公職選挙法及び教育基本法の一部を改正する法律案",
     summary:
@@ -542,9 +542,9 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 本法案は、単なる投票率向上策にとどまらず、民主主義の質的転換を図る画期的な改革である。主権者教育の体系化と投票環境の現代化により、若者の政治参加を構造的に促進し、持続可能な民主主義社会の実現を目指す。`,
   },
 
-  // ===== 学校給食無償化促進法案 =====
+  // ===== 相模原市学校給食費無償化条例 =====
   {
-    bill_name: "学校給食無償化促進法案",
+    bill_name: "相模原市学校給食費無償化条例",
     difficulty_level: "normal",
     title: "全国学校給食無償化法案",
     summary:
@@ -646,7 +646,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 初期投資は必要ですが、長期的には少子化対策、健康増進、地域活性化など、多面的な効果が期待できる未来への投資です。`,
   },
   {
-    bill_name: "学校給食無償化促進法案",
+    bill_name: "相模原市学校給食費無償化条例",
     difficulty_level: "hard",
     title: "学校給食法の一部を改正する法律案",
     summary:
@@ -761,10 +761,10 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 本法案は、憲法第26条の義務教育無償の理念を実質化し、すべての児童生徒に質の高い学校給食を保障する画期的な制度改革である。年間4,500億円の財政負担は、少子化対策、健康増進、地域経済活性化、教育格差是正など、多面的な政策効果を考慮すれば、極めて費用対効果の高い投資である。`,
   },
 
-  // ===== 学校給食無償化促進法案（第2号〜第5号）デザイン確認用 =====
+  // ===== 相模原市学校給食費無償化条例（第2号〜第5号）デザイン確認用 =====
   ...Array.from({ length: 4 }, (_, i) => [
     {
-      bill_name: `学校給食無償化促進法案（第${i + 2}号）`,
+      bill_name: `相模原市学校給食費無償化条例（第${i + 2}号）`,
       difficulty_level: "normal" as const,
       title: `全国学校給食無償化法案（第${i + 2}号）`,
       summary:
@@ -772,7 +772,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
       content: `# 全国学校給食無償化法案（第${i + 2}号）\n\nデザイン確認用のダミーコンテンツです。`,
     },
     {
-      bill_name: `学校給食無償化促進法案（第${i + 2}号）`,
+      bill_name: `相模原市学校給食費無償化条例（第${i + 2}号）`,
       difficulty_level: "hard" as const,
       title: `学校給食法の一部を改正する法律案（第${i + 2}号）`,
       summary:
@@ -781,9 +781,9 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
     },
   ]).flat(),
 
-  // ===== 中学生・高校生向けプログラミング教育必修化法案 =====
+  // ===== 相模原市立中学校プログラミング教育推進条例 =====
   {
-    bill_name: "中学生・高校生向けプログラミング教育必修化法案",
+    bill_name: "相模原市立中学校プログラミング教育推進条例",
     difficulty_level: "normal",
     title: "プログラミング教育を必修化する法案（否決）",
     summary:
@@ -883,7 +883,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 個人としては、今から自主的に学習を始めることで、将来に備えることができます。`,
   },
   {
-    bill_name: "中学生・高校生向けプログラミング教育必修化法案",
+    bill_name: "相模原市立中学校プログラミング教育推進条例",
     difficulty_level: "hard",
     title: "学校教育法施行規則の一部を改正する省令案（廃案）",
     summary:
@@ -1018,9 +1018,9 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 
 拙速な必修化は教育現場の混乱を招く。十分な準備期間を設け、質の高いプログラミング教育を実現することが、真の意味でのデジタル人材育成につながる。`,
   },
-  // ===== 船荷証券の電子化に関する法律案 =====
+  // ===== 相模原市行政手続のデジタル化推進条例 =====
   {
-    bill_name: "船荷証券の電子化に関する法律案",
+    bill_name: "相模原市行政手続のデジタル化推進条例",
     difficulty_level: "normal",
     title: "船荷証券をデジタル化する法案",
     summary:
@@ -1063,7 +1063,7 @@ export const billContentsWithBillName: BillContentWithBillName[] = [
 4. **移行期間**: 紙と電子の混在時期の管理が大変`,
   },
   {
-    bill_name: "船荷証券の電子化に関する法律案",
+    bill_name: "相模原市行政手続のデジタル化推進条例",
     difficulty_level: "hard",
     title: "電子船荷証券に関する法律案",
     summary:
