@@ -116,6 +116,9 @@ export async function upsertBillContent(params: {
   title: string;
   summary: string;
   content: string;
+  /** 生成結果の反映なら、どの生成からかを残す。手編集なら省略（参照は変えない） */
+  generationJobId?: string | null;
+  sourceHash?: string | null;
 }) {
   const supabase = createAdminClient();
   const { error } = await supabase.from("bill_contents").upsert(
@@ -125,6 +128,10 @@ export async function upsertBillContent(params: {
       title: params.title,
       summary: params.summary,
       content: params.content,
+      ...(params.generationJobId !== undefined && {
+        generation_job_id: params.generationJobId,
+        source_hash: params.sourceHash ?? null,
+      }),
       updated_at: new Date().toISOString(),
     },
     {

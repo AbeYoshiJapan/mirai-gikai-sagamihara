@@ -1,5 +1,6 @@
 import "server-only";
 
+import { countUnresolvedReviewPointsForBill } from "@/features/bill-generation/server/loaders/load-generation-jobs";
 import { closeOtherPublicConfigs } from "@/features/interview-config/server/repositories/interview-config-repository";
 import {
   invalidateWebCache,
@@ -38,6 +39,12 @@ export async function updateBillWithSideEffects(
   let reviewRecord: { reviewed_by: string | null; reviewed_at: string } | null =
     null;
   if (input.is_review_completed === true) {
+    const unresolved = await countUnresolvedReviewPointsForBill(id);
+    if (unresolved > 0) {
+      throw new Error(
+        `AI 生成の「要確認」が ${unresolved} 件残っています。生成画面で確認してからレビュー完了にしてください`
+      );
+    }
     const current = await findBillById(id);
     if (!current.is_review_completed || !current.reviewed_at) {
       reviewRecord = {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
+import { countUnresolvedReviewPointsForBill } from "@/features/bill-generation/server/loaders/load-generation-jobs";
 import {
   invalidateWebCache,
   WEB_CACHE_TAGS,
@@ -56,6 +57,13 @@ export async function updatePublishStatusAction(
       const blocker = checkPublishPreconditions(bill);
       if (blocker) {
         return { success: false, error: blocker };
+      }
+      const unresolved = await countUnresolvedReviewPointsForBill(billId);
+      if (unresolved > 0) {
+        return {
+          success: false,
+          error: `AI 生成の「要確認」が ${unresolved} 件残っています。生成画面で確認してから公開してください`,
+        };
       }
       await updateBillPublishStatus(billId, "published", {
         // 公開操作は管理者による確認でもある。レビュー完了時の記録が無ければここで残す

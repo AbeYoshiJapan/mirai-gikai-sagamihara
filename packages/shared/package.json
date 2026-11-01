@@ -128,6 +128,14 @@
       "types": "./src/og/og-assets.ts",
       "default": "./src/og/og-assets.ts"
     },
+    "./bill-explanation/schema": {
+      "types": "./src/bill-explanation/schema.ts",
+      "default": "./src/bill-explanation/schema.ts"
+    },
+    "./bill-explanation/prompt": {
+      "types": "./src/bill-explanation/prompt.ts",
+      "default": "./src/bill-explanation/prompt.ts"
+    },
     "./bill-sources/labels": {
       "types": "./src/bill-sources/labels.ts",
       "default": "./src/bill-sources/labels.ts"

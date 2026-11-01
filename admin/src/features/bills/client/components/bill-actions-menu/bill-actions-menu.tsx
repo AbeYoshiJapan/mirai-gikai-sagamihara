@@ -8,6 +8,7 @@ import {
   type LucideIcon,
   MessageCircle,
   MoreVertical,
+  Sparkles,
 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -67,6 +68,12 @@ export function BillActionsMenu({ billId, billName }: BillActionsMenuProps) {
             icon={FileText}
           >
             コンテンツ
+          </BillActionMenuLink>
+          <BillActionMenuLink
+            href={routes.billGenerate(billId) as Route}
+            icon={Sparkles}
+          >
+            AI で解説を生成
           </BillActionMenuLink>
           <BillActionMenuLink
             href={routes.billInterview(billId) as Route}
