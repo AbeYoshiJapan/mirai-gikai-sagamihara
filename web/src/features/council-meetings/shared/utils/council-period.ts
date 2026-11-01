@@ -1,10 +1,10 @@
 import type { CouncilMeeting, CouncilPeriod } from "../types";
 
 /**
- * 墨田区議会は通年議会（墨田区議会基本条例第7条）。会期は5月1日〜翌年4月30日で、
- * 閉会はない。本会議を開く「議会期間」（6月・9月・11月・2月議会）は、
- * 会議日程の「本会議（○月議会初日）」「本会議（○月議会最終日）」から求める。
+ * 通年議会では会期（議会年度）の中に本会議を開く「議会期間」（○月議会・○月定例会議）が
+ * 複数ある。会議名の「本会議（○月議会初日）」「本会議（○月議会最終日）」から期間を求める。
  * 招集議会・緊急議会・臨時会は、その日だけの議会期間とする。
+ * 会議名の書式は取込アダプタが揃える（本会議（○月議会初日）の形）。
  */
 export function extractCouncilPeriods(
   meetings: Pick<CouncilMeeting, "name" | "meeting_date" | "category">[]
@@ -39,9 +39,11 @@ export function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-/** 議会年度の開始年。5月始まり（墨田区議会通年議会実施要綱第2条）。 */
-export function councilYearOf(date: Date): number {
-  return date.getMonth() + 1 >= 5 ? date.getFullYear() : date.getFullYear() - 1;
+/** 議会年度の開始年。開始月はサイト設定（council.year_start_month）。既定は 5 月始まり。 */
+export function councilYearOf(date: Date, startMonth = 5): number {
+  return date.getMonth() + 1 >= startMonth
+    ? date.getFullYear()
+    : date.getFullYear() - 1;
 }
 
 /** 例：2026 → 令和8年度 */

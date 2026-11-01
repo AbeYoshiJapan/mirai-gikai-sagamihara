@@ -8,6 +8,7 @@ import { getInterviewQuestions } from "@/features/interview-config/server/loader
 import { InterviewChatClient } from "@/features/interview-session/client/components/interview-chat-client";
 import { InterviewSessionErrorView } from "@/features/interview-session/client/components/interview-session-error-view";
 import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface InterviewChatPageProps {
   params: Promise<{
@@ -18,6 +19,7 @@ interface InterviewChatPageProps {
 export default async function InterviewChatPage({
   params,
 }: InterviewChatPageProps) {
+  await requireFeature("ai_interview");
   const { id: billId } = await params;
 
   // 法案とインタビュー設定を取得

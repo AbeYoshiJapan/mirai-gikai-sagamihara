@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { getInterviewChatLink } from "@/features/interview-config/shared/utils/interview-links";
 import { routes } from "@/lib/routes";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 
 interface InterviewConsentModalProps {
   open: boolean;
@@ -28,6 +29,7 @@ export function InterviewConsentModal({
   billId,
   previewToken,
 }: InterviewConsentModalProps) {
+  const { operator, council, site } = useSiteSettings();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -60,11 +62,13 @@ export function InterviewConsentModal({
         <div className="flex flex-col gap-6 mt-6">
           <ul className="flex flex-col gap-3 list-disc pl-5 text-sm font-bold text-gray-800 leading-[22px]">
             <li>
-              回答データは、運営者（井上ひろき）の議会活動・政策検討に利用します。
+              回答データは、運営者（{operator.name}
+              ）の議会活動・政策検討に利用します。
             </li>
             <li>個人情報や機密情報の記載はお控えください。</li>
             <li>
-              インタビュー回答後に公開を許可するかを選択できます。公開を許可した場合、のちにみらい議会@墨田区に全文が掲載される場合があります。
+              インタビュー回答後に公開を許可するかを選択できます。公開を許可した場合、のちに
+              {site.name}に全文が掲載される場合があります。
             </li>
           </ul>
 

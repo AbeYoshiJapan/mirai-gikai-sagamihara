@@ -39,6 +39,7 @@ export type PublicSiteSettings = {
     | "committees"
   >;
   features: SiteSettings["features"];
+  legal: Pick<SiteSettings["legal"], "modified_on">;
 };
 
 export function toPublicSiteSettings(s: SiteSettings): PublicSiteSettings {
@@ -76,6 +77,7 @@ export function toPublicSiteSettings(s: SiteSettings): PublicSiteSettings {
       committees: s.council.committees,
     },
     features: s.features,
+    legal: { modified_on: s.legal.modified_on },
   };
 }
 
@@ -110,7 +112,8 @@ export function renderOperatorDisclaimer(s: SiteSettings): string {
 /** public/ 配下の既定画像。設定が空のときに使う */
 export const DEFAULT_BRAND_ASSETS = {
   logo_url: "/img/logo.svg",
-  service_logo_url: "/img/service-logo.svg",
+  /** 空のときはヘッダーにサイト名をテキストで出す */
+  service_logo_url: "",
   ogp_image_url: "/ogp.jpg",
   hero_image_url: "/img/hero_background.png",
   archive_hero_url: "/img/archive-hero.png",
@@ -132,10 +135,11 @@ export function brandAsset(
 
 /** テーマ色を CSS 変数の宣言にする（RootLayout の <style> に入れる） */
 export function brandColorsToCss(colors: SiteSettings["brand"]["colors"]): string {
+  // globals.css の :root 宣言より後に読まれる保証がないので !important で勝たせる
   return [
-    `--primary: ${colors.primary};`,
-    `--primary-accent: ${colors.primary_accent};`,
-    `--mirai-gradient-start: ${colors.gradient_start};`,
-    `--mirai-gradient-end: ${colors.gradient_end};`,
+    `--primary: ${colors.primary} !important;`,
+    `--primary-accent: ${colors.primary_accent} !important;`,
+    `--color-mirai-gradient-start: ${colors.gradient_start} !important;`,
+    `--color-mirai-gradient-end: ${colors.gradient_end} !important;`,
   ].join(" ");
 }

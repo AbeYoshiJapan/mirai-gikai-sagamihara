@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Undo2 } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
@@ -14,6 +16,7 @@ import type { UserReportsResult } from "@/features/interview-report/server/loade
 import { InterviewStatusBadge } from "@/features/interview-session/client/components/interview-status-badge";
 import { NewInterviewButton } from "@/features/interview-session/client/components/new-interview-button";
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import type { InterviewConfig } from "../../server/loaders/get-interview-config";
 import { InterviewActionButtons } from "./interview-action-buttons";
 
@@ -38,12 +41,12 @@ const FEATURES: {
   {
     iconSrc: "/icons/interview-messages.svg",
     iconSize: { w: 33, h: 26 },
-    text: "寄せられた回答は、井上ひろきが区議会での質問などの参考にします",
+    text: "寄せられた回答は、運営者が議会での質問などの参考にします",
   },
   {
     iconSrc: "/icons/interview-landmark.svg",
     iconSize: { w: 30, h: 29 },
-    text: "区の正式なパブリックコメントではありません（区の募集が始まったら、区のページをご案内します）",
+    text: "自治体の正式なパブリックコメントではありません（募集が始まったら、自治体のページをご案内します）",
   },
 ];
 
@@ -140,6 +143,7 @@ function _InterviewOverviewSection({
   billName: string;
   previewToken?: string;
 }) {
+  const { operator, council } = useSiteSettings();
   const billLink = getBillDetailLink(billId, previewToken);
 
   return (
@@ -149,7 +153,7 @@ function _InterviewOverviewSection({
       </h2>
       <div className="space-y-4 text-[15px] font-normal text-black leading-[1.87]">
         <p>
-          墨田区で検討されている
+          {council.municipality}で検討されている
           <Link
             href={billLink as Route}
             className="text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
@@ -159,7 +163,8 @@ function _InterviewOverviewSection({
           について、AIがあなたの考えを深掘りするチャット型インタビューです
         </p>
         <p>
-          いただいたご意見は、井上ひろきが区議会での質問などの参考にします。ご本人が公開を選んだ場合は、このサイト上に公開されます。
+          いただいたご意見は、{operator.name}が{council.name}
+          での質問などの参考にします。ご本人が公開を選んだ場合は、このサイト上に公開されます。
         </p>
       </div>
       <div>

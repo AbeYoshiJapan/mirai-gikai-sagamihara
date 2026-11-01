@@ -106,15 +106,15 @@
   --color-mirai-progress-track: #d9d9d9;
   --color-mirai-progress-fill: #a9c8ee;
 
-  /* Gradient endpoints */
-  --color-mirai-gradient-start: #8db4e6;
-  --color-mirai-gradient-end: #d4e4f6;
+  /* Gradient endpoints（既定値。本番はサイト設定の色を RootLayout が :root に注入して上書きする） */
+  --color-mirai-gradient-start: #7fd3a8;
+  --color-mirai-gradient-end: #d9f2e3;
 
-  /* Team Mirai brand (party design system) */
-  --color-mirai-brand-teal: #3a72c4;
-  --color-mirai-brand-teal-hover: #1f569f;
-  --color-mirai-brand-teal-deep: #1a3a66;
-  --color-mirai-brand-mint: #e6eef9;
+  /* Brand accents（primary から導く。本家のチームみらい色は使わない） */
+  --color-mirai-brand-teal: var(--primary);
+  --color-mirai-brand-teal-hover: var(--primary-accent);
+  --color-mirai-brand-teal-deep: var(--primary-accent);
+  --color-mirai-brand-mint: var(--color-mirai-gradient-end);
 
   /* Topic analysis */
   --color-topic-info-bg: #e8eef7;
@@ -138,8 +138,9 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #2a5ea8;
-  --primary-accent: #1b4580;
+  /* 既定のテーマ色。サイト設定（ブランドタブ）の値で上書きされる */
+  --primary: #1f7a4d;
+  --primary-accent: #155c3a;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

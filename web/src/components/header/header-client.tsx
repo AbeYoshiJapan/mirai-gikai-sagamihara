@@ -1,5 +1,6 @@
 "use client";
 
+import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,6 +11,7 @@ import { sendDifficultyStateEvent } from "@/lib/analytics/preference-state-event
 import { useOnPageView } from "@/lib/analytics/use-on-page-view";
 import { isInterviewPage, isMainPage } from "@/lib/page-layout-utils";
 import { routes } from "@/lib/routes";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import { HamburgerMenu } from "./hamburger-menu";
 
 interface HeaderClientProps {
@@ -18,6 +20,7 @@ interface HeaderClientProps {
 
 export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   const pathname = usePathname();
+  const { site, brand } = useSiteSettings();
   const showDifficultySelector = isMainPage(pathname);
   const showInterviewActions = isInterviewPage(pathname);
 
@@ -39,17 +42,25 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
               aria-label="ホーム"
             >
               <Image
-                src="/img/logo.svg"
-                alt="みらい議会@墨田区"
+                src={brandAsset(brand, "logo_url")}
+                alt={site.name}
                 width={40}
                 height={36}
+                unoptimized
               />
-              <Image
-                src="/img/service-logo.svg"
-                alt="みらい議会@墨田区"
-                width={151}
-                height={24}
-              />
+              {brand.service_logo_url ? (
+                <Image
+                  src={brand.service_logo_url}
+                  alt={site.name}
+                  width={151}
+                  height={24}
+                  unoptimized
+                />
+              ) : (
+                <span className="text-[17px] font-extrabold tracking-wider text-black">
+                  {site.name}
+                </span>
+              )}
             </Link>
           </div>
 

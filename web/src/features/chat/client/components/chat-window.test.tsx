@@ -184,10 +184,10 @@ describe("ChatWindow", () => {
     expect(screen.getAllByRole("button", { name: /何|議案/ })).toHaveLength(3);
 
     await user.click(
-      screen.getByRole("button", { name: "みらい議会@墨田区って何？" })
+      screen.getByRole("button", { name: "みらい議会＠○○って何？" })
     );
     expect(sendMessage).toHaveBeenCalledWith({
-      text: "みらい議会@墨田区って何？",
+      text: "みらい議会＠○○って何？",
       metadata: {
         billContext: undefined,
         difficultyLevel: "normal",
@@ -244,7 +244,7 @@ describe("ChatWindow", () => {
 
     expect(
       await screen.findByRole("region", {
-        name: "区議会や議案についてAIに質問する",
+        name: "○○議会や議案についてAIに質問する",
       })
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

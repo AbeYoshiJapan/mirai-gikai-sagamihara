@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
 import { getBills } from "@/features/bills/server/loaders/get-bills";
-import { env } from "@/lib/env";
 import { routes } from "@/lib/routes";
+import { getSiteSettings, getSiteUrl } from "@/lib/site-settings/loader";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // デプロイごとの仮URL（VERCEL_URL）ではなく本番URLを載せる
-  const baseUrl = env.webUrl;
+  // デプロイごとの仮URL（VERCEL_URL）ではなく本番URL（サイト設定）を載せる
+  const [settings, baseUrl] = await Promise.all([
+    getSiteSettings(),
+    getSiteUrl(),
+  ]);
+  if (!settings.site.published || !settings.seo.sitemap) {
+    return [];
+  }
 
   const bills = await getBills();
 

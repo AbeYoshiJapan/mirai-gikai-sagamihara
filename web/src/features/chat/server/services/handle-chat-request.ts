@@ -28,6 +28,7 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { isWithinDailyCostLimit, recordChatUsage } from "./cost-tracker";
 import {
   checkSystemDailyCostLimit,
@@ -100,7 +101,7 @@ export async function handleChatRequest({
     promptProvider
   );
   // Model configuration
-  // 墨田区版は AI Gateway の無料枠で動かすため、無料枠で使える gpt-4.1-mini にする
+  // AI Gateway の無料枠で使える gpt-4.1-mini を使う（利用者向けチャットは既定で無効）
   const model = deps?.model ?? AI_MODELS.gpt4_1_mini;
   const modelName =
     typeof model === "string" ? model : (model.modelId ?? "unknown");
@@ -220,6 +221,21 @@ async function buildPrompt(
     };
   }
 
+  // サイト名・議会名・運営者名はサイト設定から（プロンプトにベタ書きしない）
+  const settings = await getSiteSettings();
+  variables = {
+    ...variables,
+    siteName: settings.site.name,
+    councilName: settings.council.name,
+    municipality: settings.council.municipality,
+    operatorName: settings.operator.name,
+    operatorTitle: settings.operator.title,
+    scopeLabel: settings.council.scope_label,
+    primarySourceLabel: settings.council.primary_source_label,
+    sessionLabel: settings.council.session_label,
+    yearRound: String(settings.council.session_model === "year_round"),
+  };
+
   // Fetch prompt from Langfuse
   try {
     const promptResult = await promptProvider.getPrompt(promptName, variables);
@@ -294,7 +310,7 @@ function extractGatewayCost(event: {
 const INTERVIEW_AWARENESS_BASE = `
 
 ## AIインタビュー機能について
-みらい議会@墨田区には「AIインタビュー」機能があります。これは議案・計画ごとに提供される機能で、ユーザーがAIインタビュアーと対話形式で議案・計画に対する意見や知見を共有できる仕組みです。インタビュー結果は分析・レポート化され、政策議論に活用されます。
+このサイトには「AIインタビュー」機能があります。これは議案・計画ごとに提供される機能で、ユーザーがAIインタビュアーと対話形式で議案・計画に対する意見や知見を共有できる仕組みです。インタビュー結果は分析・レポート化され、政策議論に活用されます。
 `;
 
 const INTERVIEW_AWARENESS_PROMPT_BILL = `${INTERVIEW_AWARENESS_BASE}

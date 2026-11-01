@@ -6,11 +6,7 @@
   "scripts": {
     "seed": "tsx main/run.ts",
     "seed:csv": "tsx csv/import-csv.ts",
-    "typecheck": "tsc --noEmit",
-    "seed:sumida": "tsx sumida/run.ts",
-    "sync:sumida": "tsx sumida/sync.ts",
-    "import:meetings": "tsx sumida/import-meetings.ts",
-    "import:past-meetings": "tsx sumida/import-past-meetings.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@mirai-gikai/supabase": "workspace:*",

@@ -10,6 +10,7 @@ import { PublicStatusSection } from "@/features/interview-report/client/componen
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getAuthenticatedUser } from "@/features/interview-session/server/utils/verify-session-ownership";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { ExpertRegistrationSection } from "../../client/components/expert-registration-section";
 import { ReportContent } from "../../shared/components/report-content";
 import { isExpertRegistrationTargetRole } from "../../shared/utils/expert-registration-validation";
@@ -17,7 +18,7 @@ import { parseOpinions } from "../../shared/utils/format-utils";
 import { countCharacters } from "../../shared/utils/report-utils";
 import { getExpertRegistrationStatus } from "../loaders/get-expert-registration-status";
 
-/** 墨田区版は有識者の連絡先を集めない。 */
+/** 有識者の連絡先は集めない（利用者の個人情報を預からない方針）。 */
 const SHOW_EXPERT_REGISTRATION = false;
 
 interface ReportCompletePageProps {
@@ -27,6 +28,7 @@ interface ReportCompletePageProps {
 export async function ReportCompletePage({
   reportId,
 }: ReportCompletePageProps) {
+  const { operator, council } = await getSiteSettings();
   // レポートIDから全ての情報を取得
   // 完了ページなので、所有者のみが閲覧できるように制限する
   const report = await getInterviewReportById(reportId, { onlyOwner: true });
@@ -79,7 +81,8 @@ export async function ReportCompletePage({
 
           {/* 活用メッセージ */}
           <p className="text-sm text-gray-800">
-            いただいた声は、井上ひろきが区議会での質問などの参考にします
+            いただいた声は、{operator.name}が{council.name}
+            での質問などの参考にします
           </p>
         </div>
       </div>
@@ -121,7 +124,7 @@ export async function ReportCompletePage({
           >
             {/*
               有識者リスト登録バナー。本家はチームみらいから連絡するための連絡先を集めるが、
-              墨田区版は連絡先を預からない方針のため出さない（SHOW_EXPERT_REGISTRATION）。
+              連絡先を預からない方針のため出さない（SHOW_EXPERT_REGISTRATION）。
             */}
             {SHOW_EXPERT_REGISTRATION &&
               isExpertRole &&

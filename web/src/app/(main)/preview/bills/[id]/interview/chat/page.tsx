@@ -2,6 +2,7 @@ import { AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
 import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
 import { validatePreviewToken } from "@/features/bills/server/loaders/validate-preview-token";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
@@ -10,6 +11,7 @@ import { InterviewChatClient } from "@/features/interview-session/client/compone
 import { InterviewSessionErrorView } from "@/features/interview-session/client/components/interview-session-error-view";
 import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";
 import { env } from "@/lib/env";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface InterviewPreviewChatPageProps {
   params: Promise<{
@@ -49,6 +51,7 @@ export default async function InterviewPreviewChatPage({
   params,
   searchParams,
 }: InterviewPreviewChatPageProps) {
+  await requireFeature("ai_interview");
   const [{ id: billId }, { token }] = await Promise.all([params, searchParams]);
 
   // トークン検証

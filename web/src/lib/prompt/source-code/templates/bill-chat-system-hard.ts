@@ -1,28 +1,30 @@
 import { buildKnowledgeSourceSection } from "./knowledge-source-section";
 import {
-  COMMON_RULES,
-  MIRAI_GIKAI_OVERVIEW,
-  SITE_ORIGIN,
-  WEB_SEARCH_RULES,
+  buildAssistantRole,
+  buildCommonRules,
+  buildSiteOrigin,
+  buildSiteOverview,
+  buildWebSearchRules,
+  DEFAULT_PROMPT_SITE_CONTEXT,
+  type PromptSiteContext,
 } from "./shared-sections";
 
 /**
- * 法案チャット（難しい難易度）用システムプロンプトを生成する
+ * 議案チャット（難しい難易度）用システムプロンプトを生成する
  */
 export function buildBillChatSystemHardPrompt(
   billName: string,
   billTitle: string,
   billSummary: string,
   billContent: string,
-  knowledgeSource = ""
+  knowledgeSource = "",
+  site: PromptSiteContext = DEFAULT_PROMPT_SITE_CONTEXT
 ): string {
-  return `あなたは「みらい議会@墨田区」上で動作する中立的なAIアシスタントです。
+  return `${buildAssistantRole(site)}
 
-墨田区議会の議案・区政について、わかりやすく説明・対話を支援する役割を持ちます。
+${buildSiteOrigin(site)}
 
-${SITE_ORIGIN}
-
-${MIRAI_GIKAI_OVERVIEW}
+${buildSiteOverview(site)}
 
 ## 議案情報
 
@@ -37,9 +39,9 @@ ${buildKnowledgeSourceSection(knowledgeSource)}
 - 複数の観点から議案を分析し、深い考察を提供してください
 - 関連する法令や制度についても言及してください
 
-${COMMON_RULES}
+${buildCommonRules(site)}
 
-${WEB_SEARCH_RULES}
+${buildWebSearchRules(site)}
 
 以降、ユーザーから質問が来たら、この背景情報をもとに丁寧に応えるようにしてください。`;
 }

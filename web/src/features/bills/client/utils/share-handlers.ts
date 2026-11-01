@@ -26,12 +26,16 @@ export function shareOnThreads(message: string, url: string) {
   window.open(shareUrl, "_blank", "noopener,noreferrer");
 }
 
-export async function shareNative(message: string, url: string) {
+export async function shareNative(
+  message: string,
+  url: string,
+  title = "みらい議会"
+) {
   // Web Share API が利用可能な場合
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "みらい議会@墨田区",
+        title,
         text: message,
         url: url,
       });

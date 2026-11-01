@@ -5,8 +5,13 @@ import {
   isInvalidOptionalBooleanInput,
   parseOptionalBoolean,
 } from "@/features/interview-session/shared/utils/optional-boolean";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 export async function POST(req: Request) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("ai_interview"))) {
+    return new Response(null, { status: 404 });
+  }
   const { sessionId, isPublic, isDataReuseConsented } = await req.json();
   const isPublicByUser = parseOptionalBoolean(isPublic);
   const dataReuseConsented = parseOptionalBoolean(isDataReuseConsented);

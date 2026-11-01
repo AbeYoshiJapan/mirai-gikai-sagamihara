@@ -27,6 +27,22 @@ vi.mock("next/og", () => ({
   ImageResponse: mocks.imageResponse,
 }));
 
+// サイト設定は DB を読むので、テストでは既定値（AIインタビューだけ有効）に固定する
+vi.mock("@/lib/site-settings/loader", async () => {
+  const { DEFAULT_SITE_SETTINGS } = await import(
+    "@mirai-gikai/shared/site-settings/defaults"
+  );
+  const settings = {
+    ...DEFAULT_SITE_SETTINGS,
+    features: { ...DEFAULT_SITE_SETTINGS.features, ai_interview: true },
+  };
+  return {
+    getSiteSettings: async () => settings,
+    isFeatureEnabled: async (flag: keyof typeof settings.features) =>
+      settings.features[flag],
+  };
+});
+
 function findBillNameElement(
   node: ReactNode,
   text: string

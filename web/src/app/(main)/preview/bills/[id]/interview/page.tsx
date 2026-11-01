@@ -7,6 +7,7 @@ import { getInterviewConfigAdmin } from "@/features/interview-config/server/load
 import { getUserReportsByInterviewConfig } from "@/features/interview-report/server/loaders/get-user-reports-by-interview-config";
 import { getLatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import { env } from "@/lib/env";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ export default async function InterviewPreviewPage({
   params,
   searchParams,
 }: InterviewPreviewPageProps) {
+  await requireFeature("ai_interview");
   const [{ id: billId }, { token }] = await Promise.all([params, searchParams]);
 
   // トークン検証

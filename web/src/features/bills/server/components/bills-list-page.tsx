@@ -18,6 +18,7 @@ import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
 import { HomeChatClient } from "@/features/chat/client/components/home-chat-client";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { BillSearchCard } from "../../client/components/bill-list/bill-search-card";
 import { BillsSortSelect } from "../../client/components/bill-list/bills-sort-select";
 import type { BillStatusGroup } from "../../shared/utils/bill-status-group";
@@ -54,10 +55,16 @@ export async function BillsListPage({
   searchParams: BillsListSearchParams;
 }) {
   const params = parseBillsListParams(searchParams);
-  const [allBills, featuredTags, currentDifficulty] = await Promise.all([
+  const [
+    allBills,
+    featuredTags,
+    currentDifficulty,
+    { council, links, features },
+  ] = await Promise.all([
     getBillsWithReportCounts(),
     getFeaturedTags(),
     getDifficultyLevel(),
+    getSiteSettings(),
   ]);
 
   // タグ以外の絞り込みを先に適用し、そこからタグ絞り込みを派生させる。
@@ -251,30 +258,34 @@ export async function BillsListPage({
           </ul>
         )}
 
-        {/* 掲載外の法案は本家の一覧に送る */}
-        <div className="mt-8 text-sm text-mirai-text-secondary">
-          <Link
-            href="https://ssp.kaigiroku.net/tenant/sumida/SpTop.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 hover:opacity-80"
-          >
-            墨田区議会の審議の記録は{" "}
-            <span className="underline">会議録検索システムへ</span>
-            <ExternalLink className="h-3 w-3" aria-hidden />
-          </Link>
-        </div>
+        {/* 掲載外の議案は議会の会議録検索に送る */}
+        {links.minutes_search && (
+          <div className="mt-8 text-sm text-mirai-text-secondary">
+            <Link
+              href={links.minutes_search as Route}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:opacity-80"
+            >
+              {council.name}の審議の記録は{" "}
+              <span className="underline">会議録検索システムへ</span>
+              <ExternalLink className="h-3 w-3" aria-hidden />
+            </Link>
+          </div>
+        )}
       </Container>
 
       {/* チャットはトップと同じものを出す。文脈は表示中の一覧に合わせる。 */}
-      <HomeChatClient
-        currentDifficulty={currentDifficulty}
-        bills={bills.map((bill) => ({
-          name: chatBillName(bill),
-          summary: bill.bill_content?.summary,
-          tags: bill.tags?.map((tag) => tag.label) ?? [],
-        }))}
-      />
+      {features.ai_chat && (
+        <HomeChatClient
+          currentDifficulty={currentDifficulty}
+          bills={bills.map((bill) => ({
+            name: chatBillName(bill),
+            summary: bill.bill_content?.summary,
+            tags: bill.tags?.map((tag) => tag.label) ?? [],
+          }))}
+        />
+      )}
     </>
   );
 }

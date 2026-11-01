@@ -1,3 +1,4 @@
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import type { CouncilMeeting } from "../../shared/types";
 import {
   type CouncilStatus,
@@ -22,10 +23,11 @@ export type CouncilSchedule = {
   nextMeetings: CouncilMeeting[];
 };
 
-/** 区議会の状況と会議予定をまとめて読む。`now` は日本時間を渡す。 */
+/** 議会の状況と会議予定をまとめて読む。`now` は日本時間を渡す。 */
 export async function loadCouncilSchedule(now: Date): Promise<CouncilSchedule> {
   const today = toDateKey(now);
-  const councilYear = councilYearOf(now);
+  const { council } = await getSiteSettings();
+  const councilYear = councilYearOf(now, council.year_start_month);
   const meetings = await getCouncilMeetings(councilYear);
   const upcoming = meetings.filter((m) => isUpcoming(m, today));
   const later = upcoming.filter((m) => m.meeting_date > today);

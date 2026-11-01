@@ -3,6 +3,7 @@ import { checkRateLimit } from "@/features/open-data/server/utils/rate-limit-gua
 import { parsePaginationQuery } from "@/features/open-data/shared/utils/parse-pagination-query";
 import { jsonNoStore } from "@/lib/api/response";
 import { routes } from "@/lib/routes";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 const LICENSE = "CC BY 4.0";
 
@@ -17,6 +18,10 @@ const LICENSE = "CC BY 4.0";
  * - APIキーは発行せず、API全体でレートリミットを設ける
  */
 export async function GET(request: Request) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("ai_interview"))) {
+    return new Response(null, { status: 404 });
+  }
   const url = new URL(request.url);
   const termsUrl = new URL(routes.interviewDataTerms(), url.origin).toString();
 
@@ -24,8 +29,7 @@ export async function GET(request: Request) {
   if (url.searchParams.get("agreeToTerms") !== "true") {
     return jsonNoStore(
       {
-        error:
-          "みらい議会@墨田区AIインタビューデータ利用規約に同意の上、agreeToTerms=true を指定してください",
+        error: "データ利用規約に同意の上、agreeToTerms=true を指定してください",
         termsUrl,
       },
       403

@@ -1,6 +1,7 @@
 import type { Route } from "next";
 import { redirect } from "next/navigation";
 import { routes } from "@/lib/routes";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface ChatLogPageProps {
   params: Promise<{
@@ -15,6 +16,7 @@ export default async function ChatLogPage({
   params,
   searchParams,
 }: ChatLogPageProps) {
+  await requireFeature("ai_interview");
   const { reportId } = await params;
   const { from } = await searchParams;
 

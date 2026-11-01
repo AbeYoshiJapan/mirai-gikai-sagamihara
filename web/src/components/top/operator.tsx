@@ -1,45 +1,42 @@
+import { renderOperatorDisclaimer } from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { LinkButton } from "./link-button";
 
-/**
- * 運営者の公式サイトとSNS。URLは gorisan.tech のフッター設定（原稿/発信/サイト/サイト設定/）による。
- * url が空のものは表示しない。
- */
-const OPERATOR_SNS = [
-  {
-    name: "公式サイト",
-    url: "https://www.gorisan.tech/",
-    iconPath: "/icons/sns/icon_web.svg",
-  },
-  {
-    name: "X",
-    url: "https://x.com/gorisan_it",
-    iconPath: "/icons/sns/icon_x.png",
-  },
-  {
-    name: "Instagram",
-    url: "https://www.instagram.com/h.inoue1209/",
-    iconPath: "/icons/sns/icon_instagram.png",
-  },
-  {
-    name: "YouTube",
-    url: "https://www.youtube.com/channel/UCAvOPiTGcJxOAWzSgNJhAeg",
-    iconPath: "/icons/sns/icon_youtube.png",
-  },
-  {
-    name: "LINE",
-    url: "https://lin.ee/HaHeS7R",
-    iconPath: "/icons/sns/icon_line.png",
-  },
-  {
-    name: "TikTok",
-    url: "https://www.tiktok.com/@h.inoue1209",
-    iconPath: "/icons/sns/icon_tiktok.png",
-  },
-] as const;
+/** SNS 名 → /icons/sns/ のファイル。知らない名前は汎用の Web アイコン */
+const SNS_ICON_FILES: Record<string, string> = {
+  web: "icon_web.svg",
+  x: "icon_x.png",
+  twitter: "icon_x.png",
+  instagram: "icon_instagram.png",
+  youtube: "icon_youtube.png",
+  line: "icon_line.png",
+  tiktok: "icon_tiktok.png",
+  facebook: "icon_facebook.png",
+  note: "icon_note.png",
+  threads: "icon_threads.png",
+};
 
-/** 運営者（墨田区議会議員）の紹介。肩書き・所属は令和8年10月6日現在の名簿による。 */
-export function Operator() {
+export function snsIconPath(icon: string): string {
+  const file = SNS_ICON_FILES[icon.trim().toLowerCase()] ?? "icon_web.svg";
+  return `/icons/sns/${file}`;
+}
+
+/**
+ * 運営者の紹介。内容はすべてサイト設定（運営者タブ）から。
+ * 機能フラグ operator_section が false のときは呼び出し側で出さない。
+ */
+export async function Operator() {
+  const settings = await getSiteSettings();
+  const { operator } = settings;
+  const disclaimer = renderOperatorDisclaimer(settings);
+  const snsLinks = [
+    ...(operator.official_site
+      ? [{ name: "公式サイト", url: operator.official_site, icon: "web" }]
+      : []),
+    ...operator.sns.filter((sns) => sns.url),
+  ];
+
   return (
     <div className="py-10">
       <div className="flex flex-col gap-6">
@@ -56,73 +53,90 @@ export function Operator() {
         {/* コンテンツ */}
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-4">
-            <Image
-              src="/img/operator.png"
-              alt="井上ひろきの写真"
-              width={96}
-              height={96}
-              className="rounded-full flex-shrink-0"
-            />
+            {operator.photo_url ? (
+              <Image
+                src={operator.photo_url}
+                alt={`${operator.name}の写真`}
+                width={96}
+                height={96}
+                className="rounded-full flex-shrink-0 object-cover"
+                unoptimized
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-mirai-gradient text-2xl font-bold text-primary-accent"
+              >
+                {operator.name.slice(0, 1)}
+              </div>
+            )}
             <div className="flex flex-col gap-1">
               <p className="text-xs font-bold text-primary-accent">
-                墨田区議会議員
+                {operator.title}
+                {operator.ward ? `（${operator.ward}）` : ""}
               </p>
-              <p className="text-2xl font-bold">井上ひろき</p>
-              <p className="text-sm text-black">
-                ITゴリさん／AI時代のITエンジニア議員
-              </p>
+              <p className="text-2xl font-bold">{operator.name}</p>
+              {operator.catchphrase && (
+                <p className="text-sm text-black">{operator.catchphrase}</p>
+              )}
             </div>
           </div>
 
-          <p className="text-[15px] leading-[28px] text-black">
-            ソフトウェア開発の現場でエンジニアとして働き、システム開発会社を起業。2023年から墨田区議会議員（1期目）。
-            「寄り添う デジタル推進で
-            区民に幸せを。」を掲げ、ITに関わる予算の適正化や、スマートフォンやインターネットが身近ではない方へのサポートに取り組んでいます。
+          {operator.bio_md && (
+            <p className="text-[15px] leading-[28px] text-black whitespace-pre-line">
+              {operator.bio_md}
+            </p>
+          )}
+
+          {(operator.faction || operator.affiliations.length > 0) && (
+            <ul className="text-sm leading-[24px] text-black list-disc pl-5">
+              {operator.faction && <li>会派：{operator.faction}</li>}
+              {operator.affiliations.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+
+          <p className="text-sm leading-[24px] text-black whitespace-pre-line">
+            {disclaimer}
           </p>
 
-          <ul className="text-sm leading-[24px] text-black list-disc pl-5">
-            <li>会派：墨田区議会自由民主党</li>
-            <li>子ども文教委員会 副委員長／議会改革特別委員会 委員</li>
-          </ul>
-
-          <p className="text-sm leading-[24px] text-black">
-            このサイトは議員個人が運営しています。墨田区議会・墨田区の公式サイトではありません。ご意見や不具合のご連絡は、議会事務局や区役所ではなく、下のLINE公式アカウントからお寄せください。
-          </p>
-
-          {/* ボタングループ */}
-          <div className="flex flex-col gap-4">
-            <LinkButton
-              href="https://lin.ee/HaHeS7R"
-              icon={{
-                src: "/icons/sns/icon_line.png",
-                alt: "",
-                width: 22,
-                height: 22,
-              }}
-            >
-              LINE公式アカウントで問い合わせる
-            </LinkButton>
-          </div>
-
-          {/* SNSアイコン */}
-          <div className="flex flex-wrap gap-3 items-end">
-            {OPERATOR_SNS.filter((sns) => sns.url).map((sns) => (
-              <a
-                key={sns.name}
-                href={sns.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-70 transition-opacity"
+          {operator.contact_url && (
+            <div className="flex flex-col gap-4">
+              <LinkButton
+                href={operator.contact_url}
+                icon={{
+                  src: "/icons/sns/icon_web.svg",
+                  alt: "",
+                  width: 22,
+                  height: 22,
+                }}
               >
-                <Image
-                  src={sns.iconPath}
-                  alt={sns.name}
-                  width={48}
-                  height={48}
-                />
-              </a>
-            ))}
-          </div>
+                {operator.contact_label || "問い合わせる"}
+              </LinkButton>
+            </div>
+          )}
+
+          {snsLinks.length > 0 && (
+            <div className="flex flex-wrap gap-3 items-end">
+              {snsLinks.map((sns) => (
+                <a
+                  key={`${sns.name}-${sns.url}`}
+                  href={sns.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                >
+                  <Image
+                    src={snsIconPath(sns.icon)}
+                    alt={sns.name}
+                    width={48}
+                    height={48}
+                  />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

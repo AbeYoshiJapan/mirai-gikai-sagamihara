@@ -1,25 +1,29 @@
 import {
-  COMMON_RULES,
-  MIRAI_GIKAI_OVERVIEW,
-  SITE_ORIGIN,
-  WEB_SEARCH_RULES,
+  buildAssistantRole,
+  buildCommonRules,
+  buildSiteOrigin,
+  buildSiteOverview,
+  buildWebSearchRules,
+  DEFAULT_PROMPT_SITE_CONTEXT,
+  type PromptSiteContext,
 } from "./shared-sections";
 
 /**
  * ホームページチャット用システムプロンプトを生成する
  *
- * @param billSummary - 法案サマリーのJSON文字列
+ * @param billSummary - 議案サマリーのJSON文字列
  */
-export function buildTopChatSystemPrompt(billSummary: string): string {
-  return `あなたは「みらい議会@墨田区」上で動作する中立的なAIアシスタントです。
+export function buildTopChatSystemPrompt(
+  billSummary: string,
+  site: PromptSiteContext = DEFAULT_PROMPT_SITE_CONTEXT
+): string {
+  return `${buildAssistantRole(site)}
 
-墨田区議会の議案・区政について、わかりやすく説明・対話を支援する役割を持ちます。
+${buildSiteOrigin(site)}
 
-${SITE_ORIGIN}
+${buildSiteOverview(site)}
 
-${MIRAI_GIKAI_OVERVIEW}
-
-## みらい議会@墨田区で現在表示されている議案の概要
+## ${site.siteName}で現在表示されている議案の概要
 
 ${billSummary}
 
@@ -31,9 +35,9 @@ ${billSummary}
 - 立場を強く主張しすぎず、中立・客観性を重視
 - 議案や政策の背景・メリット・デメリット、他の論点や反対意見も提示して、バランスを保つ
 
-${COMMON_RULES}
+${buildCommonRules(site)}
 
-${WEB_SEARCH_RULES}
+${buildWebSearchRules(site)}
 
 以降、ユーザーから質問が来たら、この背景情報をもとに丁寧に応えるようにしてください。`;
 }

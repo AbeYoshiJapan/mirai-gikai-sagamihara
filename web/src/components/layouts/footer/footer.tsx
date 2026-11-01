@@ -1,12 +1,15 @@
 "use client";
 
+import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
+import { FORK_NOTICE } from "@mirai-gikai/shared/site-settings/schema";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isInterviewPage } from "@/lib/page-layout-utils";
 import { routes } from "@/lib/routes";
-import { policyLinks, primaryLinks } from "./footer.config";
+import { useSiteSettings } from "@/lib/site-settings/provider";
+import { buildPolicyLinks, buildPrimaryLinks } from "./footer.config";
 
 export function Footer() {
   const pathname = usePathname();
@@ -28,15 +31,17 @@ export function Footer() {
 }
 
 function FooterLogoSection() {
+  const { site, brand } = useSiteSettings();
   return (
     <div className="flex flex-col items-center text-center mb-9">
-      <Link href={routes.home()} aria-label="みらい議会@墨田区 トップページ">
+      <Link href={routes.home()} aria-label={`${site.name} トップページ`}>
         <Image
-          src="/img/logo.svg"
-          alt="みらい議会@墨田区"
+          src={brandAsset(brand, "logo_url")}
+          alt={site.name}
           width={150}
           height={128}
           className="h-auto"
+          unoptimized
         />
       </Link>
     </div>
@@ -44,6 +49,8 @@ function FooterLogoSection() {
 }
 
 function FooterPrimaryLinks() {
+  const settings = useSiteSettings();
+  const primaryLinks = buildPrimaryLinks(settings);
   return (
     <nav aria-label="主要リンク" className="w-full mb-5">
       <ul
@@ -70,6 +77,8 @@ function FooterPrimaryLinks() {
 }
 
 function FooterPolicies() {
+  const settings = useSiteSettings();
+  const policyLinks = buildPolicyLinks(settings);
   return (
     <div className="flex flex-col items-center text-[12px] font-semibold text-slate-800 mb-5">
       <ul className="flex flex-wrap justify-center gap-x-2 gap-y-1">
@@ -92,13 +101,17 @@ function FooterPolicies() {
 }
 
 function FooterCopyright() {
+  const { site, operator, legal } = useSiteSettings();
+  const modifiedOn = legal.modified_on;
   return (
     <div className="text-center text-sm font-medium text-slate-800">
-      <p className="mb-3 text-xs">
-        これは政党チームみらいが運営しているものではありません
-      </p>
+      <p className="mb-3 text-xs">{FORK_NOTICE}</p>
       <p className="text-xs">
-        本サイトは「みらい議会」（AGPL-3.0）を改変したものです（2026年10月改変）
+        本サイトは「みらい議会」（AGPL-3.0）を改変したものです
+        {modifiedOn ? `（${modifiedOn}改変）` : ""}
+      </p>
+      <p className="mt-3 text-xs">
+        {site.name}（運営：{operator.name}）
       </p>
     </div>
   );

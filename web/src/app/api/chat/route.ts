@@ -1,11 +1,12 @@
 import { simulateReadableStream, type UIMessage } from "ai";
-import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import {
   type ChatMessageMetadata,
   handleChatRequest,
 } from "@/features/chat/server/services/handle-chat-request";
 import { chatErrorToResponse } from "@/features/chat/server/utils/chat-error-response";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import { jsonResponse } from "@/lib/api/response";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 import { registerNodeTelemetry } from "@/lib/telemetry/register";
 
 async function _mockResponse(_req: Request) {
@@ -49,6 +50,10 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("ai_chat"))) {
+    return new Response(null, { status: 404 });
+  }
   // Vercel node環境でinstrumentationが自動で起動しない問題対応
   // 明示的にtelemetryを初期化
   await registerNodeTelemetry();

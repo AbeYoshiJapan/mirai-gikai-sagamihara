@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import {
   ConsentCheckListItem,
   OpenDataNoticeItem,
@@ -26,6 +27,7 @@ export function MakePublicModal({
   onConfirm,
   isSubmitting,
 }: MakePublicModalProps) {
+  const { site, operator, council } = useSiteSettings();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="py-9">
@@ -39,14 +41,16 @@ export function MakePublicModal({
 
         <div className="space-y-4 mt-6">
           <ConsentCheckListItem>
-            公開を許可した場合、今後みらい議会@墨田区にあなたのご意見の要約とインタビュー原文が匿名で掲載されることがあります。
+            公開を許可した場合、今後{site.name}
+            にあなたのご意見の要約とインタビュー原文が匿名で掲載されることがあります。
           </ConsentCheckListItem>
           <OpenDataNoticeItem />
           <ConsentCheckListItem>
             さまざまな意見が公開されることで、より深い議論につながります。
           </ConsentCheckListItem>
           <p className="text-sm text-black">
-            非公開で提出した場合でも、ご意見は運営者（井上ひろき）の議会活動・政策検討に活用させていただきます。
+            非公開で提出した場合でも、ご意見は運営者（{operator.name}
+            ）の議会活動・政策検討に活用させていただきます。
           </p>
         </div>
 

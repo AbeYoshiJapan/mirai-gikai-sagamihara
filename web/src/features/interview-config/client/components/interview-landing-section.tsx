@@ -1,19 +1,22 @@
+"use client";
+
 import { ArrowRight, Check } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 
 interface InterviewLandingSectionProps {
   billId: string;
 }
 
-function getCheckPoints(): string[] {
+function getCheckPoints(operatorName: string, councilName: string): string[] {
   return [
     "所要時間は約5分〜",
     "AIがあなたのご意見を深掘り",
-    "井上ひろきが区議会での質問などに活用",
+    `${operatorName}が${councilName}での質問などに活用`,
   ];
 }
 
@@ -39,7 +42,8 @@ function _CheckPoint({ text }: { text: string }) {
 }
 
 function _CheckPointsList() {
-  const checkPoints = getCheckPoints();
+  const { operator, council } = useSiteSettings();
+  const checkPoints = getCheckPoints(operator.name, council.name);
   return (
     <div className="flex flex-col gap-2">
       {checkPoints.map((text) => (

@@ -3,6 +3,7 @@ import { Container } from "@/components/layouts/container";
 import { Progress } from "@/components/ui/progress";
 import { calculateSessionProgress } from "@/features/diet-sessions/shared/utils/session-progress";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import type { CouncilMeeting, CouncilPeriod } from "../../shared/types";
 import {
   daysBetween,
@@ -23,19 +24,20 @@ type CouncilStatusProps = {
 };
 
 /**
- * 区議会の状況カード。
+ * 議会の状況カード。
  *
- * 墨田区議会は通年議会なので「閉会中」は出さない。議会期間（○月議会）の中なら
+ * 通年議会なので「閉会中」は出さない。議会期間（○月議会）の中なら
  * 進行バーを、外なら次の議会期間までの日数を出す。その上に次に会議が開かれる日を
  * 大きく出す。今日の会議があれば並べる。
  */
-export function CouncilStatus({
+export async function CouncilStatus({
   status,
   todayMeetings,
   nextMeetings,
   today,
 }: CouncilStatusProps) {
   const { councilYear, currentPeriod, nextPeriod } = status;
+  const { operator } = await getSiteSettings();
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -94,7 +96,7 @@ export function CouncilStatus({
           会議の予定を見る
         </Link>
         <p className="text-xs font-bold tracking-wide text-mirai-text-secondary">
-          powered by 井上ひろき &amp; AI
+          powered by {operator.name} &amp; AI
         </p>
       </div>
     </Container>

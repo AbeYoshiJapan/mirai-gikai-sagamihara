@@ -2,6 +2,7 @@ import type { PromptProvider } from "../interface/prompt-provider";
 import type { CompiledPrompt, PromptVariables } from "../interface/types";
 import { buildBillChatSystemHardPrompt } from "./templates/bill-chat-system-hard";
 import { buildBillChatSystemNormalPrompt } from "./templates/bill-chat-system-normal";
+import { promptSiteContextFromVariables } from "./templates/shared-sections";
 import { buildTopChatSystemPrompt } from "./templates/top-chat-system";
 
 const BILL_REQUIRED_KEYS = [
@@ -30,7 +31,10 @@ const PROMPT_BUILDERS: Record<string, (variables: PromptVariables) => string> =
           'Missing required variable "billSummary" for prompt "top-chat-system"'
         );
       }
-      return buildTopChatSystemPrompt(v.billSummary);
+      return buildTopChatSystemPrompt(
+        v.billSummary,
+        promptSiteContextFromVariables(v)
+      );
     },
     "bill-chat-system-normal": (v) => {
       validateBillVariables(v, "bill-chat-system-normal");
@@ -39,7 +43,8 @@ const PROMPT_BUILDERS: Record<string, (variables: PromptVariables) => string> =
         v.billTitle,
         v.billSummary,
         v.billContent,
-        v.knowledgeSource
+        v.knowledgeSource,
+        promptSiteContextFromVariables(v)
       );
     },
     "bill-chat-system-hard": (v) => {
@@ -49,7 +54,8 @@ const PROMPT_BUILDERS: Record<string, (variables: PromptVariables) => string> =
         v.billTitle,
         v.billSummary,
         v.billContent,
-        v.knowledgeSource
+        v.knowledgeSource,
+        promptSiteContextFromVariables(v)
       );
     },
   };

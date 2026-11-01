@@ -18,8 +18,7 @@
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",
     "lint:fix": "biome format --write . && biome lint --write .",
-    "postinstall": "npx simple-git-hooks",
-    "seed:sumida": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed:sumida"
+    "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",

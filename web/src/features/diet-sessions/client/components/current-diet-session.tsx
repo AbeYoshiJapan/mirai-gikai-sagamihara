@@ -1,5 +1,8 @@
+"use client";
+
 import { Container } from "@/components/layouts/container";
 import { Progress } from "@/components/ui/progress";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import { formatDateWithDots } from "@/lib/utils/date";
 import type { DietSession } from "../../shared/types";
 import { calculateSessionProgress } from "../../shared/utils/session-progress";
@@ -25,6 +28,7 @@ export function CurrentDietSession({
   now,
 }: CurrentDietSessionProps) {
   const inSession = session !== null;
+  const { operator } = useSiteSettings();
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -63,7 +67,7 @@ export function CurrentDietSession({
         )}
       </div>
       <p className="pt-2 text-right text-xs font-bold tracking-wide text-mirai-text-secondary">
-        powered by 井上ひろき &amp; AI
+        powered by {operator.name} &amp; AI
       </p>
     </Container>
   );

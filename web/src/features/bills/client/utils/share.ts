@@ -1,7 +1,16 @@
 import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { getOrigin } from "@/lib/utils/url";
 import type { BillWithContent } from "../../shared/types";
+
+/**
+ * サイト名からハッシュタグを作る。記号・空白を落とす（例: みらい議会＠相模原市 → #みらい議会相模原市）
+ */
+export function createShareHashtag(siteName: string): string {
+  const cleaned = siteName.replace(/[\s@＠#＃・/／()（）「」]/g, "");
+  return cleaned ? `#${cleaned}` : "";
+}
 
 /**
  * シェアURLを生成
@@ -17,9 +26,13 @@ export function createBillShareUrl(
 /**
  * シェアメッセージを生成
  */
-export function createShareMessage(bill: BillWithContent): string {
+export function createShareMessage(
+  bill: BillWithContent,
+  siteName = "みらい議会"
+): string {
   const displayTitle = bill.bill_content?.title ?? bill.name;
-  return `${displayTitle} #みらい議会墨田区`;
+  const hashtag = createShareHashtag(siteName);
+  return hashtag ? `${displayTitle} ${hashtag}` : displayTitle;
 }
 
 /**
@@ -41,11 +54,14 @@ export async function getShareContext(): Promise<{
  * 議案のシェアに必要なすべてのデータを取得
  */
 export async function getBillShareData(bill: BillWithContent) {
-  const { origin, difficulty } = await getShareContext();
+  const [{ origin, difficulty }, { site }] = await Promise.all([
+    getShareContext(),
+    getSiteSettings(),
+  ]);
 
   return {
     shareUrl: createBillShareUrl(origin, bill.id, difficulty),
-    shareMessage: createShareMessage(bill),
+    shareMessage: createShareMessage(bill, site.name),
     // シェア用OGP画像を優先的に使用、なければ通常のサムネイル
     thumbnailUrl: bill.share_thumbnail_url || bill.thumbnail_url,
   };

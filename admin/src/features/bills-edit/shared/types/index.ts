@@ -22,7 +22,7 @@ const billBaseSchema = z.object({
     "in_receiving_house",
     "enacted",
     "rejected",
-    // 墨田区版で追加した区分（委員会報告・行政計画・特別委員会）
+    // 地方議会向けの区分（委員会報告・行政計画・特別委員会）
     "reported",
     "plan",
     "special_committee",

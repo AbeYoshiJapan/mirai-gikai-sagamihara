@@ -2,10 +2,11 @@ import { AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
 import { validatePreviewToken } from "@/features/bills/server/loaders/validate-preview-token";
+import { InterviewDisclosurePage } from "@/features/interview-config/server/components/interview-disclosure-page";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { loadDisclosureData } from "@/features/interview-config/server/loaders/load-disclosure-data";
-import { InterviewDisclosurePage } from "@/features/interview-config/server/components/interview-disclosure-page";
 import { env } from "@/lib/env";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface DisclosurePreviewPageProps {
   params: Promise<{
@@ -45,6 +46,7 @@ export default async function DisclosurePreviewPage({
   params,
   searchParams,
 }: DisclosurePreviewPageProps) {
+  await requireFeature("ai_interview");
   const [{ id: billId }, { token }] = await Promise.all([params, searchParams]);
 
   const isValidToken = await validatePreviewToken(billId, token);

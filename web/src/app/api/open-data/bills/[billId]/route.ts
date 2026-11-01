@@ -3,6 +3,7 @@ import { checkRateLimit } from "@/features/open-data/server/utils/rate-limit-gua
 import { parseDifficultyQuery } from "@/features/open-data/shared/utils/parse-bills-query";
 import { isUuid } from "@/features/open-data/shared/utils/uuid";
 import { jsonNoStore } from "@/lib/api/response";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 /**
  * 議案詳細のオープンデータ取得API。
@@ -15,6 +16,10 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ billId: string }> }
 ) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("open_data_api"))) {
+    return new Response(null, { status: 404 });
+  }
   const { billId } = await params;
   if (!isUuid(billId)) {
     return jsonNoStore({ error: "billId はUUID形式で指定してください" }, 400);

@@ -3,6 +3,7 @@ import { PublicReportPage } from "@/features/interview-report/server/components/
 import { getPublicReportById } from "@/features/interview-report/server/loaders/get-public-report-by-id";
 import { env } from "@/lib/env";
 import { routes } from "@/lib/routes";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface PublicReportRouteProps {
   params: Promise<{
@@ -71,6 +72,7 @@ export default async function PublicReportRoute({
   params,
   searchParams,
 }: PublicReportRouteProps) {
+  await requireFeature("ai_interview");
   const { reportId } = await params;
   const { from, quote, mid } = await searchParams;
   // 同一キーが複数指定されると配列になり得るため、先頭の値に正規化する。

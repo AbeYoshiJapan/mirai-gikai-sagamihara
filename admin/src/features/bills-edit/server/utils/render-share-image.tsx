@@ -174,7 +174,7 @@ export async function renderShareImage(params: {
       {logo && (
         // biome-ignore lint/performance/noImgElement: Satori は img のみ対応
         <img
-          alt="みらい議会@墨田区のロゴ"
+          alt="サイトのロゴ"
           src={logo}
           width={logoBox.width}
           height={logoBox.height}

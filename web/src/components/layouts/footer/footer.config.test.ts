@@ -1,14 +1,44 @@
+import { DEFAULT_SITE_SETTINGS } from "@mirai-gikai/shared/site-settings/defaults";
+import { toPublicSiteSettings } from "@mirai-gikai/shared/site-settings/public";
 import { describe, expect, it } from "vitest";
 import { routes } from "@/lib/routes";
-import { policyLinks, primaryLinks } from "./footer.config";
+import { buildPolicyLinks, buildPrimaryLinks } from "./footer.config";
+
+const base = toPublicSiteSettings(DEFAULT_SITE_SETTINGS);
 
 describe("footer.config", () => {
-  it("policyLinks に規約ページと開発者向けページへの内部リンクが含まれる", () => {
-    const hrefs = policyLinks.map((link) => link.href);
+  it("policyLinks に規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
+    const hrefs = buildPolicyLinks(base).map((link) => link.href);
 
     expect(hrefs).toContain(routes.terms());
     expect(hrefs).toContain(routes.privacy());
+    expect(hrefs).toContain(routes.petitionGuide());
     expect(hrefs).toContain(routes.developers());
+  });
+
+  it("open_data_api が無効なら開発者向けページを出さない", () => {
+    const settings = {
+      ...base,
+      features: { ...base.features, open_data_api: false },
+    };
+    const hrefs = buildPolicyLinks(settings).map((link) => link.href);
+    expect(hrefs).not.toContain(routes.developers());
+  });
+
+  it("ソースコード公開先はサイト設定に URL があるときだけ出す", () => {
+    expect(
+      buildPrimaryLinks(base).some((link) => link.label === "ソースコード")
+    ).toBe(false);
+
+    const settings = {
+      ...base,
+      links: { ...base.links, fork_repo: "https://github.com/x/y" },
+    };
+    const source = buildPrimaryLinks(settings).find(
+      (link) => link.label === "ソースコード"
+    );
+    expect(source?.href).toBe("https://github.com/x/y");
+    expect(source?.external).toBe(true);
   });
 
   it("内部リンクには external フラグが付かない", () => {
@@ -16,10 +46,14 @@ describe("footer.config", () => {
       routes.home(),
       routes.terms(),
       routes.privacy(),
+      routes.petitionGuide(),
       routes.developers(),
     ]);
 
-    for (const link of [...primaryLinks, ...policyLinks]) {
+    for (const link of [
+      ...buildPrimaryLinks(base),
+      ...buildPolicyLinks(base),
+    ]) {
       if (internalHrefs.has(link.href)) {
         expect(link.external).toBeUndefined();
       } else {

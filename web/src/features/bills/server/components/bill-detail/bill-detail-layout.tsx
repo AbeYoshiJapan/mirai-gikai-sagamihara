@@ -5,6 +5,7 @@ import { getInterviewConfig } from "@/features/interview-config/server/loaders/g
 import { getPublicReportsByBillId } from "@/features/interview-report/server/loaders/get-public-reports-by-bill-id";
 import { BillTopicsPreviewSection } from "@/features/user-topic-analysis/server/components/bill-topics-preview-section";
 import { getPublicTopicAnalysis } from "@/features/user-topic-analysis/server/loaders/get-public-topic-analysis";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { getJapanTime } from "@/lib/utils/date";
 import { BillDetailClient } from "../../../client/components/bill-detail/bill-detail-client";
 import { BillDisclaimer } from "../../../client/components/bill-detail/bill-disclaimer";
@@ -26,18 +27,24 @@ export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
+  const { features } = await getSiteSettings();
+  // 利用者向け AI 機能（インタビュー・トピック分析）は機能フラグが立っているときだけ読む
   const [interviewConfig, publicReportsResult, topicAnalysis] =
     await Promise.all([
-      getInterviewConfig(bill.id),
-      getPublicReportsByBillId(bill.id),
-      getPublicTopicAnalysis(bill.id),
+      features.ai_interview ? getInterviewConfig(bill.id) : null,
+      features.topic_analysis
+        ? getPublicReportsByBillId(bill.id)
+        : { totalCount: 0 },
+      features.topic_analysis ? getPublicTopicAnalysis(bill.id) : null,
     ]);
 
-  // 行政計画は区のパブコメ期間で段階が変わる。AIインタビューは「意見募集中」の間だけ出す
+  // 行政計画は自治体のパブコメ期間で段階が変わる。AIインタビューは「意見募集中」の間だけ出す
   const isPlan = bill.status === "plan";
   const planPhase = isPlan ? getPlanPhase(bill, getJapanTime()) : null;
   const showInterview =
-    interviewConfig != null && (!isPlan || planPhase === "opinion");
+    features.ai_interview &&
+    interviewConfig != null &&
+    (!isPlan || planPhase === "opinion");
 
   return (
     <div className="container mx-auto pb-8 max-w-4xl">
@@ -51,6 +58,7 @@ export async function BillDetailLayout({
         bill={bill}
         currentDifficulty={currentDifficulty}
         hasInterviewConfig={showInterview}
+        chatEnabled={features.ai_chat}
       >
         <BillDetailHeader
           bill={bill}
@@ -83,14 +91,16 @@ export async function BillDetailLayout({
       </BillDetailClient>
 
       <Container>
-        {/* 法案のトピック一覧（AIインタビュー意見の整理） */}
-        <div className="my-8">
-          <BillTopicsPreviewSection
-            billId={bill.id}
-            topics={topicAnalysis?.topics ?? []}
-            publicReportCount={publicReportsResult.totalCount}
-          />
-        </div>
+        {/* 議案のトピック一覧（AIインタビュー意見の整理）。機能フラグで出し分け */}
+        {features.topic_analysis && (
+          <div className="my-8">
+            <BillTopicsPreviewSection
+              billId={bill.id}
+              topics={topicAnalysis?.topics ?? []}
+              publicReportCount={publicReportsResult.totalCount}
+            />
+          </div>
+        )}
 
         {showInterview && (
           <div className="my-8">
@@ -101,7 +111,7 @@ export async function BillDetailLayout({
           賛否が未設定・非公開（公開日時前を含む）なら出さない。法案提出前でも、
           賛否を登録していない段階で「法案提出前」のカードだけを出すことはしない。
         */}
-        {bill.mirai_stance && (
+        {features.operator_stance && bill.mirai_stance && (
           <div className="my-8">
             <MiraiStanceCard
               stance={bill.mirai_stance}

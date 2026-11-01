@@ -2,6 +2,7 @@ import { getOpenDataBills } from "@/features/open-data/server/services/get-open-
 import { checkRateLimit } from "@/features/open-data/server/utils/rate-limit-guard";
 import { parseBillsQuery } from "@/features/open-data/shared/utils/parse-bills-query";
 import { jsonNoStore } from "@/lib/api/response";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 /**
  * 公開中の議案一覧のオープンデータ取得API。
@@ -13,6 +14,10 @@ import { jsonNoStore } from "@/lib/api/response";
  *   データ利用規約はインタビューデータ専用のため意図的に含めていない）
  */
 export async function GET(request: Request) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("open_data_api"))) {
+    return new Response(null, { status: 404 });
+  }
   const url = new URL(request.url);
 
   const query = parseBillsQuery(url.searchParams);

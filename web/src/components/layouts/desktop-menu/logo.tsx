@@ -1,11 +1,16 @@
+"use client";
+
+import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 
 /**
  * デスクトップメニュー: ロゴ (画面左上)
  */
 export function DesktopMenuLogo() {
+  const { site, brand } = useSiteSettings();
   return (
     <Link
       href={routes.home()}
@@ -14,11 +19,12 @@ export function DesktopMenuLogo() {
       {/* ロゴ */}
       <div className="relative w-[116px] h-[98.38px]">
         <Image
-          src="/img/logo.svg"
-          alt="みらい議会@墨田区ロゴ"
+          src={brandAsset(brand, "logo_url")}
+          alt={`${site.name}ロゴ`}
           fill
           className="object-contain"
           priority
+          unoptimized
         />
       </div>
 
@@ -32,7 +38,7 @@ export function DesktopMenuLogo() {
             letterSpacing: "0.1em",
           }}
         >
-          みらい議会@墨田区
+          {site.name}
         </h1>
         <p
           className="font-bold text-black"
@@ -41,7 +47,7 @@ export function DesktopMenuLogo() {
             lineHeight: "2em",
           }}
         >
-          墨田区議会の議論をわかりやすく
+          {site.tagline}
         </p>
       </div>
     </Link>

@@ -14,6 +14,8 @@ interface BillDetailClientProps {
   bill: BillWithContent;
   currentDifficulty: DifficultyLevelEnum;
   hasInterviewConfig: boolean;
+  /** サイト設定の features.ai_chat。false なら本文選択→質問の導線もチャットボタンも出さない */
+  chatEnabled?: boolean;
   children: ReactNode;
 }
 
@@ -29,6 +31,7 @@ export function BillDetailClient({
   bill,
   currentDifficulty,
   hasInterviewConfig,
+  chatEnabled = false,
   children,
 }: BillDetailClientProps) {
   const chatButtonRef = useRef<ChatButtonRef>(null);
@@ -36,6 +39,10 @@ export function BillDetailClient({
   const handleOpenChat = (selectedText: string) => {
     chatButtonRef.current?.openWithText(selectedText);
   };
+
+  if (!chatEnabled) {
+    return <>{children}</>;
+  }
 
   return (
     <>

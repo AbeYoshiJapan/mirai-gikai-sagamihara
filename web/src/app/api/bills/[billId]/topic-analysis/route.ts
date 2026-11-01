@@ -1,4 +1,5 @@
 import { getPublicTopicAnalysis } from "@mirai-gikai/topic-analysis-core/public-server";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -19,6 +20,10 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ billId: string }> }
 ) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("topic_analysis"))) {
+    return new Response(null, { status: 404 });
+  }
   const { billId } = await params;
   if (!billId) {
     return json({ error: "billId is required" }, 400);

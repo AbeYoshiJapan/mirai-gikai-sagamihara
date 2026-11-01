@@ -4,6 +4,7 @@ import { resolveBillShareImageUrl } from "@/features/bills/shared/utils/bill-sha
 import { TopicListPage } from "@/features/user-topic-analysis/server/components/topic-list-page";
 import { env } from "@/lib/env";
 import { routes } from "@/lib/routes";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface TopicsPageProps {
   params: Promise<{ id: string }>;
@@ -46,6 +47,7 @@ export async function generateMetadata({
 }
 
 export default async function TopicsPage({ params }: TopicsPageProps) {
+  await requireFeature("topic_analysis");
   const { id } = await params;
   return <TopicListPage billId={id} />;
 }

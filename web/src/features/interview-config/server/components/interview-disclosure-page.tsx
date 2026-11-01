@@ -1,6 +1,7 @@
 import "server-only";
 
 import { DEFAULT_INTERVIEW_CHAT_MODEL } from "@/lib/ai/models";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { DisclosureBreadcrumb } from "../../shared/components/disclosure-breadcrumb";
 import type { InterviewConfig } from "../loaders/get-interview-config";
 
@@ -13,7 +14,8 @@ interface InterviewDisclosurePageProps {
   previewToken?: string;
 }
 
-function StaticDisclosureSection() {
+async function StaticDisclosureSection() {
+  const { site, operator, council } = await getSiteSettings();
   return (
     <div className="flex flex-col gap-3">
       <h1 className="text-2xl font-bold text-black leading-[1.5] my-4">
@@ -62,7 +64,8 @@ function StaticDisclosureSection() {
               </li>
               <li>
                 <span className="font-bold">活用の範囲：</span>
-                回答内容は、運営者（井上ひろき）の議会活動・政策検討、およびAIを用いた統計的分析に限定して活用いたします。
+                回答内容は、運営者（{operator.name}
+                ）の議会活動・政策検討、およびAIを用いた統計的分析に限定して活用いたします。
               </li>
               <li>
                 <span className="font-bold">分析プロセスの透明化：</span>
@@ -75,11 +78,14 @@ function StaticDisclosureSection() {
               <ul className="mt-1 space-y-2 list-none">
                 <li>
                   <span className="font-bold">公開を希望しない場合：</span>
-                  回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果、または個人を特定できない範囲に匿名化した上で、井上ひろきの区議会での質問等において引用・活用される場合があります。
+                  回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果、または個人を特定できない範囲に匿名化した上で、
+                  {operator.name}の{council.name}
+                  での質問等において引用・活用される場合があります。
                 </li>
                 <li>
                   <span className="font-bold">公開を希望する場合：</span>
-                  回答データは「みらい議会@墨田区」上に掲載され、他のユーザーが閲覧可能な状態で公開されます。これにより、利用者間での意見の共有および議論の活性化を図ります。
+                  回答データは「{site.name}
+                  」上に掲載され、他のユーザーが閲覧可能な状態で公開されます。これにより、利用者間での意見の共有および議論の活性化を図ります。
                 </li>
               </ul>
             </div>
@@ -158,7 +164,7 @@ function PromptSection({
   );
 }
 
-export function InterviewDisclosurePage({
+export async function InterviewDisclosurePage({
   billId,
   previewToken,
   ...props

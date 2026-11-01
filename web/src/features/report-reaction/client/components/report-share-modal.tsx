@@ -9,6 +9,7 @@ import {
   shareOnLine,
   shareOnTwitter,
 } from "@/features/bills/client/utils/share-handlers";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import { OgpPreviewCard } from "./ogp-preview-card";
 
 interface ReportShareModalProps {
@@ -30,11 +31,12 @@ export function ReportShareModal({
   ogImageUrl,
   shareMessage: shareMessageProp,
 }: ReportShareModalProps) {
+  const { site } = useSiteSettings();
   if (!isOpen) return null;
 
   const shareMessage = shareMessageProp
-    ? `みらい議会@墨田区AIインタビュー「${shareMessageProp}」`
-    : `みらい議会@墨田区AIインタビュー「${billName}」`;
+    ? `${site.name}AIインタビュー「${shareMessageProp}」`
+    : `${site.name}AIインタビュー「${billName}」`;
 
   const shareButtons = [
     {
@@ -55,7 +57,7 @@ export function ReportShareModal({
     {
       name: "共有",
       iconPath: "/icons/share-general.png",
-      onClick: () => shareNative(shareMessage, shareUrl),
+      onClick: () => shareNative(shareMessage, shareUrl, site.name),
     },
   ];
 

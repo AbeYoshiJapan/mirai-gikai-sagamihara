@@ -6,6 +6,7 @@ import { getPublicTopicDetail } from "@/features/user-topic-analysis/server/load
 import { parseTopicFilter } from "@/features/user-topic-analysis/shared/utils/filter-topics";
 import { env } from "@/lib/env";
 import { routes } from "@/lib/routes";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface TopicDetailRouteProps {
   params: Promise<{ id: string; topicId: string }>;
@@ -63,6 +64,7 @@ export default async function TopicDetailRoute({
   params,
   searchParams,
 }: TopicDetailRouteProps) {
+  await requireFeature("topic_analysis");
   const { id, topicId } = await params;
   const { filter } = await searchParams;
   return (

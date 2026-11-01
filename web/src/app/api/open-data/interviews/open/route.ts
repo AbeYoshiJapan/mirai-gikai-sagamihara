@@ -2,6 +2,7 @@ import { getOpenDataOpenInterviews } from "@/features/open-data/server/services/
 import { checkRateLimit } from "@/features/open-data/server/utils/rate-limit-guard";
 import { parseDifficultyQuery } from "@/features/open-data/shared/utils/parse-bills-query";
 import { jsonNoStore } from "@/lib/api/response";
+import { isFeatureEnabled } from "@/lib/site-settings/loader";
 
 /**
  * 受付中のAIインタビュー一覧のオープンデータ取得API。
@@ -13,6 +14,10 @@ import { jsonNoStore } from "@/lib/api/response";
  * - APIキーは発行せず、オープンデータAPI全体でレートリミットを設ける
  */
 export async function GET(request: Request) {
+  // サイト設定の機能フラグが立っていなければ存在しない扱いにする
+  if (!(await isFeatureEnabled("ai_interview"))) {
+    return new Response(null, { status: 404 });
+  }
   const url = new URL(request.url);
 
   const query = parseDifficultyQuery(url.searchParams);

@@ -25,6 +25,7 @@ import { UpcomingMeetingsSection } from "@/features/council-meetings/server/comp
 import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/load-council-schedule";
 import { takeFirstDays } from "@/features/council-meetings/shared/utils/council-period";
 import { getCurrentDietSession } from "@/features/diet-sessions/server/loaders/get-current-diet-session";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { getJapanTime } from "@/lib/utils/date";
 
 /** トップは本番URLを正規のURLとして示す（vercel.app などとの重複を避ける）。 */
@@ -55,6 +56,7 @@ export default async function Home() {
     currentDifficulty,
     suggestableBills,
     featuredTags,
+    { features },
   ] = await Promise.all([
     loadHomeData(),
     getCurrentDietSession(japanTime),
@@ -62,6 +64,7 @@ export default async function Home() {
     getDifficultyLevel(),
     getSuggestableBills(),
     getFeaturedTags(),
+    getSiteSettings(),
   ]);
 
   const inSession = currentSession !== null;
@@ -89,13 +92,15 @@ export default async function Home() {
 
   return (
     <>
-      {/* 本日の区議会セクション（通年議会なので閉会中は出さない） */}
-      <CouncilStatus
-        status={councilSchedule.status}
-        todayMeetings={councilSchedule.todayMeetings}
-        nextMeetings={councilSchedule.nextMeetings}
-        today={councilSchedule.today}
-      />
+      {/* 本日の議会セクション（通年議会なので閉会中は出さない） */}
+      {features.schedule && (
+        <CouncilStatus
+          status={councilSchedule.status}
+          todayMeetings={councilSchedule.todayMeetings}
+          nextMeetings={councilSchedule.nextMeetings}
+          today={councilSchedule.today}
+        />
+      )}
 
       <Container>
         <div className="pt-4">
@@ -119,15 +124,19 @@ export default async function Home() {
               会期では絞らない（閉会中でも受付中なら案内する）ため、注目と違って
               inSession で出し分けない。
             */}
-            <InterviewOpenBillSection bills={interviewOpenBills} />
+            {features.ai_interview && (
+              <InterviewOpenBillSection bills={interviewOpenBills} />
+            )}
 
-            {/* これからの会議（区議会サイトの会議日程から取り込み） */}
-            <UpcomingMeetingsSection
-              meetings={takeFirstDays(
-                councilSchedule.upcoming,
-                UPCOMING_MEETING_DAYS
-              )}
-            />
+            {/* これからの会議（議会サイトの会議日程から取り込み） */}
+            {features.schedule && (
+              <UpcomingMeetingsSection
+                meetings={takeFirstDays(
+                  councilSchedule.upcoming,
+                  UPCOMING_MEETING_DAYS
+                )}
+              />
+            )}
 
             {/*
               注目の法案は会期中だけ出す。閉会中に「注目」を掲げても、審議が
@@ -150,40 +159,43 @@ export default async function Home() {
         </div>
       </Container>
 
-      {/* 前回の国会セクション（Archive） */}
-      {(previousSessionData || pastSessions.length > 0) && (
-        <div className="bg-mirai-surface-muted py-10">
-          <Container>
-            <div className="flex flex-col gap-10">
-              {previousSessionData && (
-                <PreviousSessionSection
-                  session={previousSessionData.session}
-                  bills={previousSessionData.bills}
-                  totalBillCount={previousSessionData.totalBillCount}
-                />
-              )}
-              <PastSessionList sessions={pastSessions} />
-            </div>
-          </Container>
-        </div>
-      )}
+      {/* 前回の会期セクション（Archive） */}
+      {features.past_sessions &&
+        (previousSessionData || pastSessions.length > 0) && (
+          <div className="bg-mirai-surface-muted py-10">
+            <Container>
+              <div className="flex flex-col gap-10">
+                {previousSessionData && (
+                  <PreviousSessionSection
+                    session={previousSessionData.session}
+                    bills={previousSessionData.bills}
+                    totalBillCount={previousSessionData.totalBillCount}
+                  />
+                )}
+                <PastSessionList sessions={pastSessions} />
+              </div>
+            </Container>
+          </div>
+        )}
 
       <Container>
         {/* このサイトについて セクション */}
         <About />
 
-        {/* 運営者（墨田区議会議員）の紹介 */}
-        <Operator />
+        {/* 運営者の紹介 */}
+        {features.operator_section && <Operator />}
 
         {/* 免責事項 */}
         <BillDisclaimer />
       </Container>
 
-      {/* チャット機能 */}
-      <HomeChatClient
-        currentDifficulty={currentDifficulty}
-        bills={shownBills.map(toBillChatContext)}
-      />
+      {/* チャット機能（既定はオフ。サイト設定の機能フラグで有効化） */}
+      {features.ai_chat && (
+        <HomeChatClient
+          currentDifficulty={currentDifficulty}
+          bills={shownBills.map(toBillChatContext)}
+        />
+      )}
     </>
   );
 }

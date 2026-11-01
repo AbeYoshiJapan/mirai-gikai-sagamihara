@@ -23,6 +23,7 @@ import type { BillWithContent } from "@/features/bills/shared/types";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useViewportHeight } from "@/hooks/use-viewport-height";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import {
   CHAT_PANEL_RESPONSIVE_CLASSES,
   MobileChatDialog,
@@ -74,6 +75,7 @@ function ChatMessages({
   pageContext?: ChatWindowProps["pageContext"];
   sessionId: string;
 }) {
+  const { site, council } = useSiteSettings();
   const { scrollToBottom } = useStickToBottomContext();
   const userMessageLength = messages.filter((x) => x.role === "user").length;
   const isResponding = status === "streaming" || status === "submitted";
@@ -91,7 +93,7 @@ function ChatMessages({
         {/* 初期メッセージ */}
         <div className="flex flex-col gap-1">
           <p className="text-sm font-bold leading-[1.8] text-mirai-text">
-            区議会や議案について、気になることをAIに質問してください。
+            {council.name}や議案について、気になることをAIに質問してください。
           </p>
           {billContext && (
             <p className="text-sm font-bold leading-[1.8] text-mirai-text">
@@ -105,8 +107,8 @@ function ChatMessages({
           {(billContext
             ? [`この議案のポイントは？`, "この議案は私にどんな影響がある？"]
             : [
-                "みらい議会@墨田区って何？",
-                "区議会って何をするところ？",
+                `${site.name}って何？`,
+                `${council.name}って何をするところ？`,
                 "注目の議案について教えて",
               ]
           ).map((question) => {
@@ -170,6 +172,7 @@ export function ChatWindow({
   returnFocusRef,
   sessionId,
 }: ChatWindowProps) {
+  const { council } = useSiteSettings();
   const [input, setInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const { messages, sendMessage, status, error } = chatState;
@@ -286,7 +289,7 @@ export function ChatWindow({
   if (isPc) {
     return createPortal(
       <section
-        aria-label="区議会や議案についてAIに質問する"
+        aria-label={`${council.name}や議案についてAIに質問する`}
         className={`fixed inset-x-0 bottom-0 z-50 bg-white shadow-md rounded-t-2xl flex flex-col pc:h-[70vh] xl:right-[calc(calc(100%-1180px)/2)] ${CHAT_PANEL_RESPONSIVE_CLASSES}`}
       >
         {chatPanelContent}

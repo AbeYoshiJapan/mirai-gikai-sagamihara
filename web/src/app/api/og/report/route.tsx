@@ -7,6 +7,7 @@ import {
 import { ImageResponse } from "next/og";
 import { getReportOgData } from "@/features/interview-report/server/loaders/get-report-og-data";
 import { truncateText } from "@/features/interview-report/shared/utils/truncate-text";
+import { getSiteSettings, isFeatureEnabled } from "@/lib/site-settings/loader";
 
 // next.config の outputFileTracingIncludes と同じパスを指す
 const OGP_LOGO_PATH = join(
@@ -23,6 +24,9 @@ const OG_BILL_NAME_WIDTH = 820;
 const OG_BILL_NAME_MAX_HEIGHT = 96;
 
 export async function GET(request: Request) {
+  if (!(await isFeatureEnabled("ai_interview"))) {
+    return new Response(null, { status: 404 });
+  }
   const { searchParams } = new URL(request.url);
   const reportId = searchParams.get("id");
 
@@ -46,9 +50,10 @@ export async function GET(request: Request) {
     OG_BILL_NAME_MAX_LENGTH
   );
 
-  const [fontData, logoDataUrl] = await Promise.all([
+  const [fontData, logoDataUrl, { site }] = await Promise.all([
     loadNotoSansJp(800),
     loadOgpLogoDataUrl(OGP_LOGO_PATH),
+    getSiteSettings(),
   ]);
   const fontOptions = buildOgFontOptions(fontData, 800);
 
@@ -149,7 +154,7 @@ export async function GET(request: Request) {
               letterSpacing: "0.03em",
             }}
           >
-            みらい議会@墨田区
+            {site.name}
           </span>
         </div>
 
@@ -157,7 +162,7 @@ export async function GET(request: Request) {
         {logoDataUrl && (
           // biome-ignore lint/performance/noImgElement: ignore
           <img
-            alt="みらい議会@墨田区のロゴ"
+            alt={`${site.name}のロゴ`}
             src={logoDataUrl}
             width={189}
             height={160}

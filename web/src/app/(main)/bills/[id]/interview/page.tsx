@@ -6,6 +6,7 @@ import { getInterviewConfig } from "@/features/interview-config/server/loaders/g
 import { getUserReportsByInterviewConfig } from "@/features/interview-report/server/loaders/get-user-reports-by-interview-config";
 import { getLatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import { env } from "@/lib/env";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,7 @@ export async function generateMetadata({
 }
 
 export default async function InterviewPage({ params }: InterviewPageProps) {
+  await requireFeature("ai_interview");
   const { id } = await params;
   const [bill, interviewConfig] = await Promise.all([
     getBillById(id),

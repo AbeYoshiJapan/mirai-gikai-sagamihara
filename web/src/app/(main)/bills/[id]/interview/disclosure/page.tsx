@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
+import { InterviewDisclosurePage } from "@/features/interview-config/server/components/interview-disclosure-page";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { loadDisclosureData } from "@/features/interview-config/server/loaders/load-disclosure-data";
-import { InterviewDisclosurePage } from "@/features/interview-config/server/components/interview-disclosure-page";
+import { requireFeature } from "@/lib/site-settings/loader";
 
 interface DisclosurePageProps {
   params: Promise<{
@@ -32,6 +33,7 @@ export async function generateMetadata({
 }
 
 export default async function DisclosurePage({ params }: DisclosurePageProps) {
+  await requireFeature("ai_interview");
   const { id } = await params;
   const [bill, interviewConfig] = await Promise.all([
     getBillById(id),

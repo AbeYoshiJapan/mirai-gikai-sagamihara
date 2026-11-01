@@ -8,6 +8,8 @@ export const CACHE_TAGS = {
   INTERVIEW_CONFIGS: "interview-configs",
   // admin のレポート公開操作が revalidate するタグ。
   PUBLIC_INTERVIEW_REPORTS: "public-interview-reports",
+  // admin の「サイト設定」保存が revalidate するタグ。
+  SITE_SETTINGS: "site-settings",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

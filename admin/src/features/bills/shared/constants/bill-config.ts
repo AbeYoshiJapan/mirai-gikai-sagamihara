@@ -42,7 +42,7 @@ export const BILL_STATUS_CONFIG: Record<
     icon: XCircle,
     color: "text-red-600 bg-red-50",
   },
-  // 墨田区版で追加した区分（議案ではなく「掲載」として扱う）
+  // 地方議会向けの区分（議案ではなく「掲載」として扱う）
   reported: {
     icon: ClipboardList,
     color: "text-purple-600 bg-purple-50",

@@ -7,13 +7,16 @@ import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/
 import type { CouncilMeeting } from "@/features/council-meetings/shared/types";
 import { formatCouncilYear } from "@/features/council-meetings/shared/utils/council-period";
 import { routes } from "@/lib/routes";
+import { getSiteSettings, requireFeature } from "@/lib/site-settings/loader";
 import { getJapanTime } from "@/lib/utils/date";
 
-export const metadata: Metadata = {
-  title: "会議の予定 | みらい議会@墨田区",
-  description:
-    "墨田区議会の本会議・常任委員会・特別委員会・議会運営委員会の予定です。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { site, council } = await getSiteSettings();
+  return {
+    title: `会議の予定 | ${site.name}`,
+    description: `${council.name}の本会議・常任委員会・特別委員会・議会運営委員会の予定です。`,
+  };
+}
 
 /** 会議を開始日の月ごとに分ける。 */
 function groupByMonth(meetings: CouncilMeeting[]) {
@@ -29,6 +32,8 @@ function groupByMonth(meetings: CouncilMeeting[]) {
 }
 
 export default async function SchedulePage() {
+  await requireFeature("schedule");
+  const { council } = await getSiteSettings();
   const { status, meetings, upcoming } = await loadCouncilSchedule(
     getJapanTime()
   );
@@ -49,8 +54,11 @@ export default async function SchedulePage() {
 
       <h1 className="mb-3 text-3xl font-bold">会議の予定</h1>
       <p className="mb-8 text-sm leading-6 text-mirai-text-secondary">
-        {formatCouncilYear(status.councilYear)}
-        の墨田区議会の会議予定です。墨田区議会は通年議会のため、会期は5月1日から翌年4月30日までです。本会議は6月・9月・11月・2月の議会期間に開かれます。
+        {formatCouncilYear(status.councilYear)}の{council.name}
+        の会議予定です。
+        {council.session_model === "year_round"
+          ? `${council.name}は通年議会のため、会期は年度を通して続き、本会議は${council.session_label}の期間に開かれます。`
+          : `本会議は${council.session_label}の期間に開かれます。`}
       </p>
 
       {upcoming.length > 0 ? (

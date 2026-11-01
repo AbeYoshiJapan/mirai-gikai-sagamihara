@@ -9,6 +9,7 @@ import {
   shareOnThreads,
   shareOnTwitter,
 } from "@/features/bills/client/utils/share-handlers";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 
 interface BillShareModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export function BillShareModal({
   shareUrl,
   thumbnailUrl,
 }: BillShareModalProps) {
+  const { site } = useSiteSettings();
   if (!isOpen) return null;
 
   // 共有ボタンの設定
@@ -54,7 +56,7 @@ export function BillShareModal({
     {
       name: "共有",
       iconPath: "/icons/share-general.png",
-      onClick: () => shareNative(shareMessage, shareUrl),
+      onClick: () => shareNative(shareMessage, shareUrl, site.name),
       className: "md:hidden",
     },
   ];

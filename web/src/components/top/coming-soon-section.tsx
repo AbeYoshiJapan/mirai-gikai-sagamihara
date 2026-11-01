@@ -2,13 +2,15 @@ import { ExternalLink } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import type { ComingSoonBill } from "@/features/bills/shared/types";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { Card, CardContent } from "../ui/card";
 
 interface ComingSoonSectionProps {
   bills: ComingSoonBill[];
 }
 
-export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
+export async function ComingSoonSection({ bills }: ComingSoonSectionProps) {
+  const { site, council, links } = await getSiteSettings();
   return (
     <section className="flex flex-col gap-6">
       {/* ヘッダー */}
@@ -17,7 +19,7 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
           これから掲載される議案
         </h2>
         <p className="text-xs text-mirai-text-secondary">
-          みらい議会@墨田区は、順次更新されていきます
+          {site.name}は、順次更新されていきます
         </p>
       </div>
 
@@ -37,18 +39,20 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
       )}
 
       {/* 会議録検索システムへのリンク */}
-      <div className="text-right text-sm text-mirai-text-secondary">
-        <Link
-          href="https://ssp.kaigiroku.net/tenant/sumida/SpTop.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:opacity-80 inline-flex items-center gap-1"
-        >
-          墨田区議会の審議の記録は{" "}
-          <span className="underline">会議録検索システムへ</span>
-          <ExternalLink className="h-3 w-3" />
-        </Link>
-      </div>
+      {links.minutes_search && (
+        <div className="text-right text-sm text-mirai-text-secondary">
+          <Link
+            href={links.minutes_search as Route}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 inline-flex items-center gap-1"
+          >
+            {council.name}の審議の記録は{" "}
+            <span className="underline">会議録検索システムへ</span>
+            <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

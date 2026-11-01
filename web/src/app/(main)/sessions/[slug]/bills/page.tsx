@@ -1,3 +1,4 @@
+import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { extractCouncilPeriods } from "@/features/council-meetings/shared/utils/
 import { DietSessionBillList } from "@/features/diet-sessions/client/components/diet-session-bill-list";
 import { getDietSessionBySlug } from "@/features/diet-sessions/server/loaders/get-diet-session-by-slug";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -22,8 +24,9 @@ export async function generateMetadata({ params }: Props) {
     return { title: "会期が見つかりません" };
   }
 
+  const { site } = await getSiteSettings();
   return {
-    title: `${session.name}の議案一覧 | みらい議会@墨田区`,
+    title: `${session.name}の議案一覧 | ${site.name}`,
     description: `${session.name}（${session.start_date}〜${session.end_date}）の議案・委員会報告・特別委員会の調査の一覧です。`,
   };
 }
@@ -43,13 +46,14 @@ export default async function DietSessionBillsPage({ params }: Props) {
     getCouncilMeetings(councilYear),
   ]);
   const periods = extractCouncilPeriods(meetings);
+  const { brand } = await getSiteSettings();
 
   return (
     <div className="bg-mirai-surface-muted">
       {/* ヒーロー画像 */}
       <div className="relative w-full h-[285px]">
         <Image
-          src="/img/archive-hero-azumabashi.jpg"
+          src={brandAsset(brand, "archive_hero_url")}
           alt={`${session.name}の議案一覧`}
           fill
           priority

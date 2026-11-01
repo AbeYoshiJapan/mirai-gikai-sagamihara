@@ -43,7 +43,7 @@ describe("toPublicSiteSettings", () => {
     expect(pub).not.toHaveProperty("import");
     expect(pub).not.toHaveProperty("ai");
     expect(pub).not.toHaveProperty("seo");
-    expect(pub).not.toHaveProperty("legal");
+    expect(pub.legal).toEqual({ modified_on: "" });
     expect(pub.features).toEqual(DEFAULT_SITE_SETTINGS.features);
   });
 });
@@ -63,7 +63,7 @@ describe("brandAsset / brandColorsToCss", () => {
 
   it("CSS 変数を 4 つ出す", () => {
     const css = brandColorsToCss(DEFAULT_SITE_SETTINGS.brand.colors);
-    expect(css).toContain("--primary: #1f7a4d;");
-    expect(css).toContain("--mirai-gradient-end: #d9f2e3;");
+    expect(css).toContain("--primary: #1f7a4d !important;");
+    expect(css).toContain("--color-mirai-gradient-end: #d9f2e3 !important;");
   });
 });
