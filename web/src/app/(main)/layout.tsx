@@ -1,32 +1,28 @@
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
-import { Header } from "@/components/header";
-import { AuthGate } from "@/components/layouts/auth-gate";
-import { Footer } from "@/components/layouts/footer/footer";
-import { MainLayout } from "@/components/layouts/main-layout";
+import { ComingSoonPage } from "@/components/layouts/coming-soon-page";
+import { SiteChrome } from "@/components/layouts/site-chrome";
 import { env } from "@/lib/env";
-import { RubyfulInitializer } from "@/lib/rubyful";
+import {
+  isSitePreviewCookieValid,
+  SITE_PREVIEW_COOKIE_NAME,
+} from "@/lib/site-preview";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 
-export default function MainGroupLayout({
+export default async function MainGroupLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
-  return (
-    <>
-      <SpeedInsights />
-      <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
-      <RubyfulInitializer />
-      <AuthGate />
+  const { site } = await getSiteSettings();
 
-      <MainLayout>
-        <Header />
-        <main className="min-h-dvh md:min-h-[calc(100dvh-96px)] bg-mirai-surface">
-          {children}
-        </main>
-        <Footer />
-      </MainLayout>
-    </>
-  );
+  if (!site.published) {
+    const cookieStore = await cookies();
+    const previewCookie = cookieStore.get(SITE_PREVIEW_COOKIE_NAME)?.value;
+    if (!isSitePreviewCookieValid(previewCookie, env.sitePreviewSecret)) {
+      return <ComingSoonPage />;
+    }
+  }
+
+  return <SiteChrome>{children}</SiteChrome>;
 }

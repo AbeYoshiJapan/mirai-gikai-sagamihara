@@ -115,7 +115,6 @@ export const DEFAULT_BRAND_ASSETS = {
   /** 空のときはヘッダーにサイト名をテキストで出す */
   service_logo_url: "",
   ogp_image_url: "/ogp.jpg",
-  hero_image_url: "/img/hero_background.png",
   archive_hero_url: "/img/archive-hero.png",
   icon_192_url: "/icons/pwa/icon_android_192.png",
   icon_512_url: "/icons/pwa/icon_android_512.png",

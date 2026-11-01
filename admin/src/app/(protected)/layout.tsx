@@ -1,7 +1,10 @@
 import { Home, User } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogoutButton } from "@/features/auth/client/components/logout-button";
 import { getCurrentAdmin } from "@/features/auth/server/lib/auth-server";
+import { loadSiteSettings } from "@/features/site-settings/server/loaders/load-site-settings";
+import { routes } from "@/lib/routes";
 import { NavigationLinks } from "./layout/navigation-links";
 
 export default async function MainLayout({
@@ -9,7 +12,10 @@ export default async function MainLayout({
 }: {
   children: ReactNode;
 }) {
-  const admin = await getCurrentAdmin();
+  const [admin, { settings }] = await Promise.all([
+    getCurrentAdmin(),
+    loadSiteSettings(),
+  ]);
   return (
     <div className="min-h-dvh bg-gray-50">
       {/* Header */}
@@ -22,7 +28,7 @@ export default async function MainLayout({
                   <Home className="h-5 w-5 text-white" />
                 </div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  みらい議会 Admin
+                  {settings.site.name} 管理画面
                 </h1>
               </div>
             </div>
@@ -42,6 +48,19 @@ export default async function MainLayout({
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+        {!settings.site.setup_completed && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span>
+              初期設定がまだ完了していません。公開サイトは「準備中」のまま表示されます。
+            </span>
+            <Link
+              href={routes.setup()}
+              className="font-medium text-amber-900 underline"
+            >
+              初期設定ウィザードを開く
+            </Link>
+          </div>
+        )}
         {/* Main content */}
         <main>{children}</main>
       </div>

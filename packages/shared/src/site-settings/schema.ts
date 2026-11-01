@@ -80,7 +80,6 @@ export const brandSectionSchema = z.object({
   logo_url: optionalUrl,
   service_logo_url: optionalUrl,
   ogp_image_url: optionalUrl,
-  hero_image_url: optionalUrl,
   archive_hero_url: optionalUrl,
   icon_192_url: optionalUrl,
   icon_512_url: optionalUrl,

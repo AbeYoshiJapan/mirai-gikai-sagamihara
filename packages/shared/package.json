@@ -148,6 +148,10 @@
       "types": "./src/site-settings/templates.ts",
       "default": "./src/site-settings/templates.ts"
     },
+    "./site-settings/compliance": {
+      "types": "./src/site-settings/compliance.ts",
+      "default": "./src/site-settings/compliance.ts"
+    },
     "./site-settings/presets": {
       "types": "./src/site-settings/presets/sagamihara.ts",
       "default": "./src/site-settings/presets/sagamihara.ts"

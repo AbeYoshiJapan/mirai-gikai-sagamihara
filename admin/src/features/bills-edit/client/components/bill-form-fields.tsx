@@ -249,16 +249,16 @@ export function BillFormFields({
         name="shugiin_url"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>衆議院URL</FormLabel>
+            <FormLabel>議会サイトURL</FormLabel>
             <FormControl>
               <Input
                 {...field}
                 value={field.value || ""}
-                placeholder="https://www.shugiin.go.jp/..."
+                placeholder="https://www.sagamihara-shigikai.jp/..."
               />
             </FormControl>
             <FormDescription>
-              衆議院の議案ページURLを入力してください（「これから掲載される法案」表示時に外部リンクとして使用）
+              議会サイトの議案ページURLを入力してください（「これから掲載される議案」表示時に外部リンクとして使用）
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -291,14 +291,14 @@ export function BillFormFields({
         name="diet_session_id"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>国会会期</FormLabel>
+            <FormLabel>会期</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value ?? undefined}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="国会会期を選択" />
+                  <SelectValue placeholder="会期を選択" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -310,7 +310,7 @@ export function BillFormFields({
               </SelectContent>
             </Select>
             <FormDescription>
-              議案が提出された国会会期を選択してください
+              議案が提出された会期を選択してください
             </FormDescription>
             <FormMessage />
           </FormItem>

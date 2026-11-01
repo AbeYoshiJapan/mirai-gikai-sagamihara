@@ -5,6 +5,10 @@ const isDev = process.env.NODE_ENV === "development";
 const nextConfig: NextConfig = {
   experimental: {
     serverSourceMaps: true,
+    // サイト設定の画像アップロード（Server Action 経由、最大 5MB）
+    serverActions: {
+      bodySizeLimit: "8mb",
+    },
   },
   typedRoutes: true,
   outputFileTracingIncludes: {

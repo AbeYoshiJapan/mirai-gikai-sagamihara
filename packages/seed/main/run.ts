@@ -34,6 +34,7 @@ import {
 } from "./shipping-bill-data";
 import { createAdminClient, clearAllData } from "../shared/helper";
 import { seedLocalAdminUser } from "../shared/admin-user";
+import { seedSiteSettings } from "../shared/site-settings";
 
 async function seedDatabase() {
   const supabase = createAdminClient();
@@ -44,6 +45,9 @@ async function seedDatabase() {
 
     // ローカル開発用の admin ユーザー（ローカル接続時のみ作成される）
     await seedLocalAdminUser(supabase);
+
+    // サイト設定（相模原市議会プリセット、公開中）
+    await seedSiteSettings(supabase);
 
     // Insert tags
     console.log("🏷️  Inserting tags...");

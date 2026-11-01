@@ -38,6 +38,22 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/bill-thumbnails/**",
       },
+      // サイト設定でアップロードしたロゴ・OGP・背景画像
+      {
+        protocol: "https",
+        hostname: "127.0.0.1",
+        pathname: "/storage/v1/object/public/site-assets/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        pathname: "/storage/v1/object/public/site-assets/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/site-assets/**",
+      },
       ...(isDev
         ? [
             {

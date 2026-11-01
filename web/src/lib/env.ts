@@ -60,6 +60,9 @@ export const env = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabasePublishableKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   revalidateSecret: process.env.REVALIDATE_SECRET,
+  /** 公開前（site.published=false）のサイトを確認するための合言葉。未設定なら REVALIDATE_SECRET を使う */
+  sitePreviewSecret:
+    process.env.SITE_PREVIEW_SECRET || process.env.REVALIDATE_SECRET,
   articleReportSlackWebhookUrl: process.env.ARTICLE_REPORT_SLACK_WEBHOOK_URL,
   analytics: {
     gaTrackingId: process.env.NEXT_PUBLIC_GA_TRACKING_ID,

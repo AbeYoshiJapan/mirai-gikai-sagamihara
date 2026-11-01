@@ -20,6 +20,9 @@ export const env = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabasePublishableKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   revalidateSecret: process.env.REVALIDATE_SECRET,
+  /** 公開前サイトの確認用の合言葉。web 側と同じ値にする。未設定なら REVALIDATE_SECRET */
+  sitePreviewSecret:
+    process.env.SITE_PREVIEW_SECRET || process.env.REVALIDATE_SECRET,
   // トピック分析・バックフィルを実行する Cloud Run Job のトリガ設定
   gcp: {
     projectId: process.env.GCP_PROJECT_ID,

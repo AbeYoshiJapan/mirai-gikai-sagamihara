@@ -44,7 +44,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     logo_url: "",
     service_logo_url: "",
     ogp_image_url: "",
-    hero_image_url: "",
     archive_hero_url: "",
     icon_192_url: "",
     icon_512_url: "",
