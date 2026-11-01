@@ -107,13 +107,22 @@ const PRESET_CHOICES: {
   },
 ];
 
+function resolveChoice(
+  choice: PresetChoice,
+  current: SiteSettings
+): SiteSettings {
+  if (choice === "current") return current;
+  if (choice === "blank") return DEFAULT_SITE_SETTINGS;
+  return applyPreset(current, SITE_SETTINGS_PRESETS[choice].settings);
+}
+
 /**
  * 初期設定ウィザード。全セクションを 1 つのフォームで持ち、最後にまとめて保存する。
  */
 export function SetupWizard({ current, isSetupCompleted }: SetupWizardProps) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
-  const [preset, setPreset] = useState<PresetChoice>(
+  const [preset, setPreset] = useState<PresetChoice>(() =>
     isSetupCompleted
       ? "current"
       : (Object.keys(SITE_SETTINGS_PRESETS)[0] as PresetChoice)
@@ -122,7 +131,8 @@ export function SetupWizard({ current, isSetupCompleted }: SetupWizardProps) {
 
   const form = useForm<FieldValues>({
     resolver: createSiteSettingsResolver(),
-    defaultValues: current,
+    // 最初に選ばれているひな形をフォームにも反映しておく（カードを押さずに進んでも同じ結果になる）
+    defaultValues: resolveChoice(preset, current),
     mode: "onBlur",
   });
 
@@ -131,13 +141,7 @@ export function SetupWizard({ current, isSetupCompleted }: SetupWizardProps) {
 
   const applyChoice = (choice: PresetChoice) => {
     setPreset(choice);
-    if (choice === "current") {
-      form.reset(current);
-    } else if (choice === "blank") {
-      form.reset(DEFAULT_SITE_SETTINGS);
-    } else {
-      form.reset(applyPreset(current, SITE_SETTINGS_PRESETS[choice].settings));
-    }
+    form.reset(resolveChoice(choice, current));
   };
 
   const goNext = async () => {

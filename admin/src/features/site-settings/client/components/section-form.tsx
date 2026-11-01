@@ -2,7 +2,7 @@
 
 import type { SiteSettingsSection } from "@mirai-gikai/shared/site-settings/schema";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type FieldValues, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ interface SectionFormProps {
   values: FieldValues;
   updatedAt?: string;
   isStored: boolean;
+  /** 未保存の変更があるかを親に知らせる（タブ切替の確認に使う） */
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 function formatDateTime(iso: string): string {
@@ -31,6 +33,7 @@ export function SectionForm({
   values,
   updatedAt,
   isStored,
+  onDirtyChange,
 }: SectionFormProps) {
   const router = useRouter();
   const definition = getSectionDefinition(section);
@@ -66,6 +69,10 @@ export function SectionForm({
   };
 
   const { isDirty } = form.formState;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   return (
     <Form {...form}>

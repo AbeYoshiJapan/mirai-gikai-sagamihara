@@ -10,8 +10,8 @@ import type {
 } from "@mirai-gikai/shared/site-settings/schema";
 import { ExternalLink, Wand2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { routes } from "@/lib/routes";
@@ -49,21 +49,40 @@ export function SiteSettingsTabs({
   previewUrl,
   webUrl,
 }: SiteSettingsTabsProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const activeTab = isSection(tabParam) ? tabParam : DEFAULT_TAB;
+  const [activeTab, setActiveTab] = useState<SiteSettingsSection>(
+    isSection(tabParam) ? tabParam : DEFAULT_TAB
+  );
+  const [isDirty, setIsDirty] = useState(false);
 
   const issues: ComplianceIssue[] = useMemo(
     () => checkForkCompliance(settings),
     [settings]
   );
 
-  const selectTab = (section: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", section);
-    router.replace(`${routes.settings()}?${params.toString()}`);
-  };
+  // タブ切替はクライアント側で完結させ、URL だけ置き換える（再読み込みやリンク共有で同じタブが開く）
+  const selectTab = useCallback(
+    (section: string) => {
+      if (!isSection(section) || section === activeTab) return;
+      if (
+        isDirty &&
+        !window.confirm(
+          "保存していない変更があります。破棄してタブを切り替えますか？"
+        )
+      ) {
+        return;
+      }
+      setIsDirty(false);
+      setActiveTab(section);
+      window.history.replaceState(
+        null,
+        "",
+        `${routes.settings()}?tab=${section}`
+      );
+    },
+    [activeTab, isDirty]
+  );
 
   return (
     <div className="space-y-6">
@@ -157,6 +176,7 @@ export function SiteSettingsTabs({
                 values={settings[definition.section]}
                 updatedAt={updatedAt[definition.section]}
                 isStored={storedSections.includes(definition.section)}
+                onDirtyChange={setIsDirty}
               />
             )}
             <HistoryList entries={history[definition.section] ?? []} />

@@ -54,6 +54,15 @@ describe("SetupWizard", () => {
     expect(screen.getByLabelText("議会名")).toHaveValue("相模原市議会");
   });
 
+  it("初期設定前はひな形が最初から選ばれていて、カードを押さずに進んでも反映される", async () => {
+    const user = userEvent.setup();
+    render(
+      <SetupWizard current={DEFAULT_SITE_SETTINGS} isSetupCompleted={false} />
+    );
+    await user.click(screen.getByRole("button", { name: "次へ" }));
+    expect(screen.getByLabelText("議会名")).toHaveValue("相模原市議会");
+  });
+
   it("入力に誤りがあると次へ進めない", async () => {
     const user = userEvent.setup();
     render(

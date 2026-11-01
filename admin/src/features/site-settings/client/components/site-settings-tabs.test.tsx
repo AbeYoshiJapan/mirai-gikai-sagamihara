@@ -133,11 +133,28 @@ describe("SiteSettingsTabs", () => {
     );
   });
 
-  it("タブを切り替えると URL のクエリが変わる", async () => {
+  it("タブを切り替えると表示が変わり、URL のクエリも置き換わる", async () => {
     const user = userEvent.setup();
+    const replaceState = vi.spyOn(window.history, "replaceState");
     renderTabs();
     await user.click(screen.getByRole("tab", { name: /リンク/ }));
-    expect(mocks.replace).toHaveBeenCalledWith("/settings?tab=links");
+    expect(
+      await screen.findByLabelText("このサイトのソースコード（必須）")
+    ).toBeInTheDocument();
+    expect(replaceState).toHaveBeenCalledWith(null, "", "/settings?tab=links");
+  });
+
+  it("未保存の変更があるときはタブ切替前に確認する", async () => {
+    const user = userEvent.setup();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    renderTabs();
+
+    await user.type(screen.getByLabelText("サイト名"), "！");
+    await user.click(screen.getByRole("tab", { name: /リンク/ }));
+
+    expect(confirm).toHaveBeenCalled();
+    expect(screen.getByLabelText("サイト名")).toBeInTheDocument();
+    confirm.mockRestore();
   });
 
   it("変更履歴から差し戻せる", async () => {
