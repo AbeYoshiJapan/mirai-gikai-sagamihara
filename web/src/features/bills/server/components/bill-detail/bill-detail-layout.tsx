@@ -17,6 +17,8 @@ import { getPlanPhase } from "../../../shared/utils/plan-phase";
 import { BillShareButtons } from "../share/bill-share-buttons";
 import { BillContent } from "./bill-content";
 import { BillDetailHeader } from "./bill-detail-header";
+import { BillSourcesSection } from "./bill-sources-section";
+import { BillVotesSection } from "./bill-votes-section";
 
 interface BillDetailLayoutProps {
   bill: BillWithContent;
@@ -27,7 +29,7 @@ export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
-  const { features } = await getSiteSettings();
+  const { features, council } = await getSiteSettings();
   // 利用者向け AI 機能（インタビュー・トピック分析）は機能フラグが立っているときだけ読む
   const [interviewConfig, publicReportsResult, topicAnalysis] =
     await Promise.all([
@@ -39,7 +41,7 @@ export async function BillDetailLayout({
     ]);
 
   // 行政計画は自治体のパブコメ期間で段階が変わる。AIインタビューは「意見募集中」の間だけ出す
-  const isPlan = bill.status === "plan";
+  const isPlan = bill.bill_kind === "plan";
   const planPhase = isPlan ? getPlanPhase(bill, getJapanTime()) : null;
   const showInterview =
     features.ai_interview &&
@@ -79,8 +81,13 @@ export async function BillDetailLayout({
               />
             ) : (
               <BillStatusProgress
-                status={bill.status}
-                originatingHouse={bill.originating_house}
+                bill={{
+                  bill_kind: bill.bill_kind,
+                  stage: bill.stage,
+                  result: bill.result,
+                  vote_outcome: bill.vote_outcome,
+                  committee_name: bill.committee?.name ?? null,
+                }}
                 statusNote={bill.status_note}
               />
             )}
@@ -91,6 +98,26 @@ export async function BillDetailLayout({
       </BillDetailClient>
 
       <Container>
+        {/* 一次資料：議案書・会議録・審議結果へのリンク */}
+        <div className="my-8">
+          <BillSourcesSection
+            sources={bill.sources ?? []}
+            billDocumentUrl={bill.bill_document_url}
+            primarySourceLabel={council.primary_source_label}
+          />
+        </div>
+
+        {/* 会派・議員ごとの賛否（機能フラグ） */}
+        {(features.faction_votes || features.member_votes) && bill.votes && (
+          <div className="my-8">
+            <BillVotesSection
+              votes={bill.votes}
+              showFactions={features.faction_votes}
+              showMembers={features.member_votes}
+            />
+          </div>
+        )}
+
         {/* 議案のトピック一覧（AIインタビュー意見の整理）。機能フラグで出し分け */}
         {features.topic_analysis && (
           <div className="my-8">

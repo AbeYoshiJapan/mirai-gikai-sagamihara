@@ -54,7 +54,7 @@ describe("MobileChatDialog", () => {
 
     expect(
       screen.getByRole("dialog", {
-        name: "区議会や議案についてAIに質問する",
+        name: "○○議会や議案についてAIに質問する",
       })
     ).toHaveAttribute("aria-modal", "true");
     expect(

@@ -1,8 +1,14 @@
+import {
+  BILL_KIND_LABELS,
+  getResultLabel,
+  getStageLabel,
+  PROPOSER_KIND_LABELS,
+} from "@mirai-gikai/shared/bill-stage/labels";
 import { isMiraiStancePublished } from "@mirai-gikai/shared/mirai-stance/publish-schedule";
 import {
+  type Bill,
   type BillStatusEnum,
   getBillStatusLabel,
-  HOUSE_LABELS,
   type HouseEnum,
   type MiraiStance,
   STANCE_LABELS,
@@ -21,6 +27,13 @@ type OpenDataMiraiStanceRow = Pick<
 export type OpenDataBillRow = {
   id: string;
   name: string;
+  bill_number: string | null;
+  bill_kind: Bill["bill_kind"];
+  proposer_kind: Bill["proposer_kind"];
+  stage: Bill["stage"];
+  result: Bill["result"];
+  vote_outcome: Bill["vote_outcome"];
+  decided_on: string | null;
   status: BillStatusEnum;
   status_note: string | null;
   originating_house: HouseEnum;
@@ -46,11 +59,21 @@ export function toOpenDataBillItem(
     name: row.name,
     title: billContent?.title ?? "",
     summary: billContent?.summary ?? "",
+    billNumber: row.bill_number,
+    billKind: row.bill_kind,
+    billKindLabel: BILL_KIND_LABELS[row.bill_kind],
+    proposerKind: row.proposer_kind,
+    proposerKindLabel: PROPOSER_KIND_LABELS[row.proposer_kind],
+    stage: row.stage,
+    stageLabel: row.stage ? getStageLabel(row.stage) : null,
+    result: row.result,
+    resultLabel: row.result ? getResultLabel(row.result) : null,
+    voteOutcome: row.vote_outcome,
+    decidedOn: row.decided_on,
     status: row.status,
-    statusLabel: getBillStatusLabel(row.status, row.originating_house),
+    statusLabel: getBillStatusLabel(row),
     statusNote: row.status_note,
     originatingHouse: row.originating_house,
-    originatingHouseLabel: HOUSE_LABELS[row.originating_house],
     submittedDate: row.submitted_date,
     publishedAt: row.published_at,
     tags: row.bills_tags.flatMap((billTag) =>
@@ -79,7 +102,7 @@ export function toOpenDataBillDetail(
 }
 
 /**
- * チームみらいの賛否行をレスポンス形式（日本語ラベル付き）に変換する。
+ * 運営者の賛否行をレスポンス形式（日本語ラベル付き）に変換する。
  * 非公開・公開日時前の賛否は未設定（null）として扱う。
  */
 export function toOpenDataMiraiStance(

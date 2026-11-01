@@ -28,7 +28,7 @@ export function CurrentDietSession({
   now,
 }: CurrentDietSessionProps) {
   const inSession = session !== null;
-  const { operator } = useSiteSettings();
+  const { operator, council } = useSiteSettings();
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -52,7 +52,7 @@ export function CurrentDietSession({
                 : "bg-mirai-surface-muted text-mirai-text-secondary"
             }`}
           >
-            {inSession ? "区議会 会期中" : "区議会 閉会中"}
+            {inSession ? `${council.name} 会期中` : `${council.name} 閉会中`}
           </span>
           {inSession && (
             <span className="text-[15px] font-bold text-mirai-brand-teal-deep md:ml-auto">

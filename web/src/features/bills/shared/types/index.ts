@@ -1,3 +1,7 @@
+import {
+  getBillDecisionLabel,
+  getBillOutcomeLabel,
+} from "@mirai-gikai/shared/bill-stage/labels";
 import type { Database } from "@mirai-gikai/supabase";
 
 // Database types
@@ -61,10 +65,55 @@ export type FeaturedTag = {
   priority: number;
 };
 
+/** 付託先の委員会（公開ページで出す列だけ） */
+export type BillCommittee = {
+  id: string;
+  name: string;
+  short_name: string;
+};
+
+/** 一次資料（公開ページで出す列だけ。抽出本文は含めない） */
+export type BillSourceItem = {
+  id: string;
+  kind: Database["public"]["Enums"]["bill_source_kind"];
+  url: string;
+  label: string;
+  meeting_date: string | null;
+  sort_order: number;
+};
+
+export type VoteValue = Database["public"]["Enums"]["vote_value"];
+
+export type FactionVote = {
+  faction: { id: string; name: string; short_name: string; sort_order: number };
+  vote: VoteValue;
+  note: string | null;
+};
+
+export type MemberVote = {
+  member: {
+    id: string;
+    name: string;
+    ward: string;
+    faction_name: string | null;
+    sort_order: number;
+  };
+  vote: VoteValue;
+  note: string | null;
+};
+
+export type BillVotes = {
+  factions: FactionVote[];
+  members: MemberVote[];
+};
+
 export type BillWithContent = Bill & {
   bill_content?: BillContent;
   mirai_stance?: MiraiStance;
   tags: BillTag[];
+  committee?: BillCommittee | null;
+  sources?: BillSourceItem[];
+  votes?: BillVotes;
   featured_tag?: FeaturedTag;
   hasPublicInterview?: boolean;
   /** 公開レポート件数。一覧の回答数バッジと「声が集まっている順」に使う。 */
@@ -90,46 +139,17 @@ export const BILL_STATUS_ORDER: Record<BillStatusEnum, number> = {
   special_committee: 8,
 };
 
-// House display mapping
-export const HOUSE_LABELS: Record<HouseEnum, string> = {
-  HR: "委員会",
-  HC: "本会議",
-};
-
-// ステータスを日本語ラベルに変換する関数
-export function getBillStatusLabel(
-  status: BillStatusEnum,
-  originatingHouse?: HouseEnum | null
-): string {
-  switch (status) {
-    case "preparing":
-      return "準備中";
-    case "introduced":
-      return "提出済み";
-    case "in_originating_house":
-      if (originatingHouse) {
-        return `${HOUSE_LABELS[originatingHouse]}審議中`;
-      }
-      return "審議中"; // フォールバック
-    case "in_receiving_house":
-      if (originatingHouse) {
-        const receivingHouse = originatingHouse === "HR" ? "HC" : "HR";
-        return `${HOUSE_LABELS[receivingHouse]}審議中`;
-      }
-      return "審議中"; // フォールバック
-    case "enacted":
-      return "成立";
-    case "rejected":
-      return "否決";
-    case "reported":
-      return "委員会報告";
-    case "plan":
-      return "行政計画";
-    case "special_committee":
-      return "特別委員会";
-    default:
-      return status; // 未知のステータスはそのまま返す
-  }
+/**
+ * 審議状況の日本語ラベル（オープンデータ API などサイト設定の外で使う）。
+ * 議決済みなら「可決（賛成多数）」のように採決結果も添える。
+ */
+export function getBillStatusLabel(bill: {
+  bill_kind: Bill["bill_kind"];
+  stage: Bill["stage"];
+  result: Bill["result"];
+  vote_outcome: Bill["vote_outcome"];
+}): string {
+  return getBillDecisionLabel(bill) ?? getBillOutcomeLabel(bill);
 }
 
 export const STANCE_LABELS: Record<StanceTypeEnum, string> = {

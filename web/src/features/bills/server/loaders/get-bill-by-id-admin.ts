@@ -6,6 +6,7 @@ import {
   findTagsByBillId,
 } from "../repositories/bill-repository";
 import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
+import { getBillDetailExtras } from "./helpers/get-bill-detail-extras";
 
 /**
  * 管理者用: 公開/非公開問わず議案を取得
@@ -37,10 +38,15 @@ export async function getBillByIdAdmin(
       .filter((tag): tag is { id: string; label: string } => tag !== null) ??
     [];
 
+  const extras = await getBillDetailExtras(bill.id, bill.committee_id);
+
   return {
     ...bill,
     mirai_stance: miraiStance || undefined,
     bill_content: billContent || undefined,
     tags,
+    committee: extras.committee,
+    sources: extras.sources,
+    votes: extras.votes,
   };
 }

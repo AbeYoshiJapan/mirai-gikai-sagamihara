@@ -1,7 +1,7 @@
 import { BillStatusBadge } from "@/features/bills/client/components/bill-list/bill-status-badge";
 import { ComponentShowcase } from "../../../_components/component-showcase";
 import { PreviewSection } from "../../../_components/preview-section";
-import { allBillStatuses } from "../../../_lib/mock-data";
+import { allBillStageSamples } from "../../../_lib/mock-data";
 
 export default function BillStatusBadgePreview() {
   return (
@@ -16,8 +16,8 @@ export default function BillStatusBadgePreview() {
       >
         <PreviewSection label="全ステータス">
           <div className="flex flex-wrap gap-3">
-            {allBillStatuses.map((status) => (
-              <BillStatusBadge key={status} status={status} />
+            {allBillStageSamples.map((sample) => (
+              <BillStatusBadge key={sample.key} bill={sample.fields} />
             ))}
           </div>
         </PreviewSection>

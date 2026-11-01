@@ -78,16 +78,35 @@ function MeetingItem({ meeting: m }: { meeting: CouncilMeeting }) {
           {m.topic}
         </span>
       )}
-      {m.document_url && (
-        <a
-          href={m.document_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-fit items-center gap-1 text-xs font-bold text-primary underline underline-offset-2"
-        >
-          <FileText className="size-3.5" />
-          資料（PDF・区議会サイト）
-        </a>
+      {(m.document_url ||
+        m.agenda_pdf_url ||
+        m.stream_url ||
+        m.minutes_url ||
+        m.result_pdf_url) && (
+        <span className="flex flex-wrap gap-x-3 gap-y-1">
+          {[
+            { href: m.document_url, label: "資料（PDF・議会サイト）" },
+            { href: m.agenda_pdf_url, label: "議事日程" },
+            { href: m.stream_url, label: "中継・録画" },
+            { href: m.minutes_url, label: "会議録" },
+            { href: m.result_pdf_url, label: "審議結果" },
+          ]
+            .filter((link): link is { href: string; label: string } =>
+              Boolean(link.href)
+            )
+            .map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-fit items-center gap-1 text-xs font-bold text-primary underline underline-offset-2"
+              >
+                <FileText className="size-3.5" />
+                {link.label}
+              </a>
+            ))}
+        </span>
       )}
     </li>
   );

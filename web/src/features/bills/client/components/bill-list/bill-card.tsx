@@ -58,12 +58,12 @@ export function BillCard({ bill }: BillCardProps) {
                 )}
               </CardTitle>
               <div className="flex flex-row gap-4">
-                <BillStatusBadge status={bill.status} className="w-fit" />
+                <BillStatusBadge bill={bill} className="w-fit" />
                 <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
                   {bill.submitted_date && (
                     <time>
                       {formatDateWithDots(bill.submitted_date)}{" "}
-                      {getDateLabel(bill.status)}
+                      {getDateLabel(bill)}
                     </time>
                   )}
                 </div>

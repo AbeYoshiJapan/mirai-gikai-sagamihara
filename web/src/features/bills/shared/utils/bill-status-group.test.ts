@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { BillStatusEnum } from "../types";
+import type { BillStageFields } from "./bill-status";
 import {
   countByStatusGroup,
   filterByStatusGroup,
@@ -7,27 +7,50 @@ import {
   toBillStatusGroup,
 } from "./bill-status-group";
 
-const bill = (status: BillStatusEnum) => ({ status });
+const bill = (overrides: Partial<BillStageFields> = {}): BillStageFields => ({
+  bill_kind: "ordinance",
+  stage: "in_committee",
+  result: null,
+  vote_outcome: null,
+  ...overrides,
+});
 
 describe("toBillStatusGroup", () => {
-  it("衆参どちらの審議中も「審議中」に畳む", () => {
-    expect(toBillStatusGroup("in_originating_house")).toBe("deliberating");
-    expect(toBillStatusGroup("in_receiving_house")).toBe("deliberating");
+  it("提出から本会議までは「審議中」に畳む", () => {
+    expect(toBillStatusGroup(bill({ stage: "submitted" }))).toBe(
+      "deliberating"
+    );
+    expect(toBillStatusGroup(bill({ stage: "referred" }))).toBe("deliberating");
+    expect(toBillStatusGroup(bill({ stage: "in_committee" }))).toBe(
+      "deliberating"
+    );
+    expect(toBillStatusGroup(bill({ stage: "plenary" }))).toBe("deliberating");
   });
 
-  // 既存の getCardStatusLabel が introduced を「区議会審議中」に含めるため、
-  // ここで「審議待ち」に落とすとバッジとタブが食い違う。
-  it("提出済みは既存バッジに合わせて「審議中」に含める", () => {
-    expect(toBillStatusGroup("introduced")).toBe("deliberating");
+  it("提出前だけが「提出前」になる", () => {
+    expect(toBillStatusGroup(bill({ stage: "preparing" }))).toBe("waiting");
+    expect(toBillStatusGroup(bill({ stage: null }))).toBe("waiting");
   });
 
-  it("提出前だけが「審議待ち」になる", () => {
-    expect(toBillStatusGroup("preparing")).toBe("waiting");
+  it("議決の結果で可決・否決に分かれ、継続審査は審議中", () => {
+    expect(
+      toBillStatusGroup(bill({ stage: "decided", result: "passed" }))
+    ).toBe("enacted");
+    expect(
+      toBillStatusGroup(bill({ stage: "decided", result: "rejected" }))
+    ).toBe("rejected");
+    expect(
+      toBillStatusGroup(bill({ stage: "decided", result: "continued" }))
+    ).toBe("deliberating");
   });
 
-  it("成立と否決はそのまま", () => {
-    expect(toBillStatusGroup("enacted")).toBe("enacted");
-    expect(toBillStatusGroup("rejected")).toBe("rejected");
+  it("報告・計画・特別委員会は種類で分ける", () => {
+    expect(toBillStatusGroup(bill({ bill_kind: "report", stage: null }))).toBe(
+      "reported"
+    );
+    expect(toBillStatusGroup(bill({ bill_kind: "plan", stage: null }))).toBe(
+      "plan"
+    );
   });
 });
 
@@ -38,71 +61,38 @@ describe("isBillStatusGroup", () => {
   });
 
   it("未知の値は弾く", () => {
-    expect(isBillStatusGroup("introduced")).toBe(false);
+    expect(isBillStatusGroup("unknown")).toBe(false);
     expect(isBillStatusGroup(undefined)).toBe(false);
-    expect(isBillStatusGroup(3)).toBe(false);
+    expect(isBillStatusGroup(1)).toBe(false);
   });
 });
 
-describe("countByStatusGroup", () => {
-  it("グループごとに数え、all は総数にする", () => {
-    const counts = countByStatusGroup([
-      bill("in_originating_house"),
-      bill("in_receiving_house"),
-      bill("introduced"),
-      bill("preparing"),
-      bill("enacted"),
-      bill("rejected"),
-    ]);
+describe("countByStatusGroup / filterByStatusGroup", () => {
+  const bills = [
+    bill({ stage: "preparing" }),
+    bill({ stage: "in_committee" }),
+    bill({ stage: "plenary" }),
+    bill({ stage: "decided", result: "passed" }),
+    bill({ stage: "decided", result: "rejected" }),
+    bill({ bill_kind: "report", stage: null }),
+  ];
 
-    expect(counts).toEqual({
+  it("グループごとに数え、all は全件", () => {
+    expect(countByStatusGroup(bills)).toEqual({
       all: 6,
-      deliberating: 3,
+      deliberating: 2,
       waiting: 1,
       enacted: 1,
       rejected: 1,
-      reported: 0,
+      reported: 1,
       plan: 0,
       special_committee: 0,
     });
   });
 
-  it("空なら全て0", () => {
-    expect(countByStatusGroup([])).toEqual({
-      all: 0,
-      deliberating: 0,
-      waiting: 0,
-      enacted: 0,
-      rejected: 0,
-      reported: 0,
-      plan: 0,
-      special_committee: 0,
-    });
-  });
-});
-
-describe("filterByStatusGroup", () => {
-  const bills = [
-    bill("in_originating_house"),
-    bill("enacted"),
-    bill("preparing"),
-  ];
-
-  it("all は素通しする", () => {
-    expect(filterByStatusGroup(bills, "all")).toHaveLength(3);
-  });
-
-  it("指定グループだけ残す", () => {
-    expect(filterByStatusGroup(bills, "enacted")).toEqual([bill("enacted")]);
-  });
-
-  it("該当が無ければ空", () => {
-    expect(filterByStatusGroup(bills, "rejected")).toEqual([]);
-  });
-
-  it("元の配列を壊さない", () => {
-    const input = [bill("enacted")];
-    filterByStatusGroup(input, "all").push(bill("rejected"));
-    expect(input).toHaveLength(1);
+  it("all は素通し、それ以外はグループで絞る", () => {
+    expect(filterByStatusGroup(bills, "all")).toHaveLength(6);
+    expect(filterByStatusGroup(bills, "deliberating")).toHaveLength(2);
+    expect(filterByStatusGroup(bills, "reported")).toHaveLength(1);
   });
 });

@@ -1,55 +1,43 @@
-import type { BillStatusEnum } from "../types";
+import {
+  type BillLabelOverrides,
+  type BillStageInfo,
+  getBillDateLabel,
+  getBillOutcomeLabel,
+  getBillOutcomeVariant,
+} from "@mirai-gikai/shared/bill-stage/labels";
+import type { Bill } from "../types";
 
-/** カード用の簡略化されたステータスラベルを取得 */
-export function getCardStatusLabel(status: BillStatusEnum): string {
-  switch (status) {
-    case "introduced":
-    case "in_originating_house":
-    case "in_receiving_house":
-      return "区議会審議中";
-    case "enacted":
-      return "可決";
-    case "rejected":
-      return "否決";
-    case "reported":
-      return "委員会報告";
-    case "plan":
-      return "行政計画";
-    case "special_committee":
-      return "特別委員会";
-    default:
-      return "議案提出前";
-  }
+/** 表示の判定に使う列だけ */
+export type BillStageFields = Pick<
+  Bill,
+  "bill_kind" | "stage" | "result" | "vote_outcome"
+>;
+
+export function toStageInfo(bill: BillStageFields): BillStageInfo {
+  return {
+    bill_kind: bill.bill_kind,
+    stage: bill.stage,
+    result: bill.result,
+    vote_outcome: bill.vote_outcome,
+  };
+}
+
+/** カード用の短い審議状況ラベル。サイト設定の表示名で上書きできる */
+export function getCardStatusLabel(
+  bill: BillStageFields,
+  overrides?: BillLabelOverrides
+): string {
+  return getBillOutcomeLabel(toStageInfo(bill), overrides);
 }
 
 /** ステータスに対応するBadgeのvariantを取得 */
 export function getStatusVariant(
-  status: BillStatusEnum
+  bill: BillStageFields
 ): "light" | "default" | "dark" | "muted" {
-  switch (status) {
-    case "introduced":
-    case "in_originating_house":
-    case "in_receiving_house":
-      return "light";
-    case "enacted":
-      return "default";
-    case "rejected":
-      return "dark";
-    default:
-      return "muted";
-  }
+  return getBillOutcomeVariant(toStageInfo(bill));
 }
 
 /** 日付の後ろに付ける言葉。議案は「提出」、委員会報告は「報告」、特別委員会は「開催」。 */
-export function getDateLabel(status: BillStatusEnum): string {
-  switch (status) {
-    case "reported":
-      return "報告";
-    case "special_committee":
-      return "開催";
-    case "plan":
-      return "掲載";
-    default:
-      return "提出";
-  }
+export function getDateLabel(bill: Pick<Bill, "bill_kind">): string {
+  return getBillDateLabel(bill.bill_kind);
 }

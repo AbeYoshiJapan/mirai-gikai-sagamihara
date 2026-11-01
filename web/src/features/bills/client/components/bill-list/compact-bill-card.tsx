@@ -19,7 +19,7 @@ interface CompactBillCardProps {
 export function CompactBillCard({ bill, className }: CompactBillCardProps) {
   const displayTitle = bill.bill_content?.title || bill.name;
   // 議会年度の一覧では可決済みの議案も提出日で並ぶので、日付には提出・報告などを付ける
-  const statusLabel = getDateLabel(bill.status);
+  const statusLabel = getDateLabel(bill);
 
   return (
     <Card
@@ -38,7 +38,7 @@ export function CompactBillCard({ bill, className }: CompactBillCardProps) {
             )}
           </h3>
           <div className="flex items-center gap-3">
-            <BillStatusBadge status={bill.status} className="w-fit" />
+            <BillStatusBadge bill={bill} className="w-fit" />
             {bill.submitted_date && (
               <span className="text-xs text-muted-foreground">
                 {formatDateWithDots(bill.submitted_date)} {statusLabel}

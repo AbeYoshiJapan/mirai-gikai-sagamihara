@@ -1,79 +1,37 @@
-import type { BillStatusEnum } from "../types";
+import {
+  BILL_STAGE_GROUP_LABELS,
+  BILL_STAGE_GROUPS,
+  type BillStageGroup,
+  isBillStageGroup,
+  toBillStageGroup,
+} from "@mirai-gikai/shared/bill-stage/labels";
+import type { BillStageFields } from "./bill-status";
+import { toStageInfo } from "./bill-status";
 
 /**
- * 法案一覧のステータス絞り込みで使うグループ。
+ * 議案一覧の絞り込みで使うグループ。
  *
- * DB の status は6値（preparing / introduced / in_originating_house /
- * in_receiving_house / enacted / rejected）だが、一覧のタブはデザイン上4つに束ねる。
- * 審議の場所（衆・参）は絞り込みの軸としては細かすぎるため、まとめて「審議中」にする。
+ * 種類（bill_kind）・段階（stage）・結果（result）を、一覧のタブ用に束ねる。
+ * 値は URL のクエリになるので共通語彙（packages/shared/bill-stage）に合わせて固定。
  */
-export const BILL_STATUS_GROUPS = [
-  "all",
-  "deliberating",
-  "waiting",
-  "enacted",
-  "rejected",
-  "reported",
-  "plan",
-  "special_committee",
-] as const;
+export const BILL_STATUS_GROUPS = BILL_STAGE_GROUPS;
+export type BillStatusGroup = BillStageGroup;
+export const BILL_STATUS_GROUP_LABELS = BILL_STAGE_GROUP_LABELS;
 
-export type BillStatusGroup = (typeof BILL_STATUS_GROUPS)[number];
-
-export const BILL_STATUS_GROUP_LABELS: Record<BillStatusGroup, string> = {
-  all: "すべて",
-  deliberating: "審議中",
-  waiting: "審議待ち",
-  enacted: "可決",
-  rejected: "否決",
-  reported: "委員会報告",
-  plan: "行政計画",
-  special_committee: "特別委員会",
-};
-
-/**
- * status をタブのグループに畳む。
- *
- * 既存の `getCardStatusLabel` と同じ畳み方にする。あちらは `introduced` を
- * 「国会審議中」に含めるので、ここで「審議待ち」に落とすと、カードに
- * 「国会審議中」と出ている法案が「審議中」タブに現れない。
- *
- * 結果として「審議待ち」に残るのは `preparing`（提出前）だけになる。
- */
 export function toBillStatusGroup(
-  status: BillStatusEnum
+  bill: BillStageFields
 ): Exclude<BillStatusGroup, "all"> {
-  switch (status) {
-    case "introduced":
-    case "in_originating_house":
-    case "in_receiving_house":
-      return "deliberating";
-    case "enacted":
-      return "enacted";
-    case "rejected":
-      return "rejected";
-    case "reported":
-      return "reported";
-    case "plan":
-      return "plan";
-    case "special_committee":
-      return "special_committee";
-    default:
-      return "waiting";
-  }
+  return toBillStageGroup(toStageInfo(bill));
 }
 
 /** 文字列をグループに絞り込む型ガード。URL 直打ちで壊れないようにする。 */
 export function isBillStatusGroup(value: unknown): value is BillStatusGroup {
-  return (
-    typeof value === "string" &&
-    (BILL_STATUS_GROUPS as readonly string[]).includes(value)
-  );
+  return isBillStageGroup(value);
 }
 
 /** グループごとの件数。呼び出し側が渡した母集合をそのまま数える。 */
 export function countByStatusGroup(
-  bills: readonly { status: BillStatusEnum }[]
+  bills: readonly BillStageFields[]
 ): Record<BillStatusGroup, number> {
   const counts: Record<BillStatusGroup, number> = {
     all: bills.length,
@@ -86,16 +44,16 @@ export function countByStatusGroup(
     special_committee: 0,
   };
   for (const bill of bills) {
-    counts[toBillStatusGroup(bill.status)] += 1;
+    counts[toBillStatusGroup(bill)] += 1;
   }
   return counts;
 }
 
 /** グループで絞る。`all` は素通し。 */
-export function filterByStatusGroup<T extends { status: BillStatusEnum }>(
+export function filterByStatusGroup<T extends BillStageFields>(
   bills: readonly T[],
   group: BillStatusGroup
 ): T[] {
   if (group === "all") return [...bills];
-  return bills.filter((bill) => toBillStatusGroup(bill.status) === group);
+  return bills.filter((bill) => toBillStatusGroup(bill) === group);
 }

@@ -26,7 +26,7 @@ export function BillShareModal({
   shareUrl,
   thumbnailUrl,
 }: BillShareModalProps) {
-  const { site } = useSiteSettings();
+  const { site, council } = useSiteSettings();
   if (!isOpen) return null;
 
   // 共有ボタンの設定
@@ -105,7 +105,7 @@ export function BillShareModal({
         {/* シェアセクション */}
         <div className="flex flex-col items-center gap-4 w-full">
           <p className="text-base font-bold text-gray-800 text-center">
-            シェアして区議会の議論をオープンに
+            シェアして{council.name}の議論をオープンに
           </p>
 
           {/* SNSアイコン */}

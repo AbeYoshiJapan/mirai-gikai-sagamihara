@@ -1,3 +1,8 @@
+import {
+  BILL_KIND_LABELS,
+  isDeliberationKind,
+  PROPOSER_KIND_LABELS,
+} from "@mirai-gikai/shared/bill-stage/labels";
 import { MessageSquare } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
@@ -68,12 +73,11 @@ export async function BillDetailHeader({
           </h1>
         )}
         <div className="flex flex-row gap-4">
-          <BillStatusBadge status={bill.status} className="w-fit" />
+          <BillStatusBadge bill={bill} className="w-fit" />
           <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
             {bill.submitted_date && (
               <time>
-                {formatDateWithDots(bill.submitted_date)}{" "}
-                {getDateLabel(bill.status)}
+                {formatDateWithDots(bill.submitted_date)} {getDateLabel(bill)}
               </time>
             )}
           </div>
@@ -94,8 +98,20 @@ export async function BillDetailHeader({
           </div>
         )}
 
-        <p className="text-sm text-muted-foreground font-medium mb-4">
+        <p className="text-sm text-muted-foreground font-medium mb-1">
           {bill.name}
+        </p>
+        <p className="text-xs text-muted-foreground mb-4">
+          {[
+            bill.bill_number,
+            BILL_KIND_LABELS[bill.bill_kind],
+            isDeliberationKind(bill.bill_kind)
+              ? PROPOSER_KIND_LABELS[bill.proposer_kind]
+              : null,
+            bill.committee ? `${bill.committee.name}に付託` : null,
+          ]
+            .filter(Boolean)
+            .join(" ・ ")}
         </p>
         {reviewState !== "reviewed" && (
           <div className="mb-4">

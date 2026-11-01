@@ -1,70 +1,42 @@
 import { describe, expect, it } from "vitest";
-
 import { getBillStatusLabel } from "./index";
 
 describe("getBillStatusLabel", () => {
-  it("returns '準備中' for preparing", () => {
-    expect(getBillStatusLabel("preparing")).toBe("準備中");
+  it("審議中・提出前・結果の表示", () => {
+    expect(
+      getBillStatusLabel({
+        bill_kind: "ordinance",
+        stage: "in_committee",
+        result: null,
+        vote_outcome: null,
+      })
+    ).toBe("審議中");
+    expect(
+      getBillStatusLabel({
+        bill_kind: "ordinance",
+        stage: "preparing",
+        result: null,
+        vote_outcome: null,
+      })
+    ).toBe("提出前");
+    expect(
+      getBillStatusLabel({
+        bill_kind: "ordinance",
+        stage: "decided",
+        result: "passed",
+        vote_outcome: "majority",
+      })
+    ).toBe("可決（賛成多数）");
   });
 
-  it("returns '提出済み' for introduced", () => {
-    expect(getBillStatusLabel("introduced")).toBe("提出済み");
-  });
-
-  it("returns '成立' for enacted", () => {
-    expect(getBillStatusLabel("enacted")).toBe("成立");
-  });
-
-  it("returns '否決' for rejected", () => {
-    expect(getBillStatusLabel("rejected")).toBe("否決");
-  });
-
-  describe("in_originating_house", () => {
-    it("returns '委員会審議中' when originatingHouse is HR (委員会)", () => {
-      expect(getBillStatusLabel("in_originating_house", "HR")).toBe(
-        "委員会審議中"
-      );
-    });
-
-    it("returns '本会議審議中' when originatingHouse is HC (本会議)", () => {
-      expect(getBillStatusLabel("in_originating_house", "HC")).toBe(
-        "本会議審議中"
-      );
-    });
-
-    it("returns '審議中' when originatingHouse is undefined", () => {
-      expect(getBillStatusLabel("in_originating_house")).toBe("審議中");
-    });
-
-    it("returns '審議中' when originatingHouse is null", () => {
-      expect(getBillStatusLabel("in_originating_house", null)).toBe("審議中");
-    });
-  });
-
-  describe("in_receiving_house", () => {
-    it("returns '本会議審議中' when originatingHouse is HR", () => {
-      expect(getBillStatusLabel("in_receiving_house", "HR")).toBe(
-        "本会議審議中"
-      );
-    });
-
-    it("returns '委員会審議中' when originatingHouse is HC", () => {
-      expect(getBillStatusLabel("in_receiving_house", "HC")).toBe(
-        "委員会審議中"
-      );
-    });
-
-    it("returns '審議中' when originatingHouse is undefined", () => {
-      expect(getBillStatusLabel("in_receiving_house")).toBe("審議中");
-    });
-
-    it("returns '審議中' when originatingHouse is null", () => {
-      expect(getBillStatusLabel("in_receiving_house", null)).toBe("審議中");
-    });
-  });
-
-  it("returns the status string as-is for unknown status", () => {
-    // biome-ignore lint/suspicious/noExplicitAny: テスト用に未知のステータスを渡す
-    expect(getBillStatusLabel("unknown_status" as any)).toBe("unknown_status");
+  it("報告・計画は種類名", () => {
+    expect(
+      getBillStatusLabel({
+        bill_kind: "report",
+        stage: null,
+        result: null,
+        vote_outcome: null,
+      })
+    ).toBe("委員会報告");
   });
 });

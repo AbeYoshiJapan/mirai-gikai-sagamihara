@@ -1,7 +1,7 @@
 import { BillCard } from "@/features/bills/client/components/bill-list/bill-card";
 import { ComponentShowcase } from "../../../_components/component-showcase";
 import { PreviewSection } from "../../../_components/preview-section";
-import { allBillStatuses, createMockBill } from "../../../_lib/mock-data";
+import { allBillStageSamples, createMockBill } from "../../../_lib/mock-data";
 
 const SAMPLE_THUMBNAIL = "/img/sample-bill-thumbnail.webp";
 
@@ -104,12 +104,12 @@ export default function BillCardPreview() {
         description="全法案ステータスの表示"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {allBillStatuses.map((status) => (
-            <PreviewSection key={status} label={`status: ${status}`}>
+          {allBillStageSamples.map((sample) => (
+            <PreviewSection key={sample.key} label={sample.label}>
               <BillCard
                 bill={createMockBill({
-                  id: `mock-${status}`,
-                  status,
+                  id: `mock-${sample.key}`,
+                  ...sample.fields,
                   thumbnail_url: SAMPLE_THUMBNAIL,
                 })}
               />

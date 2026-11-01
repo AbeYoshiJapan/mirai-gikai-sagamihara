@@ -432,11 +432,21 @@
           "name",
           "title",
           "summary",
+          "billNumber",
+          "billKind",
+          "billKindLabel",
+          "proposerKind",
+          "proposerKindLabel",
+          "stage",
+          "stageLabel",
+          "result",
+          "resultLabel",
+          "voteOutcome",
+          "decidedOn",
           "status",
           "statusLabel",
           "statusNote",
           "originatingHouse",
-          "originatingHouseLabel",
           "submittedDate",
           "publishedAt",
           "tags",
@@ -461,6 +471,92 @@
             "type": "string",
             "description": "議案の概要（難易度別コンテンツ由来）"
           },
+          "billNumber": {
+            "type": ["string", "null"],
+            "description": "議案番号（例: 議案第99号）"
+          },
+          "billKind": {
+            "type": "string",
+            "enum": [
+              "ordinance",
+              "budget",
+              "settlement",
+              "contract",
+              "personnel",
+              "property",
+              "road",
+              "senketsu",
+              "member_bill",
+              "opinion",
+              "resolution",
+              "petition",
+              "citizen_petition",
+              "report",
+              "plan",
+              "special_committee",
+              "other"
+            ],
+            "description": "議案の種類"
+          },
+          "billKindLabel": {
+            "type": "string",
+            "description": "議案の種類の日本語ラベル（条例 / 予算 / 請願 など）"
+          },
+          "proposerKind": {
+            "type": "string",
+            "enum": ["mayor", "member", "committee", "citizen"],
+            "description": "提出者の区分"
+          },
+          "proposerKindLabel": {
+            "type": "string",
+            "description": "提出者の区分の日本語ラベル"
+          },
+          "stage": {
+            "type": ["string", "null"],
+            "enum": [
+              "preparing",
+              "submitted",
+              "referred",
+              "in_committee",
+              "plenary",
+              "decided",
+              null
+            ],
+            "description": "審議段階。委員会報告・行政計画・特別委員会は null"
+          },
+          "stageLabel": {
+            "type": ["string", "null"],
+            "description": "審議段階の日本語ラベル"
+          },
+          "result": {
+            "type": ["string", "null"],
+            "enum": [
+              "passed",
+              "rejected",
+              "approved",
+              "consented",
+              "adopted",
+              "not_adopted",
+              "continued",
+              "withdrawn",
+              null
+            ],
+            "description": "議決の結果。未議決は null"
+          },
+          "resultLabel": {
+            "type": ["string", "null"],
+            "description": "議決の結果の日本語ラベル"
+          },
+          "voteOutcome": {
+            "type": ["string", "null"],
+            "enum": ["unanimous", "majority", "minority", "none", null],
+            "description": "採決の結果（全会一致 / 賛成多数 / 賛成少数 / 採決なし）"
+          },
+          "decidedOn": {
+            "type": ["string", "null"],
+            "format": "date",
+            "description": "議決日"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -469,13 +565,17 @@
               "in_originating_house",
               "in_receiving_house",
               "enacted",
-              "rejected"
+              "rejected",
+              "reported",
+              "plan",
+              "special_committee"
             ],
-            "description": "審議状況"
+            "deprecated": true,
+            "description": "旧来の審議状況（互換のための導出値）。新しい利用者は stage / result を使ってください"
           },
           "statusLabel": {
             "type": "string",
-            "description": "審議状況の日本語ラベル（衆議院審議中 / 成立 など）"
+            "description": "審議状況の日本語ラベル（審議中 / 可決（賛成多数） など）"
           },
           "statusNote": {
             "type": ["string", "null"],
@@ -484,11 +584,8 @@
           "originatingHouse": {
             "type": "string",
             "enum": ["HR", "HC"],
-            "description": "提出元の議院（HR: 衆議院 / HC: 参議院）"
-          },
-          "originatingHouseLabel": {
-            "type": "string",
-            "description": "提出元議院の日本語ラベル"
+            "deprecated": true,
+            "description": "旧来の提出院。一院制の地方議会では常に HR"
           },
           "submittedDate": {
             "type": ["string", "null"],

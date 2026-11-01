@@ -37,7 +37,7 @@ export async function CouncilStatus({
   today,
 }: CouncilStatusProps) {
   const { councilYear, currentPeriod, nextPeriod } = status;
-  const { operator } = await getSiteSettings();
+  const { operator, council } = await getSiteSettings();
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -52,7 +52,9 @@ export async function CouncilStatus({
           />
           <span className="whitespace-nowrap text-xl font-bold">本日は</span>
           <span className="rounded-full bg-mirai-gradient px-3.5 py-1 text-[15px] font-bold text-mirai-text">
-            {currentPeriod ? `${currentPeriod.name} 開催中` : "区議会 会期中"}
+            {currentPeriod
+              ? `${currentPeriod.name} 開催中`
+              : `${council.name} 会期中`}
           </span>
           <span className="text-[15px] font-bold text-mirai-brand-teal-deep md:ml-auto">
             {formatCouncilYear(councilYear)}定例会（通年）

@@ -5,7 +5,7 @@ export type CouncilMeetingCategory =
   | "steering"
   | "other";
 
-/** 区議会の会議予定。区議会サイトの「会議日程」から取り込んだもの。 */
+/** 議会の会議予定。議会サイトの「会議日程」から取り込んだもの（is_published = true だけ公開側に出る）。 */
 export type CouncilMeeting = {
   id: string;
   meeting_date: string;
@@ -21,6 +21,16 @@ export type CouncilMeeting = {
   document_url: string | null;
   council_year: number;
   source_url: string;
+  /** 中継・録画 */
+  stream_url?: string | null;
+  /** 会議録 */
+  minutes_url?: string | null;
+  /** 議事日程・付議事件 */
+  agenda_pdf_url?: string | null;
+  /** 審議結果 */
+  result_pdf_url?: string | null;
+  /** 会議期間の表示名（例: 9月定例会議） */
+  session_label?: string | null;
 };
 
 /** 議会期間（6月議会など）。本会議の初日から最終日まで。 */

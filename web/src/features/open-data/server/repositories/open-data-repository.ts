@@ -82,6 +82,13 @@ const openDataBillSelect = <C extends string>(contentColumns: C) =>
   `
   id,
   name,
+  bill_number,
+  bill_kind,
+  proposer_kind,
+  stage,
+  result,
+  vote_outcome,
+  decided_on,
   status,
   status_note,
   originating_house,

@@ -1,30 +1,31 @@
-import type { BillStatusEnum, HouseEnum } from "../types";
+import {
+  BILL_PROGRESS_STEPS,
+  getBillProgressStep,
+  isDeliberationKind,
+} from "@mirai-gikai/shared/bill-stage/labels";
+import type { BillStageFields } from "./bill-status";
+import { toStageInfo } from "./bill-status";
 
-// ステップ番号マッピング
-const STATUS_TO_STEP: Record<BillStatusEnum, number> = {
-  preparing: 0,
-  introduced: 1,
-  in_originating_house: 2,
-  in_receiving_house: 3,
-  enacted: 4,
-  rejected: 4,
-  // 採決のない委員会報告は進捗を出さない（BillStatusProgress で分岐）
-  reported: 0,
-  plan: 0,
-  special_committee: 0,
-} as const;
+/** 進捗バーの段階（提出 → 委員会付託 → 委員会審査 → 本会議 → 議決） */
+export const PROGRESS_STEPS = BILL_PROGRESS_STEPS.map((step) => ({
+  stage: step.stage,
+  label: step.label,
+}));
 
-// プログレス比率
-const PROGRESS_RATIOS = [0, 1 / 8, 3 / 8, 5 / 8, 1] as const;
+/** 各段階のバーの長さ（0〜1）。最後の段階で 1 になる */
+const PROGRESS_RATIOS = [0, 1 / 10, 3 / 10, 5 / 10, 7 / 10, 1] as const;
 
 /**
- * ステータスとステータスノートからメッセージを生成する
+ * ステータスメッセージ。補足があればそれ、提出前なら「提出前」
  */
 export function getStatusMessage(
-  status: BillStatusEnum,
+  bill: BillStageFields,
   statusNote: string | null | undefined
 ): string {
-  if (status === "preparing") return "議案提出前";
+  if (!isDeliberationKind(bill.bill_kind)) return statusNote || "";
+  if (bill.stage === null || bill.stage === "preparing") {
+    return statusNote || "提出前";
+  }
   return statusNote || "";
 }
 
@@ -41,20 +42,6 @@ export function getStepState(
 }
 
 /**
- * 発議院に応じてステップ順序を調整する
- */
-export function getOrderedSteps(
-  originatingHouse: HouseEnum,
-  baseSteps: readonly { readonly label: string }[]
-): { label: string }[] {
-  const steps = baseSteps.map((s) => ({ label: s.label }));
-  if (originatingHouse === "HC") {
-    [steps[1], steps[2]] = [steps[2], steps[1]];
-  }
-  return steps;
-}
-
-/**
  * 現在のステップからプログレスバーの幅(%)を計算する
  */
 export function calculateProgressWidth(currentStep: number): number {
@@ -63,8 +50,8 @@ export function calculateProgressWidth(currentStep: number): number {
 }
 
 /**
- * ステータスからステップ番号を取得する
+ * 現在のステップ（0 = 提出前、1〜5）。審議の流れに乗らない種類は null
  */
-export function getCurrentStep(status: BillStatusEnum): number {
-  return STATUS_TO_STEP[status] ?? 0;
+export function getCurrentStep(bill: BillStageFields): number | null {
+  return getBillProgressStep(toStageInfo(bill));
 }

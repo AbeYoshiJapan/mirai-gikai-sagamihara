@@ -1,6 +1,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import { BillCard } from "../../client/components/bill-list/bill-card";
 import type { BillWithContent } from "../../shared/types";
 
@@ -8,10 +9,11 @@ interface FeaturedBillSectionProps {
   bills: BillWithContent[];
 }
 
-export function FeaturedBillSection({ bills }: FeaturedBillSectionProps) {
+export async function FeaturedBillSection({ bills }: FeaturedBillSectionProps) {
   if (bills.length === 0) {
     return null;
   }
+  const { council } = await getSiteSettings();
 
   return (
     <section className="flex flex-col gap-6">
@@ -21,7 +23,7 @@ export function FeaturedBillSection({ bills }: FeaturedBillSectionProps) {
           注目の議案🔥
         </h2>
         <p className="text-xs font-medium text-mirai-text-secondary leading-[1.67]">
-          区議会に提出された注目議案
+          {council.name}に提出された注目議案
         </p>
       </div>
 

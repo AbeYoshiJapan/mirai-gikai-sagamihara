@@ -1,16 +1,95 @@
 import type {
+  Bill,
   BillContent,
-  BillStatusEnum,
   BillWithContent,
 } from "@/features/bills/shared/types";
 
-export const allBillStatuses: BillStatusEnum[] = [
-  "preparing",
-  "introduced",
-  "in_originating_house",
-  "in_receiving_house",
-  "enacted",
-  "rejected",
+/** プレビュー用：審議状況の代表的な組み合わせ */
+export const allBillStageSamples: {
+  key: string;
+  label: string;
+  fields: Pick<Bill, "bill_kind" | "stage" | "result" | "vote_outcome">;
+}[] = [
+  {
+    key: "preparing",
+    label: "提出前",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "preparing",
+      result: null,
+      vote_outcome: null,
+    },
+  },
+  {
+    key: "submitted",
+    label: "提出",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "submitted",
+      result: null,
+      vote_outcome: null,
+    },
+  },
+  {
+    key: "in_committee",
+    label: "委員会審査中",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "in_committee",
+      result: null,
+      vote_outcome: null,
+    },
+  },
+  {
+    key: "plenary",
+    label: "本会議採決待ち",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "plenary",
+      result: null,
+      vote_outcome: null,
+    },
+  },
+  {
+    key: "passed",
+    label: "可決",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "decided",
+      result: "passed",
+      vote_outcome: "majority",
+    },
+  },
+  {
+    key: "rejected",
+    label: "否決",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "decided",
+      result: "rejected",
+      vote_outcome: "minority",
+    },
+  },
+  {
+    key: "continued",
+    label: "継続審査",
+    fields: {
+      bill_kind: "ordinance",
+      stage: "decided",
+      result: "continued",
+      vote_outcome: null,
+    },
+  },
+  {
+    key: "report",
+    label: "委員会報告",
+    fields: {
+      bill_kind: "report",
+      stage: null,
+      result: null,
+      vote_outcome: null,
+    },
+  },
 ];
 
 export function createMockBillContent(

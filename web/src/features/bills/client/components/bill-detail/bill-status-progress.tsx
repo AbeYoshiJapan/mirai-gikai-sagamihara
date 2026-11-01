@@ -1,15 +1,22 @@
-import type { BillStatusEnum, HouseEnum } from "../../../shared/types";
+"use client";
+
+import { getBillDecisionLabel } from "@mirai-gikai/shared/bill-stage/labels";
+import { toBillLabelOverrides } from "@/lib/site-settings/bill-labels";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 import {
   calculateProgressWidth,
   getCurrentStep,
-  getOrderedSteps,
   getStatusMessage,
   getStepState,
+  PROGRESS_STEPS,
 } from "../../../shared/utils/bill-progress";
+import {
+  type BillStageFields,
+  toStageInfo,
+} from "../../../shared/utils/bill-status";
 
 interface BillStatusProgressProps {
-  status: BillStatusEnum;
-  originatingHouse: HouseEnum;
+  bill: BillStageFields & { committee_name?: string | null };
   statusNote?: string | null;
 }
 
@@ -24,14 +31,6 @@ interface ProgressStepProps {
   isActive: boolean;
   isPreparing: boolean;
 }
-
-// 基本ステップ定義
-const BASE_STEPS = [
-  { label: "議案\n提出" },
-  { label: "委員会\n審査" },
-  { label: "本会議\n採決" },
-  { label: "可決" },
-] as const;
 
 // ステータスバッジコンポーネント
 function StatusBadge({ message }: StatusBadgeProps) {
@@ -94,31 +93,45 @@ function ProgressStep({
 }
 
 export function BillStatusProgress({
-  status,
-  originatingHouse,
+  bill,
   statusNote,
 }: BillStatusProgressProps) {
-  // 委員会報告・特別委員会は採決がないので、進捗ではなく日付と委員会だけを示す
-  if (status === "reported" || status === "special_committee") {
+  const { council } = useSiteSettings();
+  const overrides = toBillLabelOverrides(council);
+  const currentStep = getCurrentStep(bill);
+
+  // 委員会報告・特別委員会は採決がないので、進捗ではなく補足だけを示す
+  if (currentStep === null) {
+    const heading =
+      bill.bill_kind === "report"
+        ? "👉 委員会への報告"
+        : bill.bill_kind === "special_committee"
+          ? "👉 特別委員会の調査"
+          : "👉 現在の状況";
     return (
       <>
-        <h2 className="text-[22px] font-bold mb-4">
-          {status === "reported" ? "👉 委員会への報告" : "👉 特別委員会の調査"}
-        </h2>
+        <h2 className="text-[22px] font-bold mb-4">{heading}</h2>
         <div className="bg-white rounded-lg border p-6 flex justify-center">
-          <StatusBadge message={statusNote || "委員会報告"} />
+          <StatusBadge
+            message={
+              statusNote ||
+              (bill.bill_kind === "report" ? "委員会報告" : "特別委員会")
+            }
+          />
         </div>
       </>
     );
   }
 
-  const isPreparing = status === "preparing";
-  const currentStep = getCurrentStep(status);
-
-  const orderedSteps = getOrderedSteps(originatingHouse, BASE_STEPS);
+  const isPreparing = currentStep === 0;
   const progressWidth = calculateProgressWidth(currentStep);
-
-  const statusMessage = getStatusMessage(status, statusNote);
+  const decision = getBillDecisionLabel(toStageInfo(bill), overrides);
+  const committeeNote =
+    bill.committee_name && currentStep >= 2 && currentStep < 5
+      ? `${bill.committee_name}に付託`
+      : null;
+  const statusMessage =
+    getStatusMessage(bill, statusNote) || decision || committeeNote || "";
 
   return (
     <>
@@ -143,7 +156,7 @@ export function BillStatusProgress({
 
             {/* ステップドット */}
             <div className="relative flex justify-around">
-              {orderedSteps.map((step, index) => {
+              {PROGRESS_STEPS.map((step, index) => {
                 const stepNumber = index + 1;
                 const isActive =
                   getStepState(stepNumber, currentStep, isPreparing) ===
@@ -151,8 +164,12 @@ export function BillStatusProgress({
 
                 return (
                   <ProgressStep
-                    key={stepNumber}
-                    label={step.label}
+                    key={step.stage}
+                    label={
+                      step.stage === "decided" && decision
+                        ? decision.replace(/（.*）$/, "")
+                        : step.label
+                    }
                     stepNumber={stepNumber}
                     currentStep={currentStep}
                     isActive={isActive}

@@ -53,11 +53,10 @@ export function BillSearchCard({ bill }: { bill: BillWithContent }) {
             </h3>
 
             <div className="flex flex-wrap items-center gap-3">
-              <BillStatusBadge status={bill.status} className="w-fit" />
+              <BillStatusBadge bill={bill} className="w-fit" />
               {bill.submitted_date && (
                 <span className="text-xs font-medium text-mirai-text-muted">
-                  {formatDateWithDots(bill.submitted_date)}{" "}
-                  {getDateLabel(bill.status)}
+                  {formatDateWithDots(bill.submitted_date)} {getDateLabel(bill)}
                 </span>
               )}
             </div>

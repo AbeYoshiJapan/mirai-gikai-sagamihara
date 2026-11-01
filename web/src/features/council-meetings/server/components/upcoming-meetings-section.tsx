@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
 import type { CouncilMeeting } from "../../shared/types";
 import { MeetingList } from "./meeting-list";
 import { ScheduleSourceNote } from "./schedule-source-note";
 
 /** トップの「これからの会議」。直近の数件だけ出し、全体は /schedule へ。 */
-export function UpcomingMeetingsSection({
+export async function UpcomingMeetingsSection({
   meetings,
 }: {
   meetings: CouncilMeeting[];
 }) {
   if (meetings.length === 0) return null;
+  const { council } = await getSiteSettings();
 
   return (
     <section className="flex flex-col gap-6">
@@ -19,7 +21,7 @@ export function UpcomingMeetingsSection({
           これからの会議
         </h2>
         <p className="text-xs text-mirai-text-secondary">
-          本会議と委員会の予定です。区議会のページから取り込んでいます
+          本会議と委員会の予定です。{council.name}のページから取り込んでいます
         </p>
       </div>
       <MeetingList meetings={meetings} />

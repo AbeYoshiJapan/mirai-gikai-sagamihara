@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import type { CSSProperties, ReactNode, RefObject } from "react";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/lib/site-settings/provider";
 
 export const CHAT_PANEL_RESPONSIVE_CLASSES =
   "md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl";
@@ -32,6 +33,7 @@ export function MobileChatDialog({
   style,
 }: MobileChatDialogProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { council } = useSiteSettings();
 
   return (
     <DialogPrimitive.Root
@@ -63,7 +65,7 @@ export function MobileChatDialog({
           }}
         >
           <DialogPrimitive.Title className="sr-only">
-            区議会や議案についてAIに質問する
+            {council.name}や議案についてAIに質問する
           </DialogPrimitive.Title>
           <DialogPrimitive.Close asChild>
             <Button

@@ -1,6 +1,14 @@
 import "server-only";
+import { compareBillSources } from "@mirai-gikai/shared/bill-sources/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import type {
+  BillCommittee,
+  BillSourceItem,
+  BillVotes,
+  FactionVote,
+  MemberVote,
+} from "../../shared/types";
 
 // ============================================================
 // Bills
@@ -125,6 +133,90 @@ export async function findBillById(id: string) {
   }
 
   return data;
+}
+
+/**
+ * 付託先の委員会（公開ページ用）
+ */
+export async function findCommitteeById(
+  committeeId: string
+): Promise<BillCommittee | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("committees")
+    .select("id, name, short_name")
+    .eq("id", committeeId)
+    .maybeSingle();
+
+  if (error) {
+    return null;
+  }
+  return data;
+}
+
+/**
+ * 議案の一次資料（公開ページ用。抽出本文は返さない）
+ */
+export async function findBillSourcesByBillId(
+  billId: string
+): Promise<BillSourceItem[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("bill_sources")
+    .select("id, kind, url, label, meeting_date, sort_order")
+    .eq("bill_id", billId);
+
+  if (error) {
+    return [];
+  }
+  return [...(data ?? [])].sort(compareBillSources);
+}
+
+/**
+ * 議案の賛否（会派単位・議員単位）
+ */
+export async function findVoteRecordsByBillId(
+  billId: string
+): Promise<BillVotes> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("vote_records")
+    .select(
+      `
+      vote,
+      note,
+      factions (id, name, short_name, sort_order),
+      members (id, name, ward, sort_order, factions (name))
+    `
+    )
+    .eq("bill_id", billId);
+
+  if (error || !data) {
+    return { factions: [], members: [] };
+  }
+
+  const factions: FactionVote[] = [];
+  const members: MemberVote[] = [];
+  for (const row of data) {
+    if (row.factions) {
+      factions.push({ faction: row.factions, vote: row.vote, note: row.note });
+    } else if (row.members) {
+      members.push({
+        member: {
+          id: row.members.id,
+          name: row.members.name,
+          ward: row.members.ward,
+          sort_order: row.members.sort_order,
+          faction_name: row.members.factions?.name ?? null,
+        },
+        vote: row.vote,
+        note: row.note,
+      });
+    }
+  }
+  factions.sort((a, b) => a.faction.sort_order - b.faction.sort_order);
+  members.sort((a, b) => a.member.sort_order - b.member.sort_order);
+  return { factions, members };
 }
 
 /**
