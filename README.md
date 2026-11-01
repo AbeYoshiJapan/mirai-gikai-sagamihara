@@ -99,7 +99,30 @@ WHERE email = '<1で作成したユーザーのemail>';
 pnpm lint
 pnpm typecheck
 pnpm test
+# ローカル Supabase を起動した状態で（DB トリガー・MCP・リポジトリの統合テスト）
+pnpm test:integration
 ```
+
+Docker が使えない環境では、`scripts/check-migrations.mjs` で PGlite（WASM 版 PostgreSQL）にマイグレーションを当て、
+公開ゲートと審議段階のトリガーの動作を確かめられます（使い方はファイル先頭のコメント）。
+
+## 議案のデータモデル（地方議会向け）
+
+| 列 | 意味 |
+|----|------|
+| `bill_kind` | 議案の種類（条例・予算・決算・契約・人事・請願・陳情・委員会報告・行政計画 など） |
+| `proposer_kind` | 提出者（市長・議員・委員会・市民） |
+| `committee_id` | 付託先の委員会（`committees` テーブル。管理画面「委員会」） |
+| `stage` | 審議段階（提出前 → 提出 → 委員会付託 → 委員会審査中 → 本会議採決待ち → 議決済み） |
+| `result` / `vote_outcome` / `decided_on` | 議決の結果（可決・否決・承認・同意・採択・不採択・継続審査・撤回）、採決（全会一致・賛成多数…）、議決日 |
+| `status` | 本家由来の列。トリガー `sync_bill_legacy_status` が `stage` などから導出する（直接編集しない） |
+| `bill_sources` | 一次資料（議案書 PDF・会議録・審議結果・中継）。公開ページの「一次資料」欄 |
+| `factions` / `members` / `vote_records` | 会派・議員と賛否。表示は機能フラグ `faction_votes` / `member_votes` |
+
+### 公開ゲート
+
+議案を「公開中」にできるのは管理画面の公開操作だけです。記事レビュー完了（`is_review_completed`）と確認日時（`reviewed_at`）が無い議案は、
+DB のトリガー `enforce_publish_gate` が公開を拒否します。取込・MCP・生成は下書きまでで、インタビューレポートやトピック分析の自動公開もありません。
 
 ## 他の自治体で使う場合
 
