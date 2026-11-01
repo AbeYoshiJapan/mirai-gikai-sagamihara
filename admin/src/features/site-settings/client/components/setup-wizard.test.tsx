@@ -126,9 +126,8 @@ describe("SetupWizard", () => {
     );
     expect(payload.site.setup_completed).toBe(true);
     expect(payload.site.name).toBe(SAGAMIHARA_PRESET.site.name);
-    expect(payload.council.committees).toEqual(
-      SAGAMIHARA_PRESET.council.committees
-    );
+    expect(payload.council.name).toBe("相模原市議会");
+    expect(payload.import.sources).toEqual(SAGAMIHARA_PRESET.import.sources);
     expect(mocks.push).toHaveBeenCalledWith("/settings");
   });
 

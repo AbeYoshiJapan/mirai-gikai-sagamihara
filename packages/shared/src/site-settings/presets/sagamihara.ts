@@ -46,26 +46,11 @@ export const SAGAMIHARA_PRESET: SiteSettings = {
     resident_label: "市民",
     scope_label: "市議会・市政",
     primary_source_label: "相模原市議会の議案書・会議録",
-    committees: [
-      { name: "総務委員会", short_name: "総務", kind: "standing", sort: 1, is_active: true },
-      { name: "民生委員会", short_name: "民生", kind: "standing", sort: 2, is_active: true },
-      { name: "市民環境経済委員会", short_name: "市民環境経済", kind: "standing", sort: 3, is_active: true },
-      { name: "建設委員会", short_name: "建設", kind: "standing", sort: 4, is_active: true },
-      { name: "こども文教委員会", short_name: "こども文教", kind: "standing", sort: 5, is_active: true },
-      { name: "議会運営委員会", short_name: "議運", kind: "steering", sort: 6, is_active: true },
-      { name: "予算特別委員会", short_name: "予算特別", kind: "budget", sort: 7, is_active: true },
-      { name: "決算特別委員会", short_name: "決算特別", kind: "settlement", sort: 8, is_active: true },
-    ],
-    status_labels: {
-      preparing: "議案提出前",
-      introduced: "提出",
-      in_originating_house: "委員会審査中",
-      in_receiving_house: "本会議採決待ち",
-      enacted: "可決",
-      rejected: "否決",
-      reported: "委員会報告",
-      plan: "行政計画",
-      special_committee: "特別委員会",
+    stage_labels: {
+      ...DEFAULT_SITE_SETTINGS.council.stage_labels,
+    },
+    result_labels: {
+      ...DEFAULT_SITE_SETTINGS.council.result_labels,
     },
     in_progress_label: "市議会審議中",
   },
@@ -109,8 +94,31 @@ export const SAGAMIHARA_PRESET: SiteSettings = {
   },
 };
 
+/** 委員会の初期データ。初期設定ウィザードを終えたとき committees テーブルが空なら入れる */
+export type PresetCommittee = {
+  name: string;
+  short_name: string;
+  kind: "standing" | "special" | "steering" | "budget" | "settlement" | "other";
+  sort_order: number;
+};
+
+export const SAGAMIHARA_COMMITTEES: PresetCommittee[] = [
+  { name: "総務委員会", short_name: "総務", kind: "standing", sort_order: 1 },
+  { name: "民生委員会", short_name: "民生", kind: "standing", sort_order: 2 },
+  { name: "市民環境経済委員会", short_name: "市民環境経済", kind: "standing", sort_order: 3 },
+  { name: "建設委員会", short_name: "建設", kind: "standing", sort_order: 4 },
+  { name: "こども文教委員会", short_name: "こども文教", kind: "standing", sort_order: 5 },
+  { name: "議会運営委員会", short_name: "議運", kind: "steering", sort_order: 6 },
+  { name: "予算特別委員会", short_name: "予算特別", kind: "budget", sort_order: 7 },
+  { name: "決算特別委員会", short_name: "決算特別", kind: "settlement", sort_order: 8 },
+];
+
 export const SITE_SETTINGS_PRESETS = {
-  sagamihara: { label: "相模原市議会", settings: SAGAMIHARA_PRESET },
+  sagamihara: {
+    label: "相模原市議会",
+    settings: SAGAMIHARA_PRESET,
+    committees: SAGAMIHARA_COMMITTEES,
+  },
 } as const;
 
 export type SiteSettingsPresetId = keyof typeof SITE_SETTINGS_PRESETS;

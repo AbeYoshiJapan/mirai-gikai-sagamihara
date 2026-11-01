@@ -120,16 +120,16 @@ describe("SiteSettingsTabs", () => {
     expect(mocks.refresh).toHaveBeenCalled();
   });
 
-  it("議会タブで委員会を追加できる", async () => {
+  it("運営者タブで SNS を追加できる", async () => {
     const user = userEvent.setup();
-    renderTabs({}, "council");
+    renderTabs({}, "operator");
 
-    const rowsBefore = screen.getAllByLabelText("名称");
-    expect(rowsBefore).toHaveLength(settings.council.committees.length);
+    const rowsBefore = screen.queryAllByLabelText("表示名");
+    expect(rowsBefore).toHaveLength(settings.operator.sns.length);
 
-    await user.click(screen.getByRole("button", { name: "委員会を追加" }));
-    expect(screen.getAllByLabelText("名称")).toHaveLength(
-      settings.council.committees.length + 1
+    await user.click(screen.getByRole("button", { name: "SNSを追加" }));
+    expect(screen.getAllByLabelText("表示名")).toHaveLength(
+      settings.operator.sns.length + 1
     );
   });
 

@@ -27,7 +27,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  COMMITTEE_KIND_OPTIONS,
   type CustomEditor,
   type FieldOption,
   SNS_ICON_OPTIONS,
@@ -55,29 +54,6 @@ const EDITORS: Record<
   CustomEditor,
   { title: string; columns: Column[]; empty: () => Record<string, unknown> }
 > = {
-  committees: {
-    title: "委員会",
-    columns: [
-      { key: "name", label: "名称", kind: "text", placeholder: "総務委員会" },
-      { key: "short_name", label: "略称", kind: "text", placeholder: "総務" },
-      {
-        key: "kind",
-        label: "種別",
-        kind: "select",
-        options: COMMITTEE_KIND_OPTIONS,
-        width: "w-44",
-      },
-      { key: "sort", label: "順", kind: "number", width: "w-20" },
-      { key: "is_active", label: "有効", kind: "boolean", width: "w-16" },
-    ],
-    empty: () => ({
-      name: "",
-      short_name: "",
-      kind: "standing",
-      sort: 0,
-      is_active: true,
-    }),
-  },
   sns: {
     title: "SNS",
     columns: [

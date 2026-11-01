@@ -28,29 +28,27 @@ describe("applyPreset", () => {
     );
   });
 
-  it("配列は丸ごと扱う（既定値のままならプリセットの委員会が入る）", () => {
+  it("配列は丸ごと扱う（既定値のままならプリセットの取込元が入る）", () => {
     const result = applyPreset(DEFAULT_SITE_SETTINGS, SAGAMIHARA_PRESET);
-    expect(result.council.committees).toEqual(
-      SAGAMIHARA_PRESET.council.committees
-    );
+    expect(result.import.sources).toEqual(SAGAMIHARA_PRESET.import.sources);
 
     const edited = {
       ...DEFAULT_SITE_SETTINGS,
-      council: {
-        ...DEFAULT_SITE_SETTINGS.council,
-        committees: [
+      import: {
+        ...DEFAULT_SITE_SETTINGS.import,
+        sources: [
           {
-            name: "独自委員会",
-            short_name: "独自",
-            kind: "other" as const,
-            sort: 1,
-            is_active: true,
+            id: "custom",
+            adapter: "custom_adapter",
+            url: "https://example.org/bills",
+            enabled: true,
+            schedule: "",
           },
         ],
       },
     };
-    expect(applyPreset(edited, SAGAMIHARA_PRESET).council.committees).toEqual(
-      edited.council.committees
+    expect(applyPreset(edited, SAGAMIHARA_PRESET).import.sources).toEqual(
+      edited.import.sources
     );
   });
 

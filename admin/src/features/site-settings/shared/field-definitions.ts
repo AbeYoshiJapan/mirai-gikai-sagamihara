@@ -40,7 +40,7 @@ export type FieldDefinition = {
 };
 
 /** 配列項目は専用エディタで扱う */
-export type CustomEditor = "committees" | "sns" | "import_sources";
+export type CustomEditor = "sns" | "import_sources";
 
 export type FieldGroup = {
   title: string;
@@ -67,15 +67,6 @@ export const SNS_ICON_OPTIONS: FieldOption[] = [
   { value: "note", label: "note" },
   { value: "threads", label: "Threads" },
   { value: "web", label: "Web サイト" },
-];
-
-export const COMMITTEE_KIND_OPTIONS: FieldOption[] = [
-  { value: "standing", label: "常任委員会" },
-  { value: "special", label: "特別委員会" },
-  { value: "steering", label: "議会運営委員会" },
-  { value: "budget", label: "予算特別委員会" },
-  { value: "settlement", label: "決算特別委員会" },
-  { value: "other", label: "その他" },
 ];
 
 const TEMPLATE_HELP =
@@ -237,37 +228,37 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
         ],
       },
       {
-        title: "ステータス表示",
-        description: "議案の進行状況ごとの表示名。",
+        title: "審議段階の表示名",
+        description: "議案の進み具合の表示。空欄にはできません。",
         fields: [
-          { name: "status_labels.preparing", label: "提出前", kind: "text" },
-          { name: "status_labels.introduced", label: "提出", kind: "text" },
+          { name: "stage_labels.preparing", label: "提出前", kind: "text" },
+          { name: "stage_labels.submitted", label: "提出", kind: "text" },
+          { name: "stage_labels.referred", label: "委員会付託", kind: "text" },
           {
-            name: "status_labels.in_originating_house",
+            name: "stage_labels.in_committee",
             label: "委員会審査中",
             kind: "text",
           },
           {
-            name: "status_labels.in_receiving_house",
+            name: "stage_labels.plenary",
             label: "本会議採決待ち",
             kind: "text",
           },
-          { name: "status_labels.enacted", label: "可決", kind: "text" },
-          { name: "status_labels.rejected", label: "否決", kind: "text" },
-          { name: "status_labels.reported", label: "委員会報告", kind: "text" },
-          { name: "status_labels.plan", label: "行政計画", kind: "text" },
-          {
-            name: "status_labels.special_committee",
-            label: "特別委員会",
-            kind: "text",
-          },
+          { name: "stage_labels.decided", label: "議決済み", kind: "text" },
         ],
       },
       {
-        title: "委員会",
-        description: "議案の付託先として選べる委員会の一覧。",
-        fields: [],
-        custom: { editor: "committees", name: "committees" },
+        title: "議決の結果の表示名",
+        fields: [
+          { name: "result_labels.passed", label: "可決", kind: "text" },
+          { name: "result_labels.rejected", label: "否決", kind: "text" },
+          { name: "result_labels.approved", label: "承認", kind: "text" },
+          { name: "result_labels.consented", label: "同意", kind: "text" },
+          { name: "result_labels.adopted", label: "採択", kind: "text" },
+          { name: "result_labels.not_adopted", label: "不採択", kind: "text" },
+          { name: "result_labels.continued", label: "継続審査", kind: "text" },
+          { name: "result_labels.withdrawn", label: "撤回", kind: "text" },
+        ],
       },
     ],
   },

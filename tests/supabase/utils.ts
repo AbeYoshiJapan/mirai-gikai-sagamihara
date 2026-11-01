@@ -132,6 +132,24 @@ export async function createTestBill(
     shugiin_url: string;
     article_kind: "standard" | "ai_generated";
     is_review_completed: boolean;
+    reviewed_by: string | null;
+    reviewed_at: string | null;
+    bill_kind:
+      | "ordinance"
+      | "budget"
+      | "report"
+      | "plan"
+      | "special_committee"
+      | "other";
+    stage:
+      | "preparing"
+      | "submitted"
+      | "referred"
+      | "in_committee"
+      | "plenary"
+      | "decided"
+      | null;
+    result: "passed" | "rejected" | "continued" | "withdrawn" | null;
   }> = {}
 ) {
   const defaults = {
@@ -141,6 +159,16 @@ export async function createTestBill(
     publish_status: "draft" as const,
     ...overrides,
   };
+  // 公開済みで作るときは公開ゲートを通すため確認済みにしておく
+  if (
+    defaults.publish_status === "published" &&
+    defaults.is_review_completed === undefined
+  ) {
+    Object.assign(defaults, {
+      is_review_completed: true,
+      reviewed_at: new Date().toISOString(),
+    });
+  }
   const { data, error } = await adminClient
     .from("bills")
     .insert(defaults)

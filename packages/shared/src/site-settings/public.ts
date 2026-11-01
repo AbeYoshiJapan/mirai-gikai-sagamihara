@@ -34,9 +34,9 @@ export type PublicSiteSettings = {
     | "resident_label"
     | "scope_label"
     | "primary_source_label"
-    | "status_labels"
+    | "stage_labels"
+    | "result_labels"
     | "in_progress_label"
-    | "committees"
   >;
   features: SiteSettings["features"];
   legal: Pick<SiteSettings["legal"], "modified_on">;
@@ -72,9 +72,9 @@ export function toPublicSiteSettings(s: SiteSettings): PublicSiteSettings {
       resident_label: s.council.resident_label,
       scope_label: s.council.scope_label,
       primary_source_label: s.council.primary_source_label,
-      status_labels: s.council.status_labels,
+      stage_labels: s.council.stage_labels,
+      result_labels: s.council.result_labels,
       in_progress_label: s.council.in_progress_label,
-      committees: s.council.committees,
     },
     features: s.features,
     legal: { modified_on: s.legal.modified_on },

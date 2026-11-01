@@ -5,7 +5,21 @@ export type Bill = Database["public"]["Tables"]["bills"]["Row"];
 export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
 
-export type BillContent = Database["public"]["Tables"]["bill_contents"]["Row"];
+/**
+ * 公開側で扱う解説。生成元や確認者の記録（generation_job_id / source_hash /
+ * reviewed_by / reviewed_at）は管理画面だけの情報なので持たない。
+ */
+export type BillContent = Pick<
+  Database["public"]["Tables"]["bill_contents"]["Row"],
+  | "id"
+  | "bill_id"
+  | "title"
+  | "summary"
+  | "content"
+  | "difficulty_level"
+  | "created_at"
+  | "updated_at"
+>;
 export type BillContentInsert =
   Database["public"]["Tables"]["bill_contents"]["Insert"];
 export type BillContentUpdate =

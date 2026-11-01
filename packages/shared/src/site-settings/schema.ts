@@ -108,34 +108,26 @@ export const linksSectionSchema = z.object({
   fork_guidelines: optionalUrl,
 });
 
-export const committeeKindSchema = z.enum([
-  "standing",
-  "special",
-  "steering",
-  "budget",
-  "settlement",
-  "other",
-]);
-
-export const committeeSchema = z.object({
-  name: shortText(60),
-  short_name: shortText(20),
-  kind: committeeKindSchema,
-  sort: z.number().int().min(0).max(999),
-  is_active: z.boolean(),
+/** 審議段階（bills.stage）の表示名。空なら既定（packages/shared/src/bill-stage/labels.ts） */
+export const stageLabelsSchema = z.object({
+  preparing: shortText(20),
+  submitted: shortText(20),
+  referred: shortText(20),
+  in_committee: shortText(20),
+  plenary: shortText(20),
+  decided: shortText(20),
 });
 
-/** bills.status の表示ラベル（web のカード・進捗・管理画面） */
-export const statusLabelsSchema = z.object({
-  preparing: shortText(20),
-  introduced: shortText(20),
-  in_originating_house: shortText(20),
-  in_receiving_house: shortText(20),
-  enacted: shortText(20),
+/** 議決の結果（bills.result）の表示名 */
+export const resultLabelsSchema = z.object({
+  passed: shortText(20),
   rejected: shortText(20),
-  reported: shortText(20),
-  plan: shortText(20),
-  special_committee: shortText(20),
+  approved: shortText(20),
+  consented: shortText(20),
+  adopted: shortText(20),
+  not_adopted: shortText(20),
+  continued: shortText(20),
+  withdrawn: shortText(20),
 });
 
 export const councilSectionSchema = z.object({
@@ -157,9 +149,9 @@ export const councilSectionSchema = z.object({
   scope_label: shortText(20),
   /** 会議録検索など一次資料の総称 */
   primary_source_label: shortText(40),
-  committees: z.array(committeeSchema).max(30),
-  status_labels: statusLabelsSchema,
-  /** 審議中ステータスのカード表示（例: 市議会審議中） */
+  stage_labels: stageLabelsSchema,
+  result_labels: resultLabelsSchema,
+  /** 審議中の議案のカード表示（例: 市議会審議中） */
   in_progress_label: shortText(20),
 });
 
@@ -254,8 +246,8 @@ export type BrandSection = z.infer<typeof brandSectionSchema>;
 export type BrandColors = z.infer<typeof brandColorsSchema>;
 export type LinksSection = z.infer<typeof linksSectionSchema>;
 export type CouncilSection = z.infer<typeof councilSectionSchema>;
-export type Committee = z.infer<typeof committeeSchema>;
-export type StatusLabels = z.infer<typeof statusLabelsSchema>;
+export type StageLabels = z.infer<typeof stageLabelsSchema>;
+export type ResultLabels = z.infer<typeof resultLabelsSchema>;
 export type AiSection = z.infer<typeof aiSectionSchema>;
 export type ImportSection = z.infer<typeof importSectionSchema>;
 export type FeaturesSection = z.infer<typeof featuresSectionSchema>;

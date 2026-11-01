@@ -32,6 +32,18 @@ const baseBill: Bill = {
   public_comment_start: null,
   public_comment_end: null,
   public_comment_url: null,
+  bill_number: "議案第1号",
+  bill_kind: "ordinance",
+  proposer_kind: "mayor",
+  committee_id: null,
+  stage: "submitted",
+  decided_on: null,
+  result: null,
+  vote_outcome: null,
+  bill_document_url: null,
+  reviewed_by: "admin-001",
+  reviewed_at: "2025-01-03T00:00:00Z",
+  published_by: "admin-001",
 };
 
 describe("prepareBillForDuplication", () => {
@@ -55,6 +67,21 @@ describe("prepareBillForDuplication", () => {
   it("is_review_completedをfalseにリセットする", () => {
     const result = prepareBillForDuplication(baseBill);
     expect(result.is_review_completed).toBe(false);
+  });
+
+  it("確認者・公開者の記録は引き継がない", () => {
+    const result = prepareBillForDuplication(baseBill);
+    expect(result.reviewed_by).toBeNull();
+    expect(result.reviewed_at).toBeNull();
+    expect(result.published_by).toBeNull();
+    expect(result.published_at).toBeNull();
+  });
+
+  it("議案番号・種類・付託先・段階は引き継ぐ", () => {
+    const result = prepareBillForDuplication(baseBill);
+    expect(result.bill_number).toBe("議案第1号");
+    expect(result.bill_kind).toBe("ordinance");
+    expect(result.stage).toBe("submitted");
   });
 
   it("slugをnullにリセットする", () => {

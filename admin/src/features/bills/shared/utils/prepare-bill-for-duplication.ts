@@ -11,6 +11,11 @@ export function prepareBillForDuplication(originalBill: Bill): BillInsert {
     updated_at: ___,
     status_order: ____,
     slug: _____,
+    // 複製は未確認の下書きから始める（公開ゲートの記録は引き継がない）
+    reviewed_by: ______,
+    reviewed_at: _______,
+    published_by: ________,
+    published_at: _________,
     ...billWithoutId
   } = originalBill;
 
@@ -20,6 +25,10 @@ export function prepareBillForDuplication(originalBill: Bill): BillInsert {
     name: `${originalBill.name} (複製)`,
     publish_status: "draft",
     is_review_completed: false,
+    reviewed_by: null,
+    reviewed_at: null,
+    published_by: null,
+    published_at: null,
   };
 }
 

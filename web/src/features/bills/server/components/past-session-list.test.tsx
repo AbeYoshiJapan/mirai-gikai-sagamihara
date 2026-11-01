@@ -15,6 +15,7 @@ const session = (
   start_date: "2025-10-24",
   end_date: "2025-12-17",
   is_active: false,
+  meeting_periods: [],
   created_at: "2025-10-01T00:00:00Z",
   updated_at: "2025-10-01T00:00:00Z",
   ...overrides,

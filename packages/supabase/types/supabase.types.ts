@@ -99,7 +99,11 @@ export type Database = {
           content: string
           created_at: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level_enum"]
+          generation_job_id: string | null
           id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_hash: string | null
           summary: string
           title: string
           updated_at: string
@@ -109,7 +113,11 @@ export type Database = {
           content: string
           created_at?: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level_enum"]
+          generation_job_id?: string | null
           id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_hash?: string | null
           summary: string
           title: string
           updated_at?: string
@@ -119,7 +127,11 @@ export type Database = {
           content?: string
           created_at?: string
           difficulty_level?: Database["public"]["Enums"]["difficulty_level_enum"]
+          generation_job_id?: string | null
           id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_hash?: string | null
           summary?: string
           title?: string
           updated_at?: string
@@ -132,12 +144,77 @@ export type Database = {
             referencedRelation: "bills"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bill_contents_generation_job_id_fkey"
+            columns: ["generation_job_id"]
+            isOneToOne: false
+            referencedRelation: "generation_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bill_sources: {
+        Row: {
+          bill_id: string
+          content_hash: string | null
+          created_at: string
+          extracted_text: string | null
+          fetched_at: string | null
+          id: string
+          kind: Database["public"]["Enums"]["bill_source_kind"]
+          label: string
+          meeting_date: string | null
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          bill_id: string
+          content_hash?: string | null
+          created_at?: string
+          extracted_text?: string | null
+          fetched_at?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["bill_source_kind"]
+          label?: string
+          meeting_date?: string | null
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          bill_id?: string
+          content_hash?: string | null
+          created_at?: string
+          extracted_text?: string | null
+          fetched_at?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["bill_source_kind"]
+          label?: string
+          meeting_date?: string | null
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bill_sources_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bills: {
         Row: {
           article_kind: Database["public"]["Enums"]["bill_article_kind"]
+          bill_document_url: string | null
+          bill_kind: Database["public"]["Enums"]["bill_kind"]
+          bill_number: string | null
+          committee_id: string | null
           created_at: string
+          decided_on: string | null
           diet_session_id: string | null
           id: string
           is_featured: boolean
@@ -145,15 +222,21 @@ export type Database = {
           knowledge_source: string | null
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
+          proposer_kind: Database["public"]["Enums"]["bill_proposer_kind"]
           public_comment_end: string | null
           public_comment_start: string | null
           public_comment_url: string | null
           publish_status: Database["public"]["Enums"]["bill_publish_status"]
           publish_status_order: number | null
           published_at: string | null
+          published_by: string | null
+          result: Database["public"]["Enums"]["bill_result"] | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           share_thumbnail_url: string | null
           shugiin_url: string | null
           slug: string | null
+          stage: Database["public"]["Enums"]["bill_stage"] | null
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note: string | null
           status_order: number | null
@@ -161,53 +244,38 @@ export type Database = {
           thumbnail_url: string | null
           updated_at: string
           use_knowledge_source_in_chat: boolean
+          vote_outcome: Database["public"]["Enums"]["bill_vote_outcome"] | null
         }
         Insert: {
           article_kind?: Database["public"]["Enums"]["bill_article_kind"]
+          bill_document_url?: string | null
+          bill_kind?: Database["public"]["Enums"]["bill_kind"]
+          bill_number?: string | null
+          committee_id?: string | null
           created_at?: string
+          decided_on?: string | null
           diet_session_id?: string | null
           id?: string
           is_featured?: boolean
           is_review_completed?: boolean
           knowledge_source?: string | null
           name: string
-          originating_house: Database["public"]["Enums"]["house_enum"]
-          public_comment_end?: string | null
-          public_comment_start?: string | null
-          public_comment_url?: string | null
-          publish_status?: Database["public"]["Enums"]["bill_publish_status"]
-          publish_status_order?: number | null
-          published_at?: string | null
-          share_thumbnail_url?: string | null
-          shugiin_url?: string | null
-          slug?: string | null
-          status: Database["public"]["Enums"]["bill_status_enum"]
-          status_note?: string | null
-          status_order?: number | null
-          submitted_date?: string | null
-          thumbnail_url?: string | null
-          updated_at?: string
-          use_knowledge_source_in_chat?: boolean
-        }
-        Update: {
-          article_kind?: Database["public"]["Enums"]["bill_article_kind"]
-          created_at?: string
-          diet_session_id?: string | null
-          id?: string
-          is_featured?: boolean
-          is_review_completed?: boolean
-          knowledge_source?: string | null
-          name?: string
           originating_house?: Database["public"]["Enums"]["house_enum"]
+          proposer_kind?: Database["public"]["Enums"]["bill_proposer_kind"]
           public_comment_end?: string | null
           public_comment_start?: string | null
           public_comment_url?: string | null
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           publish_status_order?: number | null
           published_at?: string | null
+          published_by?: string | null
+          result?: Database["public"]["Enums"]["bill_result"] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           share_thumbnail_url?: string | null
           shugiin_url?: string | null
           slug?: string | null
+          stage?: Database["public"]["Enums"]["bill_stage"] | null
           status?: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
           status_order?: number | null
@@ -215,6 +283,46 @@ export type Database = {
           thumbnail_url?: string | null
           updated_at?: string
           use_knowledge_source_in_chat?: boolean
+          vote_outcome?: Database["public"]["Enums"]["bill_vote_outcome"] | null
+        }
+        Update: {
+          article_kind?: Database["public"]["Enums"]["bill_article_kind"]
+          bill_document_url?: string | null
+          bill_kind?: Database["public"]["Enums"]["bill_kind"]
+          bill_number?: string | null
+          committee_id?: string | null
+          created_at?: string
+          decided_on?: string | null
+          diet_session_id?: string | null
+          id?: string
+          is_featured?: boolean
+          is_review_completed?: boolean
+          knowledge_source?: string | null
+          name?: string
+          originating_house?: Database["public"]["Enums"]["house_enum"]
+          proposer_kind?: Database["public"]["Enums"]["bill_proposer_kind"]
+          public_comment_end?: string | null
+          public_comment_start?: string | null
+          public_comment_url?: string | null
+          publish_status?: Database["public"]["Enums"]["bill_publish_status"]
+          publish_status_order?: number | null
+          published_at?: string | null
+          published_by?: string | null
+          result?: Database["public"]["Enums"]["bill_result"] | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          share_thumbnail_url?: string | null
+          shugiin_url?: string | null
+          slug?: string | null
+          stage?: Database["public"]["Enums"]["bill_stage"] | null
+          status?: Database["public"]["Enums"]["bill_status_enum"]
+          status_note?: string | null
+          status_order?: number | null
+          submitted_date?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          use_knowledge_source_in_chat?: boolean
+          vote_outcome?: Database["public"]["Enums"]["bill_vote_outcome"] | null
         }
         Relationships: [
           {
@@ -222,6 +330,13 @@ export type Database = {
             columns: ["diet_session_id"]
             isOneToOne: false
             referencedRelation: "diet_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bills_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
             referencedColumns: ["id"]
           },
         ]
@@ -342,56 +457,135 @@ export type Database = {
           },
         ]
       }
+      committees: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["committee_kind"]
+          name: string
+          parent_id: string | null
+          short_name: string
+          since: string | null
+          sort_order: number
+          until: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["committee_kind"]
+          name: string
+          parent_id?: string | null
+          short_name?: string
+          since?: string | null
+          sort_order?: number
+          until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["committee_kind"]
+          name?: string
+          parent_id?: string | null
+          short_name?: string
+          since?: string | null
+          sort_order?: number
+          until?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committees_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       council_meetings: {
         Row: {
+          agenda_pdf_url: string | null
           category: string
+          committee_id: string | null
           council_year: number
           created_at: string
           document_url: string | null
           end_date: string | null
           gallery: string | null
           id: string
+          is_published: boolean
           meeting_date: string
+          minutes_url: string | null
           name: string
           place: string | null
+          result_pdf_url: string | null
+          session_label: string | null
           source_url: string
           start_time: string | null
+          stream_url: string | null
           topic: string | null
           updated_at: string
         }
         Insert: {
+          agenda_pdf_url?: string | null
           category: string
+          committee_id?: string | null
           council_year: number
           created_at?: string
           document_url?: string | null
           end_date?: string | null
           gallery?: string | null
           id?: string
+          is_published?: boolean
           meeting_date: string
+          minutes_url?: string | null
           name: string
           place?: string | null
+          result_pdf_url?: string | null
+          session_label?: string | null
           source_url: string
           start_time?: string | null
+          stream_url?: string | null
           topic?: string | null
           updated_at?: string
         }
         Update: {
+          agenda_pdf_url?: string | null
           category?: string
+          committee_id?: string | null
           council_year?: number
           created_at?: string
           document_url?: string | null
           end_date?: string | null
           gallery?: string | null
           id?: string
+          is_published?: boolean
           meeting_date?: string
+          minutes_url?: string | null
           name?: string
           place?: string | null
+          result_pdf_url?: string | null
+          session_label?: string | null
           source_url?: string
           start_time?: string | null
+          stream_url?: string | null
           topic?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "council_meetings_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       diet_sessions: {
         Row: {
@@ -399,6 +593,7 @@ export type Database = {
           end_date: string
           id: string
           is_active: boolean
+          meeting_periods: Json
           name: string
           shugiin_url: string | null
           slug: string | null
@@ -410,6 +605,7 @@ export type Database = {
           end_date: string
           id?: string
           is_active?: boolean
+          meeting_periods?: Json
           name: string
           shugiin_url?: string | null
           slug?: string | null
@@ -421,6 +617,7 @@ export type Database = {
           end_date?: string
           id?: string
           is_active?: boolean
+          meeting_periods?: Json
           name?: string
           shugiin_url?: string | null
           slug?: string | null
@@ -456,6 +653,170 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      factions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          short_name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          short_name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          short_name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      generation_jobs: {
+        Row: {
+          bill_id: string
+          cost_usd: number | null
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          input_hash: string | null
+          kind: Database["public"]["Enums"]["generation_job_kind"]
+          model: string
+          output: Json | null
+          prompt_version: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["generation_job_status"]
+          updated_at: string
+        }
+        Insert: {
+          bill_id: string
+          cost_usd?: number | null
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          input_hash?: string | null
+          kind: Database["public"]["Enums"]["generation_job_kind"]
+          model: string
+          output?: Json | null
+          prompt_version?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["generation_job_status"]
+          updated_at?: string
+        }
+        Update: {
+          bill_id?: string
+          cost_usd?: number | null
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          input_hash?: string | null
+          kind?: Database["public"]["Enums"]["generation_job_kind"]
+          model?: string
+          output?: Json | null
+          prompt_version?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["generation_job_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_jobs_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      glossary: {
+        Row: {
+          created_at: string
+          definition_md: string
+          id: string
+          is_published: boolean
+          reading: string
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          definition_md?: string
+          id?: string
+          is_published?: boolean
+          reading?: string
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          definition_md?: string
+          id?: string
+          is_published?: boolean
+          reading?: string
+          term?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      import_runs: {
+        Row: {
+          adapter: string
+          created_at: string
+          dry_run: boolean
+          finished_at: string | null
+          id: string
+          log: string | null
+          source_id: string
+          started_at: string
+          status: Database["public"]["Enums"]["import_run_status"]
+          summary: Json
+          triggered_by: string | null
+        }
+        Insert: {
+          adapter: string
+          created_at?: string
+          dry_run?: boolean
+          finished_at?: string | null
+          id?: string
+          log?: string | null
+          source_id: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["import_run_status"]
+          summary?: Json
+          triggered_by?: string | null
+        }
+        Update: {
+          adapter?: string
+          created_at?: string
+          dry_run?: boolean
+          finished_at?: string | null
+          id?: string
+          log?: string | null
+          source_id?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["import_run_status"]
+          summary?: Json
+          triggered_by?: string | null
         }
         Relationships: []
       }
@@ -813,6 +1174,56 @@ export type Database = {
           },
         ]
       }
+      members: {
+        Row: {
+          created_at: string
+          faction_id: string | null
+          id: string
+          is_active: boolean
+          kana: string
+          name: string
+          sort_order: number
+          term_end: string | null
+          term_start: string | null
+          updated_at: string
+          ward: string
+        }
+        Insert: {
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          is_active?: boolean
+          kana?: string
+          name: string
+          sort_order?: number
+          term_end?: string | null
+          term_start?: string | null
+          updated_at?: string
+          ward?: string
+        }
+        Update: {
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          is_active?: boolean
+          kana?: string
+          name?: string
+          sort_order?: number
+          term_end?: string | null
+          term_start?: string | null
+          updated_at?: string
+          ward?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_faction_id_fkey"
+            columns: ["faction_id"]
+            isOneToOne: false
+            referencedRelation: "factions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mirai_stances: {
         Row: {
           bill_id: string
@@ -1004,6 +1415,64 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      vote_records: {
+        Row: {
+          bill_id: string
+          created_at: string
+          faction_id: string | null
+          id: string
+          member_id: string | null
+          note: string | null
+          source_url: string | null
+          updated_at: string
+          vote: Database["public"]["Enums"]["vote_value"]
+        }
+        Insert: {
+          bill_id: string
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          member_id?: string | null
+          note?: string | null
+          source_url?: string | null
+          updated_at?: string
+          vote: Database["public"]["Enums"]["vote_value"]
+        }
+        Update: {
+          bill_id?: string
+          created_at?: string
+          faction_id?: string | null
+          id?: string
+          member_id?: string | null
+          note?: string | null
+          source_url?: string | null
+          updated_at?: string
+          vote?: Database["public"]["Enums"]["vote_value"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vote_records_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vote_records_faction_id_fkey"
+            columns: ["faction_id"]
+            isOneToOne: false
+            referencedRelation: "factions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vote_records_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       topic: {
         Row: {
@@ -1555,7 +2024,53 @@ export type Database = {
         | "unclear"
         | "other"
       bill_article_kind: "standard" | "ai_generated"
+      bill_kind:
+        | "ordinance"
+        | "budget"
+        | "settlement"
+        | "contract"
+        | "personnel"
+        | "property"
+        | "road"
+        | "senketsu"
+        | "member_bill"
+        | "opinion"
+        | "resolution"
+        | "petition"
+        | "citizen_petition"
+        | "report"
+        | "plan"
+        | "special_committee"
+        | "other"
+      bill_proposer_kind: "mayor" | "member" | "committee" | "citizen"
       bill_publish_status: "draft" | "published" | "coming_soon"
+      bill_result:
+        | "passed"
+        | "rejected"
+        | "approved"
+        | "consented"
+        | "adopted"
+        | "not_adopted"
+        | "continued"
+        | "withdrawn"
+      bill_source_kind:
+        | "bill_pdf"
+        | "agenda_pdf"
+        | "result_pdf"
+        | "committee_result_pdf"
+        | "minutes_plenary"
+        | "minutes_committee"
+        | "video"
+        | "newsletter"
+        | "city_page"
+        | "other"
+      bill_stage:
+        | "preparing"
+        | "submitted"
+        | "referred"
+        | "in_committee"
+        | "plenary"
+        | "decided"
       bill_status_enum:
         | "introduced"
         | "in_originating_house"
@@ -1566,9 +2081,31 @@ export type Database = {
         | "reported"
         | "plan"
         | "special_committee"
+      bill_vote_outcome: "unanimous" | "majority" | "minority" | "none"
       chat_role_enum: "user" | "system" | "assistant"
+      committee_kind:
+        | "standing"
+        | "special"
+        | "steering"
+        | "budget"
+        | "settlement"
+        | "other"
       difficulty_level_enum: "normal" | "hard"
+      generation_job_kind:
+        | "summary_normal"
+        | "content_normal"
+        | "content_hard"
+        | "tags"
+        | "glossary"
+        | "translation"
+      generation_job_status:
+        | "queued"
+        | "running"
+        | "succeeded"
+        | "failed"
+        | "discarded"
       house_enum: "HR" | "HC"
+      import_run_status: "running" | "succeeded" | "failed" | "skipped"
       interview_config_status_enum: "public" | "closed"
       interview_feedback_tag_enum:
         | "irrelevant_questions"
@@ -1594,6 +2131,7 @@ export type Database = {
         | "continued_deliberation"
         | "free_vote"
       topic_analysis_status: "pending" | "running" | "completed" | "failed"
+      vote_value: "for" | "against" | "abstain" | "absent" | "chair"
     }
     CompositeTypes: {
       [_ in never]: never
