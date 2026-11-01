@@ -1,3 +1,10 @@
+import {
+  BILL_KINDS,
+  BILL_RESULTS,
+  BILL_STAGES,
+  PROPOSER_KINDS,
+  VOTE_OUTCOMES,
+} from "@mirai-gikai/shared/bill-stage/labels";
 import type { Database } from "@mirai-gikai/supabase";
 import { z } from "zod";
 
@@ -9,25 +16,63 @@ export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 // 公開ステータス型
 export type BillPublishStatus = "draft" | "published" | "coming_soon";
 
+const optionalUrl = z
+  .string()
+  .transform((val) => (val === "" ? null : val))
+  .nullable()
+  .refine((val) => val === null || val.startsWith("http"), {
+    message: "有効なURLを入力してください",
+  })
+  .optional();
+
+const optionalDate = z
+  .string()
+  .refine(
+    (val) => val === "" || /^\d{4}-\d{2}-\d{2}$/.test(val),
+    "日付は YYYY-MM-DD 形式で入力してください"
+  )
+  .nullable()
+  .optional();
+
 // 共通のバリデーションスキーマ
 const billBaseSchema = z.object({
   name: z
     .string()
     .min(1, "議案名は必須です")
     .max(200, "議案名は200文字以内で入力してください"),
-  status: z.enum([
-    "preparing",
-    "introduced",
-    "in_originating_house",
-    "in_receiving_house",
-    "enacted",
-    "rejected",
-    // 地方議会向けの区分（委員会報告・行政計画・特別委員会）
-    "reported",
-    "plan",
-    "special_committee",
-  ]),
-  originating_house: z.enum(["HR", "HC"]),
+  /** 議案番号（例: 議案第99号） */
+  bill_number: z
+    .string()
+    .max(50, "議案番号は50文字以内で入力してください")
+    .transform((val) => (val === "" ? null : val))
+    .nullable()
+    .optional(),
+  bill_kind: z.enum(BILL_KINDS).optional(),
+  proposer_kind: z.enum(PROPOSER_KINDS).optional(),
+  committee_id: z.string().uuid().nullable().optional(),
+  stage: z.enum(BILL_STAGES).nullable().optional(),
+  result: z.enum(BILL_RESULTS).nullable().optional(),
+  vote_outcome: z.enum(VOTE_OUTCOMES).nullable().optional(),
+  decided_on: optionalDate,
+  bill_document_url: optionalUrl,
+  /**
+   * 国会由来の status。DB トリガーが stage／result／bill_kind から導出するので
+   * 管理画面のフォームは送らない（MCP の旧クライアント向けに受け付けだけ残す）
+   */
+  status: z
+    .enum([
+      "preparing",
+      "introduced",
+      "in_originating_house",
+      "in_receiving_house",
+      "enacted",
+      "rejected",
+      "reported",
+      "plan",
+      "special_committee",
+    ])
+    .optional(),
+  originating_house: z.enum(["HR", "HC"]).optional(),
   status_note: z
     .string()
     .max(500, "ステータス備考は500文字以内で入力してください")

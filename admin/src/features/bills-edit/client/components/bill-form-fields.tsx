@@ -1,6 +1,5 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
 import type { Control } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -24,34 +23,13 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ARTICLE_KIND_LABELS,
   type BillArticleKind,
-  type BillStatus,
-  HOUSE_LABELS,
-  type OriginatingHouse,
 } from "@/features/bills/shared/types";
+import type { Committee } from "@/features/committees/shared/types";
 import type { DietSession } from "@/features/diet-sessions/shared/types";
 import type { BillCreateInput } from "../../shared/types";
-import { shouldAutoCloseInterviewOnBillStatus } from "../../shared/utils/should-auto-close-interview";
+import { BillCouncilFields } from "./bill-council-fields";
 import { ShareImageGenerator } from "./share-image-generator";
 import { ThumbnailUpload } from "./thumbnail-upload";
-
-const BILL_STATUS_OPTIONS: Array<{ value: BillStatus; label: string }> = [
-  { value: "preparing", label: "準備中" },
-  { value: "introduced", label: "提出済み" },
-  { value: "in_originating_house", label: "審議中（提出院）" },
-  { value: "in_receiving_house", label: "審議中（送付院）" },
-  { value: "enacted", label: "成立" },
-  { value: "rejected", label: "否決" },
-  { value: "reported", label: "委員会報告" },
-  { value: "plan", label: "行政計画" },
-  { value: "special_committee", label: "特別委員会" },
-];
-
-const ORIGINATING_HOUSE_OPTIONS = Object.entries(HOUSE_LABELS).map(
-  ([value, label]) => ({
-    value: value as OriginatingHouse,
-    label,
-  })
-);
 
 const ARTICLE_KIND_OPTIONS = Object.entries(ARTICLE_KIND_LABELS).map(
   ([value, label]) => ({
@@ -64,6 +42,7 @@ interface BillFormFieldsProps {
   control: Control<BillCreateInput>;
   billId?: string;
   dietSessions: DietSession[];
+  committees: Committee[];
   shareImageDefaultTitle?: string;
 }
 
@@ -71,6 +50,7 @@ export function BillFormFields({
   control,
   billId,
   dietSessions,
+  committees,
   shareImageDefaultTitle,
 }: BillFormFieldsProps) {
   return (
@@ -92,78 +72,14 @@ export function BillFormFields({
         )}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          control={control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>ステータス *</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="ステータスを選択" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {BILL_STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                現在の審議状況を選択してください
-              </FormDescription>
-              {shouldAutoCloseInterviewOnBillStatus(field.value) && (
-                <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded flex items-start gap-2">
-                  <AlertTriangle className="size-4 mt-0.5 shrink-0" />
-                  <span>
-                    保存すると、この議案に紐づく公開中のインタビューは自動でクローズされます。
-                  </span>
-                </p>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="originating_house"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>提出院 *</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="提出院を選択" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ORIGINATING_HOUSE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                議案を提出した議院を選択してください
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <BillCouncilFields control={control} committees={committees} />
 
       <FormField
         control={control}
         name="status_note"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>ステータス備考</FormLabel>
+            <FormLabel>審議状況の補足</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
@@ -184,11 +100,13 @@ export function BillFormFields({
         name="submitted_date"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>法案提出日 *</FormLabel>
+            <FormLabel>提出日 *</FormLabel>
             <FormControl>
               <Input type="date" {...field} />
             </FormControl>
-            <FormDescription>法案の提出日を設定してください</FormDescription>
+            <FormDescription>
+              議案の提出日（本会議に上程された日）
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

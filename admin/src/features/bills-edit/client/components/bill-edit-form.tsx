@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
+import type { Committee } from "@/features/committees/shared/types";
 import type { DietSession } from "@/features/diet-sessions/shared/types";
 import { updateBill } from "../../server/actions/update-bill";
 import {
@@ -20,12 +21,14 @@ import { BillFormFields } from "./bill-form-fields";
 interface BillEditFormProps {
   bill: Bill;
   dietSessions: DietSession[];
+  committees: Committee[];
   shareImageDefaultTitle: string;
 }
 
 export function BillEditForm({
   bill,
   dietSessions,
+  committees,
   shareImageDefaultTitle,
 }: BillEditFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
@@ -39,8 +42,15 @@ export function BillEditForm({
     resolver: zodResolver(billUpdateSchema),
     defaultValues: {
       name: bill.name,
-      status: bill.status,
-      originating_house: bill.originating_house,
+      bill_number: bill.bill_number,
+      bill_kind: bill.bill_kind,
+      proposer_kind: bill.proposer_kind,
+      committee_id: bill.committee_id,
+      stage: bill.stage ?? "preparing",
+      result: bill.result,
+      vote_outcome: bill.vote_outcome,
+      decided_on: bill.decided_on ?? "",
+      bill_document_url: bill.bill_document_url,
       status_note: bill.status_note,
       submitted_date: bill.submitted_date
         ? new Date(bill.submitted_date).toLocaleDateString("sv-SE", {
@@ -79,6 +89,7 @@ export function BillEditForm({
               control={form.control}
               billId={bill.id}
               dietSessions={dietSessions}
+              committees={committees}
               shareImageDefaultTitle={shareImageDefaultTitle}
             />
 

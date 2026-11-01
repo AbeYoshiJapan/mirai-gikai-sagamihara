@@ -2,10 +2,7 @@ import "server-only";
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import {
-  findBillsWithDietSessions,
-  updateBillPublishStatus,
-} from "@/features/bills/server/repositories/bill-repository";
+import { findBillsWithDietSessions } from "@/features/bills/server/repositories/bill-repository";
 import {
   createBillRecord,
   createBillsTags,
@@ -100,12 +97,13 @@ export function registerBillsTools(server: McpServer): void {
     {
       title: "議案を作成",
       description:
-        "billsテーブルに新しい議案を作成する。コンテンツやタグは別ツール（update_bill_contents / update_bill_tags）で後から設定する。",
-      inputSchema: billCreateSchema.shape,
+        "billsテーブルに新しい議案を下書きとして作成する。コンテンツやタグは別ツール（update_bill_contents / update_bill_tags）で後から設定する。公開は管理画面から行う。",
+      inputSchema: billCreateSchema.omit({ is_review_completed: true }).shape,
     },
     async (input) => {
       const inserted = await createBillRecord({
         ...input,
+        is_review_completed: false,
         submitted_date: input.submitted_date
           ? `${input.submitted_date}T00:00:00+09:00`
           : null,
@@ -120,32 +118,14 @@ export function registerBillsTools(server: McpServer): void {
     {
       title: "議案を更新",
       description:
-        "指定IDの議案のメタ情報（name, status, originating_house 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。",
+        "指定IDの議案のメタ情報（name, bill_kind, stage 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。公開ステータスと記事レビュー完了は管理画面からだけ変えられる。",
       inputSchema: {
         billId: z.string().uuid(),
-        ...billUpdateSchema.partial().shape,
+        ...billUpdateSchema.omit({ is_review_completed: true }).partial().shape,
       },
     },
     async ({ billId, ...rest }) => {
       await updateBillWithSideEffects(billId, rest);
-      return jsonResult({ ok: true });
-    }
-  );
-
-  server.registerTool(
-    "update_bill_publish_status",
-    {
-      title: "議案の公開ステータスを変更",
-      description:
-        "議案の publish_status を draft / published / coming_soon に変更する。",
-      inputSchema: {
-        billId: z.string().uuid(),
-        publishStatus: z.enum(["draft", "published", "coming_soon"]),
-      },
-    },
-    async ({ billId, publishStatus }) => {
-      await updateBillPublishStatus(billId, publishStatus);
-      await invalidateBillsCache();
       return jsonResult({ ok: true });
     }
   );

@@ -113,12 +113,18 @@ export const SAGAMIHARA_COMMITTEES: PresetCommittee[] = [
   { name: "決算特別委員会", short_name: "決算特別", kind: "settlement", sort_order: 8 },
 ];
 
+export type SiteSettingsPreset = {
+  label: string;
+  settings: SiteSettings;
+  committees: PresetCommittee[];
+};
+
 export const SITE_SETTINGS_PRESETS = {
   sagamihara: {
     label: "相模原市議会",
     settings: SAGAMIHARA_PRESET,
     committees: SAGAMIHARA_COMMITTEES,
   },
-} as const;
+} as const satisfies Record<string, SiteSettingsPreset>;
 
 export type SiteSettingsPresetId = keyof typeof SITE_SETTINGS_PRESETS;

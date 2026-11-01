@@ -448,23 +448,28 @@ describe("MCP bills tools", () => {
     });
   });
 
-  describe("update_bill_publish_status", () => {
-    it("publish_status を変更する", async () => {
+  describe("公開ステータスは MCP から変えられない", () => {
+    it("update_bill_publish_status ツールは無い", () => {
+      expect(registry.toolNames()).not.toContain("update_bill_publish_status");
+    });
+
+    it("update_bill で is_review_completed は受け付けない", async () => {
       const bill = await createTestBill({ publish_status: "draft" });
       billIds.push(bill.id);
 
-      const result = await registry.callTool<{ ok: boolean }>(
-        "update_bill_publish_status",
-        { billId: bill.id, publishStatus: "published" }
-      );
-      expect(result.ok).toBe(true);
+      await registry.callTool<{ ok: boolean }>("update_bill", {
+        billId: bill.id,
+        name: "MCP から更新",
+        is_review_completed: true,
+      });
 
       const { data } = await adminClient
         .from("bills")
-        .select("publish_status")
+        .select("name, is_review_completed")
         .eq("id", bill.id)
         .single();
-      expect(data?.publish_status).toBe("published");
+      expect(data?.name).toBe("MCP から更新");
+      expect(data?.is_review_completed).toBe(false);
     });
   });
 
@@ -604,7 +609,6 @@ describe("MCP bills tools", () => {
         "get_bill_by_slug",
         "create_bill",
         "update_bill",
-        "update_bill_publish_status",
         "update_bill_contents",
         "update_bill_tags",
       ].sort()

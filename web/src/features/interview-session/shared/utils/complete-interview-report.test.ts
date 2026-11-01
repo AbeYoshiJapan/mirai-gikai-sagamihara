@@ -57,7 +57,6 @@ describe("buildCompletedInterviewReportInsert", () => {
       expect.objectContaining({
         interview_session_id: "session-1",
         is_public_by_user: true,
-        is_public_by_admin: true,
         moderation_score: 29,
         moderation_reasoning: "問題なし",
         // 完了時は再抽出ウォーターマークを未処理へ戻す（再完了後もバックフィルで復旧可能にする）

@@ -1,7 +1,9 @@
 "use client";
 
 import { ChevronDown, Clock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -10,10 +12,16 @@ import {
 } from "@/components/ui/popover";
 import { updatePublishStatusAction } from "../../../server/actions/update-publish-status";
 import type { BillPublishStatus } from "../../../shared/types";
+import {
+  checkPublishPreconditions,
+  type PublishGateInput,
+} from "../../../shared/utils/publish-gate";
 
 interface PublishStatusBadgeProps {
   billId: string;
   publishStatus: BillPublishStatus;
+  /** 公開ゲートの判定に使う */
+  gate: PublishGateInput;
 }
 
 const PUBLISH_STATUS_CONFIG: Record<
@@ -46,16 +54,23 @@ const PUBLISH_STATUS_CONFIG: Record<
 export function PublishStatusBadge({
   billId,
   publishStatus,
+  gate,
 }: PublishStatusBadgeProps) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
   const currentConfig = PUBLISH_STATUS_CONFIG[publishStatus];
   const CurrentIcon = currentConfig.icon;
+  const publishBlocker = checkPublishPreconditions(gate);
 
   const handleStatusChange = async (newStatus: BillPublishStatus) => {
     if (newStatus === publishStatus) {
       setOpen(false);
+      return;
+    }
+    if (newStatus === "published" && publishBlocker) {
+      toast.error(publishBlocker);
       return;
     }
 
@@ -64,8 +79,18 @@ export function PublishStatusBadge({
       const formData = new FormData();
       formData.append("billId", billId);
       formData.append("newStatus", newStatus);
-      await updatePublishStatusAction(formData);
+      const result = await updatePublishStatusAction(formData);
+      if (!result.success) {
+        toast.error(result.error ?? "ステータスの更新に失敗しました");
+        return;
+      }
+      toast.success(
+        newStatus === "published"
+          ? "公開しました"
+          : "公開ステータスを変更しました"
+      );
       setOpen(false);
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
@@ -98,13 +123,16 @@ export function PublishStatusBadge({
             ).map(([status, config]) => {
               const Icon = config.icon;
               const isSelected = status === publishStatus;
+              const isBlocked =
+                status === "published" && publishBlocker !== null;
               return (
                 <Button
                   key={status}
                   onClick={() => handleStatusChange(status)}
                   variant={isSelected ? "secondary" : "ghost"}
                   size="sm"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isBlocked}
+                  title={isBlocked ? publishBlocker : undefined}
                   className="w-full justify-start"
                 >
                   {isSubmitting && status !== publishStatus ? (
@@ -117,6 +145,9 @@ export function PublishStatusBadge({
               );
             })}
           </div>
+          {publishBlocker && publishStatus !== "published" && (
+            <p className="text-xs text-amber-700">{publishBlocker}</p>
+          )}
         </div>
       </PopoverContent>
     </Popover>

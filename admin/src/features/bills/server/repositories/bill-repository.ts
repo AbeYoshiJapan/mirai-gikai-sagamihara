@@ -73,12 +73,18 @@ export async function deleteBillById(id: string) {
 
 export async function updateBillPublishStatus(
   billId: string,
-  publishStatus: BillPublishStatus
+  publishStatus: BillPublishStatus,
+  audit: {
+    reviewed_by?: string;
+    reviewed_at?: string;
+    published_by?: string;
+    published_at?: string;
+  }
 ) {
   const supabase = createAdminClient();
   const { error } = await supabase
     .from("bills")
-    .update({ publish_status: publishStatus })
+    .update({ publish_status: publishStatus, ...audit })
     .eq("id", billId);
 
   if (error) {

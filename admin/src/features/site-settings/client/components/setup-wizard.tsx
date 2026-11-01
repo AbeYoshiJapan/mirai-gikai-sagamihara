@@ -171,7 +171,12 @@ export function SetupWizard({ current, isSetupCompleted }: SetupWizardProps) {
         ...settings,
         site: { ...settings.site, setup_completed: true },
       };
-      const result = await saveSiteSettingsSections(payload);
+      const result = await saveSiteSettingsSections(payload, {
+        presetId:
+          preset in SITE_SETTINGS_PRESETS
+            ? (preset as SiteSettingsPresetId)
+            : null,
+      });
       if (result.error) {
         if (result.fieldErrors) {
           for (const [path, message] of Object.entries(result.fieldErrors)) {

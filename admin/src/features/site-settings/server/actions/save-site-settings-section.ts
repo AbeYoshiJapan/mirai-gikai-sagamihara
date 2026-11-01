@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  SITE_SETTINGS_PRESETS,
+  type SiteSettingsPresetId,
+} from "@mirai-gikai/shared/site-settings/presets";
 import { parseSection } from "@mirai-gikai/shared/site-settings/resolve";
 import {
   SITE_SETTINGS_SECTIONS,
@@ -8,6 +12,10 @@ import {
 } from "@mirai-gikai/shared/site-settings/schema";
 import { ZodError } from "zod";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
+import {
+  countCommittees,
+  insertCommitteeRecords,
+} from "@/features/committees/server/repositories/committee-repository";
 import {
   invalidateWebCache,
   WEB_CACHE_TAGS,
@@ -76,9 +84,11 @@ export async function saveSiteSettingsSection<S extends SiteSettingsSection>(
 /**
  * 複数セクションをまとめて保存する（初期設定ウィザード用）。
  * 1 セクションでも検証に失敗したら何も保存しない。
+ * presetId を渡すと、委員会がまだ 1 件も無いときだけプリセットの委員会を入れる。
  */
 export async function saveSiteSettingsSections(
-  input: Partial<Record<SiteSettingsSection, unknown>>
+  input: Partial<Record<SiteSettingsSection, unknown>>,
+  options: { presetId?: SiteSettingsPresetId | null } = {}
 ): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
   try {
     const admin = await requireAdmin();
@@ -117,7 +127,19 @@ export async function saveSiteSettingsSections(
       });
     }
 
-    await invalidateWebCache([WEB_CACHE_TAGS.SITE_SETTINGS]);
+    const preset = options.presetId
+      ? SITE_SETTINGS_PRESETS[options.presetId]
+      : null;
+    if (preset && (await countCommittees()) === 0) {
+      await insertCommitteeRecords(
+        preset.committees.map((c) => ({ ...c, is_active: true }))
+      );
+    }
+
+    await invalidateWebCache([
+      WEB_CACHE_TAGS.SITE_SETTINGS,
+      WEB_CACHE_TAGS.BILLS,
+    ]);
     return {};
   } catch (error) {
     console.error("Save site settings error:", error);

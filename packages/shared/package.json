@@ -128,6 +128,10 @@
       "types": "./src/og/og-assets.ts",
       "default": "./src/og/og-assets.ts"
     },
+    "./bill-sources/labels": {
+      "types": "./src/bill-sources/labels.ts",
+      "default": "./src/bill-sources/labels.ts"
+    },
     "./bill-stage/labels": {
       "types": "./src/bill-stage/labels.ts",
       "default": "./src/bill-stage/labels.ts"

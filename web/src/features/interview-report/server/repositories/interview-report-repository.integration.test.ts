@@ -124,7 +124,7 @@ describe("updateReportPublicSetting 統合テスト", () => {
     }
   });
 
-  it("公開許可時に自動公開条件を満たす未公開レポートを管理者公開にする", async () => {
+  it("公開許可しても管理者公開（is_public_by_admin）は変わらない（自動公開はしない）", async () => {
     const { bill, report } = await createReportFixture(testUser.id, {
       is_public_by_admin: false,
       is_public_by_user: false,
@@ -137,42 +137,24 @@ describe("updateReportPublicSetting 統合テスト", () => {
 
     await expect(findPublicFlags(report.id)).resolves.toEqual({
       is_public_by_user: true,
+      is_public_by_admin: false,
+    });
+  });
+
+  it("管理者が公開済みのレポートでユーザーが公開を取り下げると表示されなくなる", async () => {
+    const { bill, report } = await createReportFixture(testUser.id, {
       is_public_by_admin: true,
-    });
-  });
-
-  it("自動公開条件を満たさない場合はユーザー公開設定だけを更新する", async () => {
-    const { bill, report } = await createReportFixture(testUser.id, {
-      is_public_by_admin: false,
-      is_public_by_user: false,
-      moderation_score: AUTO_PUBLISH_MAX_MODERATION_SCORE + 1,
-      contentRichnessTotal: AUTO_PUBLISH_MIN_CONTENT_RICHNESS,
-    });
-    billIds.push(bill.id);
-
-    await updateReportPublicSetting(report.id, true);
-
-    await expect(findPublicFlags(report.id)).resolves.toEqual({
       is_public_by_user: true,
-      is_public_by_admin: false,
-    });
-  });
-
-  it("管理者が非公開にしたレポートはユーザー操作で再公開しない", async () => {
-    const { bill, report } = await createReportFixture(testUser.id, {
-      is_public_by_admin: false,
-      is_public_by_user: false,
-      admin_unpublished_at: new Date().toISOString(),
       moderation_score: AUTO_PUBLISH_MAX_MODERATION_SCORE,
       contentRichnessTotal: AUTO_PUBLISH_MIN_CONTENT_RICHNESS,
     });
     billIds.push(bill.id);
 
-    await updateReportPublicSetting(report.id, true);
+    await updateReportPublicSetting(report.id, false);
 
     await expect(findPublicFlags(report.id)).resolves.toEqual({
-      is_public_by_user: true,
-      is_public_by_admin: false,
+      is_public_by_user: false,
+      is_public_by_admin: true,
     });
   });
 

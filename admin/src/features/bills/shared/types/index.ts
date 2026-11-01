@@ -1,3 +1,7 @@
+import {
+  getBillDecisionLabel,
+  getBillOutcomeLabel,
+} from "@mirai-gikai/shared/bill-stage/labels";
 import type { Database } from "@mirai-gikai/supabase";
 
 export type Bill = Database["public"]["Tables"]["bills"]["Row"];
@@ -54,49 +58,20 @@ export const BILL_STATUS_ORDER: Record<BillStatus, number> = {
   special_committee: 8,
 };
 
-// House display mapping
-export const HOUSE_LABELS: Record<OriginatingHouse, string> = {
-  HR: "衆議院",
-  HC: "参議院",
-};
-
 export const ARTICLE_KIND_LABELS: Record<BillArticleKind, string> = {
   standard: "通常版",
   ai_generated: "AI自動生成版",
 };
 
-// ステータスを日本語ラベルに変換する関数
-export function getBillStatusLabel(
-  status: BillStatus,
-  originatingHouse?: OriginatingHouse | null
-): string {
-  switch (status) {
-    case "preparing":
-      return "準備中";
-    case "introduced":
-      return "提出済み";
-    case "in_originating_house":
-      if (originatingHouse) {
-        return `${HOUSE_LABELS[originatingHouse]}審議中`;
-      }
-      return "審議中";
-    case "in_receiving_house":
-      if (originatingHouse) {
-        const receivingHouse = originatingHouse === "HR" ? "HC" : "HR";
-        return `${HOUSE_LABELS[receivingHouse]}審議中`;
-      }
-      return "審議中";
-    case "enacted":
-      return "成立";
-    case "rejected":
-      return "否決";
-    case "reported":
-      return "委員会報告";
-    case "plan":
-      return "行政計画";
-    case "special_committee":
-      return "特別委員会";
-    default:
-      return status;
-  }
+/**
+ * 一覧の審議状況ラベル。種類・段階・結果から決める（共通語彙）。
+ * 議決済みなら「可決（賛成多数）」のように採決結果も添える。
+ */
+export function getBillStageLabel(bill: {
+  bill_kind: Bill["bill_kind"];
+  stage: Bill["stage"];
+  result: Bill["result"];
+  vote_outcome: Bill["vote_outcome"];
+}): string {
+  return getBillDecisionLabel(bill) ?? getBillOutcomeLabel(bill);
 }

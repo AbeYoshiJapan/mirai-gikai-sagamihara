@@ -99,7 +99,6 @@ async function executeAssign(versionId: string): Promise<void> {
   // version が完了してから抽出済みを記録する（finalize 後に置く理由は増分側と同じ）。
   // フル分析では全対象意見を抽出済みにし、以後の増分で「新規」として再抽出されないようにする。
   await markExtractedBestEffort(targetOpinions.map((o) => o.opinion_id));
-  await autoPublish(versionId);
 }
 
 async function runFullAnalysis(
@@ -142,20 +141,10 @@ async function groupAndSave(
 
 // ── 増分分析（新規意見のみ抽出し、既存トピックへ差分追加） ──
 
-/**
- * 既定動作（§7）: completed したら自動公開（旧公開版は降ろす）。公開は付帯処理なので
- * 失敗しても version を failed に倒さない（best-effort）。未公開なら Admin 手動公開で復旧可。
+/*
+ * 分析が completed になっても自動では公開しない。公開は管理画面の「公開」操作（publishVersion）
+ * だけで行う（公開前に管理人が内容を確認する方針）。
  */
-async function autoPublish(versionId: string): Promise<void> {
-  try {
-    await publishVersion(versionId);
-  } catch (error) {
-    console.error(
-      `[UserTopicAnalysis] auto-publish failed (version ${versionId} stays completed):`,
-      error
-    );
-  }
-}
 
 /**
  * 抽出済みウォーターマークの記録（best-effort）。version 完了後の付帯処理なので、
@@ -242,7 +231,6 @@ async function runIncrementalAnalysis(
   // finalize 失敗時に「未保存なのに抽出済み」になり、新規意見が次回以降に再抽出されず
   // 新トピックが二度と提案されなくなるため（completed 後に置く）。
   await markExtractedBestEffort(unextracted.map((o) => o.opinion_id));
-  await autoPublish(versionId);
 }
 
 /**

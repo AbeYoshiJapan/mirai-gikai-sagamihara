@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
+import type { Committee } from "@/features/committees/shared/types";
 import type { DietSession } from "@/features/diet-sessions/shared/types";
 import { createBill } from "../../server/actions/create-bill";
 import { type BillCreateInput, billCreateSchema } from "../../shared/types";
@@ -15,9 +16,13 @@ import { BillFormFields } from "./bill-form-fields";
 
 interface BillCreateFormProps {
   dietSessions: DietSession[];
+  committees: Committee[];
 }
 
-export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
+export function BillCreateForm({
+  dietSessions,
+  committees,
+}: BillCreateFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
 
   // Default to the latest session (first in the list, sorted by start_date desc)
@@ -28,8 +33,15 @@ export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
     resolver: zodResolver(billCreateSchema),
     defaultValues: {
       name: "",
-      status: "preparing",
-      originating_house: "HR",
+      bill_number: null,
+      bill_kind: "ordinance",
+      proposer_kind: "mayor",
+      committee_id: null,
+      stage: "preparing",
+      result: null,
+      vote_outcome: null,
+      decided_on: "",
+      bill_document_url: null,
       status_note: null,
       submitted_date: new Date().toLocaleDateString("sv-SE", {
         timeZone: "Asia/Tokyo",
@@ -62,6 +74,7 @@ export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
             <BillFormFields
               control={form.control}
               dietSessions={dietSessions}
+              committees={committees}
             />
 
             {error && (

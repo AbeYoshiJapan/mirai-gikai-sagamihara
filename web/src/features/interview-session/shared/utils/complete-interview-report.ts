@@ -1,5 +1,4 @@
 import { enrichOpinionsWithSourceContent } from "@mirai-gikai/shared/interview-report/enrich-opinions";
-import { isReportAutoPublishEligible } from "@mirai-gikai/shared/report-publication/auto-publish";
 import type { InterviewReportData } from "../schemas";
 import type { InterviewMessage, InterviewReportInsert } from "../types";
 
@@ -32,12 +31,6 @@ export function buildCompletedInterviewReportInsert({
     messages
   );
 
-  const shouldAutoPublish = isReportAutoPublishEligible({
-    isPublicByUser: isPublicByUser ?? false,
-    moderationScore,
-    totalContentRichness: reportData.content_richness.total,
-  });
-
   return {
     interview_session_id: sessionId,
     summary: reportData.summary,
@@ -59,6 +52,6 @@ export function buildCompletedInterviewReportInsert({
     ...(typeof isDataReuseConsented === "boolean"
       ? { is_data_reuse_consented: isDataReuseConsented }
       : {}),
-    ...(shouldAutoPublish ? { is_public_by_admin: true } : {}),
+    // 公開（is_public_by_admin）は管理者の操作だけで行う。ここでは触らない
   };
 }

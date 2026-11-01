@@ -1,7 +1,9 @@
 import { MODERATION_THRESHOLDS } from "../moderation/moderation";
 
+/** 一括公開ボタンの既定しきい値（モデレーションスコアの上限） */
 export const AUTO_PUBLISH_MAX_MODERATION_SCORE =
   MODERATION_THRESHOLDS.WARNING - 1;
+/** 一括公開ボタンの既定しきい値（内容の充実度の下限） */
 export const AUTO_PUBLISH_MIN_CONTENT_RICHNESS = 50;
 /**
  * オープンデータAPIが議案を配布対象に含める下限。
@@ -13,47 +15,12 @@ export const AUTO_PUBLISH_MIN_CONTENT_RICHNESS = 50;
  */
 export const MIN_PUBLIC_REPORTS_FOR_OPEN_DATA = 20;
 
-export type AutoPublishReportInput = {
-  isPublicByUser: boolean;
-  moderationScore: number | null;
-  totalContentRichness: number | null;
-};
-
-export function isReportAutoPublishEligible({
-  isPublicByUser,
-  moderationScore,
-  totalContentRichness,
-}: AutoPublishReportInput): boolean {
-  return (
-    isPublicByUser &&
-    moderationScore !== null &&
-    moderationScore <= AUTO_PUBLISH_MAX_MODERATION_SCORE &&
-    totalContentRichness !== null &&
-    totalContentRichness >= AUTO_PUBLISH_MIN_CONTENT_RICHNESS
-  );
-}
-
-export type UserSettingAutoPublishInput = AutoPublishReportInput & {
-  isPublicByAdmin: boolean;
-  adminUnpublishedAt: string | null;
-};
-
 /**
- * ユーザーの公開設定変更に伴って is_public_by_admin を引き上げてよいかを判定する。
- * 管理者が明示的に非公開にしたレポート（admin_unpublished_at あり）は、
- * 自動公開条件を満たしていてもユーザー操作では再公開しない。
+ * レポートの公開は管理者の操作（個別の公開・しきい値を指定した一括公開）だけで行う。
+ * 以前はモデレーションスコアと内容の充実度で自動公開していたが、
+ * 「公開前に管理人が確認する」方針により撤去した。上の 2 つのしきい値は
+ * 一括公開ボタンの既定値としてだけ使う。
  */
-export function shouldAutoPublishOnUserSettingChange({
-  isPublicByAdmin,
-  adminUnpublishedAt,
-  ...eligibility
-}: UserSettingAutoPublishInput): boolean {
-  return (
-    !isPublicByAdmin &&
-    adminUnpublishedAt === null &&
-    isReportAutoPublishEligible(eligibility)
-  );
-}
 
 export type PublicReportVisibilityInput = {
   isPublicByAdmin: boolean;

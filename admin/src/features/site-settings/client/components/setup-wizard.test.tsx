@@ -120,7 +120,9 @@ describe("SetupWizard", () => {
     await waitFor(() => {
       expect(mocks.saveSiteSettingsSections).toHaveBeenCalledTimes(1);
     });
-    const payload = mocks.saveSiteSettingsSections.mock.calls[0][0];
+    const [payload, options] = mocks.saveSiteSettingsSections.mock.calls[0];
+    // 「いまの設定から続ける」なのでプリセットの委員会は入れない
+    expect(options).toEqual({ presetId: null });
     expect(Object.keys(payload).sort()).toEqual(
       Object.keys(DEFAULT_SITE_SETTINGS).sort()
     );

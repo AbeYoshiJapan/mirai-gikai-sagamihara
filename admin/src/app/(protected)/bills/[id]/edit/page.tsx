@@ -1,11 +1,14 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BillSourcesForm } from "@/features/bill-sources/client/components/bill-sources-form";
+import { getBillSources } from "@/features/bill-sources/server/loaders/get-bill-sources";
 import { BillEditForm } from "@/features/bills-edit/client/components/bill-edit-form";
 import { BillTagsForm } from "@/features/bills-edit/client/components/bill-tags-form";
 import { getBillById } from "@/features/bills-edit/server/loaders/get-bill-by-id";
 import { getBillContents } from "@/features/bills-edit/server/loaders/get-bill-contents";
 import { getBillTagIds } from "@/features/bills-edit/server/loaders/get-bill-tag-ids";
+import { loadCommittees } from "@/features/committees/server/loaders/load-committees";
 import { loadDietSessions } from "@/features/diet-sessions/server/loaders/load-diet-sessions";
 import { StanceForm } from "@/features/mirai-stance/client/components/stance-form";
 import { getStanceByBillId } from "@/features/mirai-stance/server/loaders/get-stance-by-bill-id";
@@ -20,15 +23,25 @@ interface BillEditPageProps {
 
 export default async function BillEditPage({ params }: BillEditPageProps) {
   const { id } = await params;
-  const [bill, stance, allTags, selectedTagIds, dietSessions, contents] =
-    await Promise.all([
-      getBillById(id),
-      getStanceByBillId(id),
-      loadTags(),
-      getBillTagIds(id),
-      loadDietSessions(),
-      getBillContents(id),
-    ]);
+  const [
+    bill,
+    stance,
+    allTags,
+    selectedTagIds,
+    dietSessions,
+    contents,
+    committees,
+    sources,
+  ] = await Promise.all([
+    getBillById(id),
+    getStanceByBillId(id),
+    loadTags(),
+    getBillTagIds(id),
+    loadDietSessions(),
+    getBillContents(id),
+    loadCommittees(),
+    getBillSources(id),
+  ]);
 
   if (!bill) {
     notFound();
@@ -59,9 +72,15 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
         <BillEditForm
           bill={bill}
           dietSessions={dietSessions}
+          committees={committees}
           shareImageDefaultTitle={normalTitle || bill.name}
         />
-        <StanceForm billId={bill.id} stance={stance} billStatus={bill.status} />
+        <BillSourcesForm billId={bill.id} sources={sources} />
+        <StanceForm
+          billId={bill.id}
+          stance={stance}
+          billStatus={bill.stage === "preparing" ? "preparing" : bill.status}
+        />
         <BillTagsForm
           billId={bill.id}
           allTags={allTags}

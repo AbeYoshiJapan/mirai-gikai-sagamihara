@@ -1,3 +1,4 @@
+import { toBillStageGroup } from "@mirai-gikai/shared/bill-stage/labels";
 import { Plus } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -17,29 +18,38 @@ import { BillActionsMenu } from "../../../client/components/bill-actions-menu/bi
 import { PreviewButton } from "../../../client/components/bill-list/preview-button";
 import { PublishStatusBadge } from "../../../client/components/bill-list/publish-status-badge";
 import { ViewButton } from "../../../client/components/bill-list/view-button";
-import { BILL_STATUS_CONFIG } from "../../../shared/constants/bill-config";
+import { BILL_STAGE_GROUP_CONFIG } from "../../../shared/constants/bill-config";
 import type {
   BillSortConfig,
-  BillStatus,
   BillWithDietSession,
 } from "../../../shared/types";
-import { getBillStatusLabel } from "../../../shared/types";
+import { getBillStageLabel } from "../../../shared/types";
+import { summarizeReviewQueue } from "../../../shared/utils/review-queue";
 import { getBills } from "../../loaders/get-bills";
 
-function StatusBadge({
-  status,
-  originatingHouse,
-}: {
-  status: BillStatus;
-  originatingHouse: BillWithDietSession["originating_house"];
-}) {
-  const config = BILL_STATUS_CONFIG[status];
+function StageBadge({ bill }: { bill: BillWithDietSession }) {
+  const group = toBillStageGroup(bill);
+  const config = BILL_STAGE_GROUP_CONFIG[group];
   const Icon = config.icon;
 
   return (
     <div className="inline-flex items-center gap-1.5 py-1 rounded-full text-sm font-bold">
       <Icon className="h-4 w-4" />
-      <span>{getBillStatusLabel(status, originatingHouse)}</span>
+      <span>{getBillStageLabel(bill)}</span>
+    </div>
+  );
+}
+
+function ReviewQueueSummary({ bills }: { bills: BillWithDietSession[] }) {
+  const summary = summarizeReviewQueue(bills);
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600">
+      <span>{bills.length}件の議案</span>
+      <span>公開中 {summary.published}</span>
+      <span className={summary.awaitingReview > 0 ? "text-amber-700" : ""}>
+        未確認の下書き {summary.awaitingReview}
+      </span>
+      <span>確認済み・未公開 {summary.reviewedUnpublished}</span>
     </div>
   );
 }
@@ -50,7 +60,7 @@ export async function BillList({ sortConfig }: { sortConfig: BillSortConfig }) {
   return (
     <div>
       <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="text-sm text-gray-600">{bills.length}件の議案</div>
+        <ReviewQueueSummary bills={bills} />
         <Link href={routes.billNew()}>
           <Button>
             <Plus className="h-4 w-4 mr-1" />
@@ -119,6 +129,10 @@ function BillRow({ bill }: { bill: BillWithDietSession }) {
           <PublishStatusBadge
             billId={bill.id}
             publishStatus={bill.publish_status}
+            gate={{
+              is_review_completed: bill.is_review_completed,
+              article_kind: bill.article_kind,
+            }}
           />
           {(bill.publish_status === "draft" ||
             bill.publish_status === "coming_soon") && (
@@ -130,10 +144,7 @@ function BillRow({ bill }: { bill: BillWithDietSession }) {
         </div>
       </TableCell>
       <TableCell>
-        <StatusBadge
-          status={bill.status}
-          originatingHouse={bill.originating_house}
-        />
+        <StageBadge bill={bill} />
       </TableCell>
       <TableCell className="text-gray-600">
         {bill.submitted_date
