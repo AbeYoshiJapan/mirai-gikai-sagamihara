@@ -1,0 +1,844 @@
+[
+  {
+    "citation": "令和8年議案第99号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:99",
+    "kind": "bill",
+    "name": "令和7年度相模原市一般会計歳入歳出決算",
+    "number": 99,
+    "number_label": "議案第99号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成多数)",
+    "result": "approved",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第100号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:100",
+    "kind": "bill",
+    "name": "令和7年度相模原市国民健康保険事業特別会計歳入歳出決算",
+    "number": 100,
+    "number_label": "議案第100号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成多数)",
+    "result": "approved",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第101号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:101",
+    "kind": "bill",
+    "name": "令和7年度相模原市介護保険事業特別会計歳入歳出決算",
+    "number": 101,
+    "number_label": "議案第101号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成多数)",
+    "result": "approved",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第102号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:102",
+    "kind": "bill",
+    "name": "令和7年度相模原市母子父子寡婦福祉資金貸付事業特別会計歳入歳出決算",
+    "number": 102,
+    "number_label": "議案第102号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第103号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:103",
+    "kind": "bill",
+    "name": "令和7年度相模原市後期高齢者医療事業特別会計歳入歳出決算",
+    "number": 103,
+    "number_label": "議案第103号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成多数)",
+    "result": "approved",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第104号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:104",
+    "kind": "bill",
+    "name": "令和7年度相模原市自動車駐車場事業特別会計歳入歳出決算",
+    "number": 104,
+    "number_label": "議案第104号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第105号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:105",
+    "kind": "bill",
+    "name": "令和7年度相模原市麻溝台・新磯野第一整備地区土地区画整理事業特別会計歳入歳出決算",
+    "number": 105,
+    "number_label": "議案第105号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第106号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:106",
+    "kind": "bill",
+    "name": "令和7年度相模原市公共用地先行取得事業特別会計歳入歳出決算",
+    "number": 106,
+    "number_label": "議案第106号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第107号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:107",
+    "kind": "bill",
+    "name": "令和7年度相模原市財産区特別会計歳入歳出決算",
+    "number": 107,
+    "number_label": "議案第107号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第108号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:108",
+    "kind": "bill",
+    "name": "令和7年度相模原市公債管理特別会計歳入歳出決算",
+    "number": 108,
+    "number_label": "議案第108号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第109号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:109",
+    "kind": "bill",
+    "name": "令和7年度相模原市簡易水道事業会計決算",
+    "number": 109,
+    "number_label": "議案第109号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第110号",
+    "committees": [
+      "決算特別委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:110",
+    "kind": "bill",
+    "name": "令和7年度相模原市下水道事業会計決算",
+    "number": 110,
+    "number_label": "議案第110号",
+    "number_year": 2026,
+    "raw_result": "認定(賛成総員)",
+    "result": "approved",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第111号",
+    "committees": [
+      "総務委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:111",
+    "kind": "bill",
+    "name": "相模原市職員等の旅費に関する条例について",
+    "number": 111,
+    "number_label": "議案第111号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成多数)",
+    "result": "passed",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第112号",
+    "committees": [
+      "総務委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:112",
+    "kind": "bill",
+    "name": "相模原市職員の特殊勤務手当に関する条例の一部を改正する条例について",
+    "number": 112,
+    "number_label": "議案第112号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第113号",
+    "committees": [
+      "総務委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:113",
+    "kind": "bill",
+    "name": "相模原市議会議員の議員報酬、費用弁償等に関する条例等の一部を改正する条例について",
+    "number": 113,
+    "number_label": "議案第113号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成多数)",
+    "result": "passed",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第114号",
+    "committees": [
+      "総務委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:114",
+    "kind": "bill",
+    "name": "相模原市市税条例の一部を改正する条例について",
+    "number": 114,
+    "number_label": "議案第114号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第115号",
+    "committees": [
+      "民生委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:115",
+    "kind": "bill",
+    "name": "相模原市国民健康保険診療所条例の一部を改正する条例について",
+    "number": 115,
+    "number_label": "議案第115号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第116号",
+    "committees": [
+      "こども文教委員会"
+    ],
+    "decided_on": "2026-08-24",
+    "key": "2026:bill:116",
+    "kind": "bill",
+    "name": "相模原市立保育所設置条例の一部を改正する条例の一部を改正する条例について",
+    "number": 116,
+    "number_label": "議案第116号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第117号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:117",
+    "kind": "bill",
+    "name": "相模原市高度処理型浄化槽の設置及び管理に関する条例及び相模原市下水道事業の設置等に関する条例の一部を改正する条例について",
+    "number": 117,
+    "number_label": "議案第117号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成多数)",
+    "result": "passed",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第118号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:118",
+    "kind": "bill",
+    "name": "工事請負契約について（防災行政同報無線(ひばり放送)更新整備業務委託）",
+    "number": 118,
+    "number_label": "議案第118号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第119号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:119",
+    "kind": "bill",
+    "name": "工事請負契約について（南清掃工場基幹的設備改良工事）",
+    "number": 119,
+    "number_label": "議案第119号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第120号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:120",
+    "kind": "bill",
+    "name": "工事請負契約について（消防救急デジタル無線設備更新作業委託）",
+    "number": 120,
+    "number_label": "議案第120号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第121号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:121",
+    "kind": "bill",
+    "name": "動産の取得について（救助工作車Ⅲ型）",
+    "number": 121,
+    "number_label": "議案第121号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第122号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:122",
+    "kind": "bill",
+    "name": "動産の取得について（救助用資機材）",
+    "number": 122,
+    "number_label": "議案第122号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第123号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:123",
+    "kind": "bill",
+    "name": "動産の取得について（大型水槽車）",
+    "number": 123,
+    "number_label": "議案第123号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第124号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:124",
+    "kind": "bill",
+    "name": "動産の取得について（災害活動支援車）",
+    "number": 124,
+    "number_label": "議案第124号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第125号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:125",
+    "kind": "bill",
+    "name": "市道の認定について",
+    "number": 125,
+    "number_label": "議案第125号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成多数)",
+    "result": "passed",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第126号",
+    "committees": [
+      "民生委員会",
+      "市民環境経済委員会",
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-01",
+    "key": "2026:bill:126",
+    "kind": "bill",
+    "name": "令和8年度相模原市一般会計補正予算（第2号）",
+    "number": 126,
+    "number_label": "議案第126号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成多数)",
+    "result": "passed",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第127号",
+    "committees": [
+      "総務委員会",
+      "民生委員会",
+      "市民環境経済委員会",
+      "建設委員会",
+      "こども文教委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:127",
+    "kind": "bill",
+    "name": "令和8年度相模原市一般会計補正予算（第3号）",
+    "number": 127,
+    "number_label": "議案第127号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第128号",
+    "committees": [
+      "建設委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:128",
+    "kind": "bill",
+    "name": "令和8年度相模原市自動車駐車場事業特別会計補正予算（第1号）",
+    "number": 128,
+    "number_label": "議案第128号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第129号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:129",
+    "kind": "bill",
+    "name": "教育委員会の委員の選任について",
+    "number": 129,
+    "number_label": "議案第129号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第130号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:130",
+    "kind": "bill",
+    "name": "人権擁護委員の候補者の推薦について",
+    "number": 130,
+    "number_label": "議案第130号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第131号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:131",
+    "kind": "bill",
+    "name": "人権擁護委員の候補者の推薦について",
+    "number": 131,
+    "number_label": "議案第131号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第132号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:132",
+    "kind": "bill",
+    "name": "人権擁護委員の候補者の推薦について",
+    "number": 132,
+    "number_label": "議案第132号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第133号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:133",
+    "kind": "bill",
+    "name": "人権擁護委員の候補者の推薦について",
+    "number": 133,
+    "number_label": "議案第133号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第134号",
+    "committees": [],
+    "decided_on": "2026-09-02",
+    "key": "2026:bill:134",
+    "kind": "bill",
+    "name": "人権擁護委員の候補者の推薦について",
+    "number": 134,
+    "number_label": "議案第134号",
+    "number_year": 2026,
+    "raw_result": "同意(賛成総員)",
+    "result": "consented",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第135号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:135",
+    "kind": "bill",
+    "name": "相模原市立学校体育施設使用料条例の一部を改正する条例について",
+    "number": 135,
+    "number_label": "議案第135号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議案第136号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:bill:136",
+    "kind": "bill",
+    "name": "工事請負契約の変更について（旧東清掃事業所解体工事）",
+    "number": 136,
+    "number_label": "議案第136号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年議提議案第8号",
+    "committees": [],
+    "decided_on": "2026-09-30",
+    "key": "2026:member_bill:8",
+    "kind": "member_bill",
+    "name": "国による義務教育財源の保障及び教育の機会均等と水準の維持・向上並びに行き届いた教育の実現を求める意見書",
+    "number": 8,
+    "number_label": "議提議案第8号",
+    "number_year": 2026,
+    "raw_result": "可決(賛成総員)",
+    "result": "passed",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第7号",
+    "committees": [
+      "総務委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:7",
+    "kind": "petition",
+    "name": "憲法堅持に関する意見書を国に提出するよう求めることについて",
+    "number": 7,
+    "number_label": "陳情第7号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第8号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:8",
+    "kind": "petition",
+    "name": "伊勢山公園の植樹を求めることについて",
+    "number": 8,
+    "number_label": "陳情第8号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第9号",
+    "committees": [
+      "こども文教委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:9",
+    "kind": "petition",
+    "name": "国による義務教育財源の保障、教育の機会均等と水準の維持・向上、並びにゆきとどいた教育の実現を求めることについて",
+    "number": 9,
+    "number_label": "陳情第9号",
+    "number_year": 2026,
+    "raw_result": "採択(賛成総員)",
+    "result": "adopted",
+    "vote_outcome": "unanimous",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第10号",
+    "committees": [
+      "民生委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:10",
+    "kind": "petition",
+    "name": "国に対し、ＯＴＣ類似薬の追加負担の実施を見送ることを求める意見書提出を求めることについて",
+    "number": 10,
+    "number_label": "陳情第10号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第11号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:11",
+    "kind": "petition",
+    "name": "奥山再生に関することについて",
+    "number": 11,
+    "number_label": "陳情第11号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第12号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:12",
+    "kind": "petition",
+    "name": "神奈川県に対して奥山再生の意見書を提出するよう求めることについて",
+    "number": 12,
+    "number_label": "陳情第12号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第13号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:13",
+    "kind": "petition",
+    "name": "日本国に対して奥山再生の意見書を提出するよう求めることについて",
+    "number": 13,
+    "number_label": "陳情第13号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第14号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:14",
+    "kind": "petition",
+    "name": "中和田ふれあい広場からのボール被害について",
+    "number": 14,
+    "number_label": "陳情第14号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第16号",
+    "committees": [
+      "市民環境経済委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:16",
+    "kind": "petition",
+    "name": "非核三原則の尊重と堅持を求める意見書を国に提出することを求めることについて",
+    "number": 16,
+    "number_label": "陳情第16号",
+    "number_year": 2026,
+    "raw_result": "採択(賛成多数)",
+    "result": "adopted",
+    "vote_outcome": "majority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第17号",
+    "committees": [
+      "民生委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:17",
+    "kind": "petition",
+    "name": "高齢者補聴器購入費助成制度の充実を求めることについて",
+    "number": 17,
+    "number_label": "陳情第17号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  },
+  {
+    "citation": "令和8年陳情第18号",
+    "committees": [
+      "民生委員会"
+    ],
+    "decided_on": "2026-09-30",
+    "key": "2026:petition:18",
+    "kind": "petition",
+    "name": "国に対し、ＯＴＣ類似薬の追加負担の実施を見送ることを求める意見書提出について",
+    "number": 18,
+    "number_label": "陳情第18号",
+    "number_year": 2026,
+    "raw_result": "不採択(賛成少数)",
+    "result": "not_adopted",
+    "vote_outcome": "minority",
+    "warnings": []
+  }
+]

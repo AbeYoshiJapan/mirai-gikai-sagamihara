@@ -4,7 +4,7 @@
 結果の語（可決・否決・認定・同意・採択・不採択・継続審査・撤回・承認）と採決区分
 （賛成総員・賛成多数・賛成少数）をサイトの語彙に写す。
 
-注意: 見本の PDF を手元で確かめていないため、列の名前や日付の書き方が違えば
+2026 年 6 月・9 月の実物で確認済み。列の名前や日付の書き方が変わったら
 見出し行の語（_COLUMN_WORDS）を直すこと。
 """
 
@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pdfplumber
 
-from ..meeting import parse_meeting_header
+from ..meeting import meeting_year_of, parse_meeting_header
 from .agenda import parse_committee_cell
 from ..model import ImportResult, Meeting
 from ..numbers import NumberRef, carried_over_flags, parse_number_label
@@ -50,6 +50,8 @@ _VOTE_WORDS: list[tuple[str, str]] = [
     ("全員", "unanimous"),
     ("賛成多数", "majority"),
     ("賛成少数", "minority"),
+    # 「賛成なし」はサイトの語彙に無いので賛成少数に寄せる（原文は raw_result に残る）
+    ("賛成なし", "minority"),
 ]
 _MONTH_DAY_RE = re.compile(r"([0-9０-９]{1,2})\s*[/／月]\s*([0-9０-９]{1,2})\s*日?")
 
@@ -155,7 +157,7 @@ def parse_results_pdf(path: str | Path, *, year: int | None = None) -> ResultsLi
                             raw_number=raw_number,
                             name=name,
                             committees=committees,
-                            decided_on=parse_decided_on(decided_raw or "", year or meeting.council_year),
+                            decided_on=parse_decided_on(decided_raw or "", year or meeting_year_of(meeting)),
                             result=result,
                             vote_outcome=vote,
                             raw_result=normalize_key(result_raw or ""),

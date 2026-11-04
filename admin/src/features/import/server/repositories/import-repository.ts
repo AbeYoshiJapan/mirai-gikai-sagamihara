@@ -21,7 +21,7 @@ export async function findBillsForImport(): Promise<ExistingBill[]> {
   const { data, error } = await supabase
     .from("bills")
     .select(
-      "id, name, bill_number, bill_kind, proposer_kind, committee_id, stage, result, vote_outcome, decided_on, submitted_date, publish_status, diet_session_id, bill_sources(id, kind, url, content_hash, extracted_text)"
+      "id, name, bill_number, bill_kind, proposer_kind, committee_id, stage, result, vote_outcome, decided_on, submitted_date, status_note, publish_status, diet_session_id, bill_sources(id, kind, url, content_hash, extracted_text)"
     )
     .order("created_at", { ascending: false })
     .limit(5000);
@@ -40,6 +40,7 @@ export async function findBillsForImport(): Promise<ExistingBill[]> {
     vote_outcome: row.vote_outcome,
     decided_on: row.decided_on,
     submitted_date: row.submitted_date,
+    status_note: row.status_note,
     publish_status: row.publish_status,
     diet_session_id: row.diet_session_id,
     sources: (row.bill_sources ?? []).map((s) => ({

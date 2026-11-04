@@ -9,6 +9,7 @@ from pathlib import Path
 from .adapters.agenda import agenda_rows_to_items, number_year_of, parse_agenda_pdf
 from .adapters.bills import parse_bill_collection, segment_metadata, segment_to_document
 from .adapters.results import parse_results_pdf, results_to_import
+from .meeting import meeting_year_of
 from .model import ImportBundle, ImportItem, SourceFile
 from .numbers import NumberRef, expand_label_ranges
 from .pdfs import OcrMode, file_sha256, page_count
@@ -123,7 +124,7 @@ def build_results_bundle(
     number_year: int | None = None,
 ) -> ImportBundle:
     results = parse_results_pdf(results_pdf, year=number_year)
-    year = number_year or (int(results.meeting.as_of[:4]) if results.meeting.as_of else results.meeting.council_year)
+    year = number_year or meeting_year_of(results.meeting)
     if year is None:
         raise ValueError("番号の年が分かりません。--number-year を指定してください")
     bundle = ImportBundle(adapter=ADAPTER_RESULTS, source_url=source_url, meeting=results.meeting)

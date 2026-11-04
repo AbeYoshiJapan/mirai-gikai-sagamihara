@@ -95,6 +95,7 @@ function existing(overrides: Partial<ExistingBill> = {}): ExistingBill {
     vote_outcome: null,
     decided_on: null,
     submitted_date: "2026-08-24",
+    status_note: null,
     publish_status: "draft",
     diet_session_id: "s-r8",
     sources: [
@@ -255,6 +256,21 @@ describe("planResultsImport", () => {
         warnings: [],
       },
       {
+        key: "2026:petition:5",
+        kind: "petition",
+        number: 5,
+        number_label: "陳情第5号",
+        number_year: 2026,
+        citation: "令和8年陳情第5号",
+        name: "賛成なしの陳情",
+        committees: [],
+        decided_on: "2026-07-01",
+        result: "not_adopted",
+        vote_outcome: "minority",
+        raw_result: "不採択(賛成なし)",
+        warnings: [],
+      },
+      {
         key: "2026:bill:200",
         kind: "bill",
         number: 200,
@@ -281,10 +297,21 @@ describe("planResultsImport", () => {
       stage: "referred",
       sources: [],
     });
-    const plan = planResultsImport(resultsBundle, [existing(), petition], committees, "s-r8");
+    const noVotes = existing({
+      id: "bill-3",
+      name: "賛成なしの陳情",
+      bill_number: "令和8年陳情第5号",
+      bill_kind: "citizen_petition",
+      stage: "referred",
+      sources: [],
+    });
+    const plan = planResultsImport(resultsBundle, [existing(), petition, noVotes], committees, "s-r8");
     expect(detectImportMode(resultsBundle)).toBe("results");
-    expect(plan.summary).toEqual({ create: 0, update: 2, skip: 1, warnings: 0 });
-    const [bill, continued, missing] = plan.entries;
+    expect(plan.summary).toEqual({ create: 0, update: 3, skip: 1, warnings: 0 });
+    const [bill, continued, none, missing] = plan.entries;
+    expect(none.changes.find((c) => c.field === "status_note")?.to).toBe(
+      "本会議の議決結果：不採択(賛成なし)"
+    );
     expect(bill.changes.map((c) => [c.field, c.to])).toEqual([
       ["stage", "decided"],
       ["result", "approved"],

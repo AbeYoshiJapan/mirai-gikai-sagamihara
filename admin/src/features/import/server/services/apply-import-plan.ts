@@ -64,6 +64,9 @@ export function changesToBillFields(
       case "decided_on":
         fields.decided_on = change.to;
         break;
+      case "status_note":
+        fields.status_note = change.to;
+        break;
       default:
         break;
     }

@@ -15,7 +15,7 @@ import pdfplumber
 from ..classify import committee_full_name, infer_bill_kind, infer_proposer_kind, is_known_committee
 from ..numbers import NumberRef, carried_over_flags, parse_number_label
 from ..text import clean_title, collapse_spaces, normalize_key
-from ..meeting import parse_meeting_header
+from ..meeting import meeting_year_of, parse_meeting_header
 from ..model import ImportItem, Meeting
 
 _ADDED_RE = re.compile(r"^\s*※\s*(.+)$")
@@ -149,10 +149,8 @@ def parse_agenda_pdf(path: str | Path) -> AgendaList:
 
 def number_year_of(meeting: Meeting) -> int | None:
     """番号が属する暦年。議案・陳情の番号は暦年ごとに振り直されるので、
-    「○月○日現在」の年を使う（3 月定例会議は前年の定例会に属するが番号は新年のもの）。"""
-    if meeting.as_of:
-        return int(meeting.as_of[:4])
-    return meeting.council_year
+    会議の年（3 月定例会議は前年の定例会に属するが番号は新年のもの）を使う。"""
+    return meeting_year_of(meeting)
 
 
 def agenda_rows_to_items(agenda: AgendaList, number_year: int) -> list[ImportItem]:

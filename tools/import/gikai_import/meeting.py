@@ -33,3 +33,16 @@ def parse_meeting_header(text: str) -> Meeting:
         if meeting.as_of is None and re.search(r"(現在|議決|採決)", line):
             meeting.as_of = parse_era_date(line)
     return meeting
+
+
+def meeting_year_of(meeting: Meeting) -> int | None:
+    """会議が開かれた暦年。議決日の年や、番号の年（暦年ごとに振り直される）に使う。
+    「令和7年相模原市議会定例会 令和8年3月定例会議」のように会議の呼び名に年があればそれ、
+    無ければ基準日の年、それも無ければ定例会の年。"""
+    if meeting.label:
+        era = parse_era_year(meeting.label)
+        if era:
+            return era[1]
+    if meeting.as_of:
+        return int(meeting.as_of[:4])
+    return meeting.council_year

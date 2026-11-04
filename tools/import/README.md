@@ -97,8 +97,7 @@ python -m pytest
 UPDATE_SNAPSHOTS=1 python -m pytest   # 期待値を書き直す
 ```
 
-`tests/fixtures/` には 2026 年の実物の PDF を置いています。審議結果だけは実物を確かめていないので、
-`tests/fixtures/make_results_fixture.py` で作った合成 PDF を使っています。実物が手に入ったら差し替えてください。
+`tests/fixtures/` には 2026 年の実物の PDF（付議事件一覧・議案集・議提議案・陳情・審議結果）を置いています。
 
 ## PDF の書式が変わったら
 

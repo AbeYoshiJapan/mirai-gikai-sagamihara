@@ -29,8 +29,10 @@ def test_bundle_attaches_documents_and_reports_missing(fixtures):
 
 
 def test_results_bundle(fixtures):
-    bundle = build_results_bundle(fixtures / "synthetic_kekka.pdf", results_url="https://example.com/kekka.pdf")
+    bundle = build_results_bundle(fixtures / "2026_kekka_9_0930.pdf", results_url="https://example.com/kekka.pdf")
     data = bundle.to_dict()
     assert data["source"]["adapter"] == "sagamihara_results_pdf"
-    assert len(data["results"]) == 9
+    assert data["source"]["files"][0]["label"] == "審議結果"
+    assert len(data["results"]) == 50
     assert data["results"][0]["citation"] == "令和8年議案第99号"
+    assert data["results"][0]["decided_on"] == "2026-09-30"

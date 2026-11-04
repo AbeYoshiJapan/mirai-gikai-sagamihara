@@ -39,6 +39,7 @@ export type ExistingBill = {
   vote_outcome: VoteOutcome | null;
   decided_on: string | null;
   submitted_date: string | null;
+  status_note: string | null;
   publish_status: string;
   diet_session_id: string | null;
   sources: ExistingBillSource[];
@@ -370,6 +371,15 @@ export function planResultsImport(
       }
       if (result.decided_on && found.decided_on !== result.decided_on) {
         changes.push({ field: "decided_on", label: "議決日", from: found.decided_on, to: result.decided_on });
+      }
+      // 「賛成なし」はサイトの採決区分に無く「賛成少数」に寄せるので、原文を補足に残す
+      if (result.raw_result.includes("賛成なし") && !found.status_note) {
+        changes.push({
+          field: "status_note",
+          label: "補足",
+          from: null,
+          to: `本会議の議決結果：${result.raw_result}`,
+        });
       }
     }
     const committee = result.committees[0] ? findCommittee(committees, result.committees[0]) : null;
