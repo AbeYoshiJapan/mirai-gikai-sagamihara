@@ -70,7 +70,8 @@ export async function updatePublishStatusAction(
         reviewed_by: bill.reviewed_by ?? admin.id,
         reviewed_at: bill.reviewed_at ?? now,
         published_by: admin.id,
-        published_at: bill.published_at ?? now,
+        // published_at は提出日の古い別名なので触らない。公開日時は first_published_at に残す
+        first_published_at: bill.first_published_at ?? now,
       });
     } else {
       await updateBillPublishStatus(billId, newStatus as BillPublishStatus, {});

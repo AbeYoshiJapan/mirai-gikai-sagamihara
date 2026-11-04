@@ -78,7 +78,7 @@ export async function updateBillPublishStatus(
     reviewed_by?: string;
     reviewed_at?: string;
     published_by?: string;
-    published_at?: string;
+    first_published_at?: string;
   }
 ) {
   const supabase = createAdminClient();

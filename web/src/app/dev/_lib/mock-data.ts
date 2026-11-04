@@ -145,6 +145,7 @@ const baseBill: BillWithContent = {
   reviewed_by: null,
   reviewed_at: null,
   published_by: null,
+  first_published_at: null,
   created_at: "2026-02-15T00:00:00Z",
   updated_at: "2026-02-15T00:00:00Z",
   bill_content: createMockBillContent(),

@@ -43,6 +43,7 @@ const makeBill = (
   reviewed_by: null,
   reviewed_at: null,
   published_by: null,
+  first_published_at: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   bill_content: {

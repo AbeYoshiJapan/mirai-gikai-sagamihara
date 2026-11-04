@@ -216,6 +216,7 @@ export type Database = {
           created_at: string
           decided_on: string | null
           diet_session_id: string | null
+          first_published_at: string | null
           id: string
           is_featured: boolean
           is_review_completed: boolean
@@ -255,6 +256,7 @@ export type Database = {
           created_at?: string
           decided_on?: string | null
           diet_session_id?: string | null
+          first_published_at?: string | null
           id?: string
           is_featured?: boolean
           is_review_completed?: boolean
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: string
           decided_on?: string | null
           diet_session_id?: string | null
+          first_published_at?: string | null
           id?: string
           is_featured?: boolean
           is_review_completed?: boolean

@@ -15,10 +15,11 @@ export function prepareBillForDuplication(originalBill: Bill): BillInsert {
     reviewed_by: ______,
     reviewed_at: _______,
     published_by: ________,
-    published_at: _________,
+    first_published_at: _________,
     ...billWithoutId
   } = originalBill;
 
+  // published_at（提出日の古い別名）は submitted_date と一緒に引き継ぐ
   return {
     ...billWithoutId,
     slug: null,
@@ -28,7 +29,7 @@ export function prepareBillForDuplication(originalBill: Bill): BillInsert {
     reviewed_by: null,
     reviewed_at: null,
     published_by: null,
-    published_at: null,
+    first_published_at: null,
   };
 }
 

@@ -9,7 +9,10 @@ import {
   submitArticleReportCore,
 } from "./submit-article-report-core";
 
-describe("submitArticleReportCore 統合テスト", () => {
+// 相模原版では AI 自動生成版（article_kind = ai_generated）はレビュー完了にできず、公開ゲートにより
+// 公開もできない（解説は管理者が確認して通常版として公開する）。公開中の AI 版記事に対する誤り報告という
+// 本家の経路は使われないので、このテストは飛ばす。
+describe.skip("submitArticleReportCore 統合テスト", () => {
   const billIds: string[] = [];
   let baseDeps: SubmitArticleReportDeps;
 

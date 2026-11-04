@@ -146,9 +146,9 @@ await expectError(
 );
 await q(`update bills set reviewed_at=now(), reviewed_by=$2 where id=$1`, [g.id, user.id]);
 expect(
-  "確認済みなら公開でき published_at が入る",
-  (await q(`update bills set publish_status='published' where id=$1 returning publish_status, (published_at is not null) as has_published_at`, [g.id]))[0],
-  { publish_status: "published", has_published_at: true }
+  "確認済みなら公開でき first_published_at が入る（提出日の別名 published_at は触らない）",
+  (await q(`update bills set publish_status='published' where id=$1 returning publish_status, (first_published_at is not null) as has_first_published_at, submitted_date, published_at`, [g.id]))[0],
+  { publish_status: "published", has_first_published_at: true, submitted_date: null, published_at: null }
 );
 expect(
   "レビュー完了を外すと確認記録が消える",

@@ -44,7 +44,7 @@ describe("enforce_publish_gate", () => {
     expect(error?.message).toContain("reviewed_at");
   });
 
-  it("レビュー完了と確認日時がそろえば公開でき、published_at が記録される", async () => {
+  it("レビュー完了と確認日時がそろえば公開でき、first_published_at が記録される", async () => {
     const bill = await createTestBill();
     billIds.push(bill.id);
 
@@ -66,7 +66,10 @@ describe("enforce_publish_gate", () => {
 
     expect(error).toBeNull();
     expect(data?.publish_status).toBe("published");
-    expect(data?.published_at).not.toBeNull();
+    expect(data?.first_published_at).not.toBeNull();
+    // published_at は提出日（submitted_date）の古い別名なので、公開しても提出日は入らない
+    expect(data?.submitted_date).toBeNull();
+    expect(data?.published_at).toBeNull();
   });
 
   it("レビュー完了を外すと確認者・確認日時も消える", async () => {

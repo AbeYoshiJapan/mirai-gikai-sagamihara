@@ -18,6 +18,7 @@ const baseBill: Bill = {
   originating_house: "HR",
   publish_status: "published",
   published_at: null,
+  first_published_at: null,
   submitted_date: null,
   share_thumbnail_url: null,
   shugiin_url: null,
@@ -74,7 +75,7 @@ describe("prepareBillForDuplication", () => {
     expect(result.reviewed_by).toBeNull();
     expect(result.reviewed_at).toBeNull();
     expect(result.published_by).toBeNull();
-    expect(result.published_at).toBeNull();
+    expect(result.first_published_at).toBeNull();
   });
 
   it("議案番号・種類・付託先・段階は引き継ぐ", () => {
