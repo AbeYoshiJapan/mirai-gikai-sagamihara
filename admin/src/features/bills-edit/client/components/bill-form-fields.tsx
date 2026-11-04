@@ -315,7 +315,7 @@ export function BillFormFields({
               <Textarea
                 {...field}
                 value={field.value ?? ""}
-                placeholder="議案の補足情報やチームみらいの仮説などを入力"
+                placeholder="議案の補足情報や運営者の見立てなどを入力"
                 className="min-h-[200px] resize-y"
               />
             </FormControl>

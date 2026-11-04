@@ -23,6 +23,11 @@ export const env = {
   /** 公開前サイトの確認用の合言葉。web 側と同じ値にする。未設定なら REVALIDATE_SECRET */
   sitePreviewSecret:
     process.env.SITE_PREVIEW_SECRET || process.env.REVALIDATE_SECRET,
+  /**
+   * ログイン画面に「Google でログイン」を出すか。Supabase 側で Google プロバイダを
+   * 設定したときだけ "true" にする（既定は非表示。メール＋パスワードのみ）
+   */
+  googleLoginEnabled: process.env.ADMIN_GOOGLE_LOGIN === "true",
   // トピック分析・バックフィルを実行する Cloud Run Job のトリガ設定
   gcp: {
     projectId: process.env.GCP_PROJECT_ID,

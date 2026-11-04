@@ -20,7 +20,12 @@ import { type LoginFormData, loginSchema } from "../../shared/types";
 import { useLogin } from "../hooks/use-login";
 import { signInWithGoogle } from "../lib/auth-client";
 
-export function LoginForm() {
+type LoginFormProps = {
+  /** Supabase に Google プロバイダを設定したときだけ true（既定は非表示） */
+  showGoogleLogin?: boolean;
+};
+
+export function LoginForm({ showGoogleLogin = false }: LoginFormProps) {
   const searchParams = useSearchParams();
   const { login, isLoading, error } = useLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -57,25 +62,29 @@ export function LoginForm() {
 
   return (
     <div className="space-y-6">
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        onClick={handleGoogleLogin}
-        disabled={isLoading || isGoogleLoading}
-      >
-        <GoogleIcon />
-        {isGoogleLoading ? "リダイレクト中..." : "Googleでログイン"}
-      </Button>
+      {showGoogleLogin && (
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+            disabled={isLoading || isGoogleLoading}
+          >
+            <GoogleIcon />
+            {isGoogleLoading ? "リダイレクト中..." : "Googleでログイン"}
+          </Button>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">または</span>
-        </div>
-      </div>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">または</span>
+            </div>
+          </div>
+        </>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -136,7 +145,7 @@ export function LoginForm() {
             className="w-full"
             disabled={isLoading || isGoogleLoading}
           >
-            {isLoading ? "ログイン中..." : "メールアドレスでログイン"}
+            {isLoading ? "ログイン中..." : "ログイン"}
           </Button>
         </form>
       </Form>

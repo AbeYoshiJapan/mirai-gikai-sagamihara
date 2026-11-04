@@ -120,7 +120,7 @@ export function StanceForm({ billId, stance, billStatus }: StanceFormProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <CardTitle>チームみらいのスタンス</CardTitle>
+          <CardTitle>運営者の賛否</CardTitle>
           {stance && !stance.is_published && (
             <Badge variant="outline">非公開</Badge>
           )}

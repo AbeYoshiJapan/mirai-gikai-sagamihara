@@ -67,6 +67,7 @@
 | `NEXT_PUBLIC_GA_TRACKING_ID` | ○ | − | Google Analytics を使うなら |
 | `OPEN_DATA_RATE_LIMIT_PER_IP` / `OPEN_DATA_RATE_LIMIT_GLOBAL` | ○ | − | オープンデータ API の上限（既定値のままでよい） |
 | `ADMIN_MCP_TOKEN` | − | ○ | Claude Code などから `/api/mcp` を使うときだけ。未設定なら MCP は全部拒否されます |
+| `ADMIN_GOOGLE_LOGIN` | − | ○ | Supabase に Google プロバイダを設定し、ログイン画面に「Google でログイン」を出すときだけ `true` |
 | `CHAT_*`・`LANGFUSE_*`・`GCP_*`・`SUPABASE_AUTH_EXTERNAL_GOOGLE_*`・`ADMIN_AUTH_CALLBACK_URL` | − | − | 本家由来。チャット・Langfuse・Cloud Run・Google ログインは使いません（`ADMIN_AUTH_CALLBACK_URL` はローカルの config.toml 用） |
 
 ## 3. 管理画面で初期設定 → 取込 → 公開

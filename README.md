@@ -73,6 +73,7 @@ pnpm dev
 | `SITE_PREVIEW_SECRET` | 公開前（「公開中」オフ）のサイトを管理者が確認するための合言葉。web と admin の両方に同じ値を設定。未設定なら `REVALIDATE_SECRET` を使う |
 | `READER_POST_SLACK_WEBHOOK_URL` | 意見・質問フォームの投稿を Slack に通知する Incoming Webhook（任意。未設定なら `ARTICLE_REPORT_SLACK_WEBHOOK_URL`） |
 | `IP_HASH_SALT` | 投稿の連投対策で IP アドレスをハッシュ化するときの salt（任意。未設定なら `REVALIDATE_SECRET`）。生の IP は保存しない |
+| `ADMIN_GOOGLE_LOGIN` | admin のログイン画面に「Google でログイン」を出すなら `true`（Supabase 側の Google プロバイダ設定が必要）。既定はメール＋パスワードだけ |
 
 ## マイグレーション
 

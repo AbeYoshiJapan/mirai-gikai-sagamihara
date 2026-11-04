@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "@/features/auth/client/components/login-form";
+import { env } from "@/lib/env";
 
 export default function LoginPage() {
   return (
@@ -11,17 +12,17 @@ export default function LoginPage() {
             管理者ログイン
           </CardTitle>
           <p className="text-sm text-muted-foreground text-center">
-            みらい議会 Admin
+            みらい議会 管理画面
           </p>
         </CardHeader>
         <CardContent>
           <Suspense fallback={<div>Loading...</div>}>
-            <LoginForm />
+            <LoginForm showGoogleLogin={env.googleLoginEnabled} />
           </Suspense>
 
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
-              © 2025 チームみらい. All rights reserved.
+              オープンソース「みらい議会」（AGPL-3.0）をもとに運営者が独自に運営しています
             </p>
           </div>
         </CardContent>
