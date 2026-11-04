@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  type CustomEditor,
+  type ArrayEditorKind,
   type FieldOption,
   SNS_ICON_OPTIONS,
 } from "../../shared/field-definitions";
@@ -51,7 +51,7 @@ type Column = {
 };
 
 const EDITORS: Record<
-  CustomEditor,
+  ArrayEditorKind,
   { title: string; columns: Column[]; empty: () => Record<string, unknown> }
 > = {
   sns: {
@@ -188,7 +188,7 @@ export function ArrayEditor({
   control,
   name,
   disabled,
-}: EditorProps & { editor: CustomEditor }) {
+}: EditorProps & { editor: ArrayEditorKind }) {
   const config = EDITORS[editor];
   const { fields, append, remove } = useFieldArray({ control, name });
   const { getFieldState } = useFormContext();

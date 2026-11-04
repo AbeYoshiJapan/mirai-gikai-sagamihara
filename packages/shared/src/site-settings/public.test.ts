@@ -5,6 +5,7 @@ import {
   brandColorsToCss,
   renderLegalText,
   renderOperatorDisclaimer,
+  splitSiteName,
   toPublicSiteSettings,
 } from "./public";
 import { renderTemplate } from "./templates";
@@ -49,10 +50,16 @@ describe("toPublicSiteSettings", () => {
 });
 
 describe("brandAsset / brandColorsToCss", () => {
-  it("空なら既定パス、設定があればその URL", () => {
+  it("空なら選んだブランド案の同梱画像、設定があればその URL", () => {
     expect(brandAsset(DEFAULT_SITE_SETTINGS.brand, "logo_url")).toBe(
-      "/img/logo.svg"
+      "/brand/kakehashi/logo.svg"
     );
+    expect(
+      brandAsset(
+        { ...DEFAULT_SITE_SETTINGS.brand, preset: "ajisai" },
+        "ogp_image_url"
+      )
+    ).toBe("/brand/ajisai/ogp.png");
     expect(
       brandAsset(
         { ...DEFAULT_SITE_SETTINGS.brand, logo_url: "https://x.test/l.svg" },
@@ -61,9 +68,39 @@ describe("brandAsset / brandColorsToCss", () => {
     ).toBe("https://x.test/l.svg");
   });
 
+  it("custom で画像が空なら案1 の同梱画像に戻る", () => {
+    expect(
+      brandAsset(
+        { ...DEFAULT_SITE_SETTINGS.brand, preset: "custom" },
+        "icon_192_url"
+      )
+    ).toBe("/brand/kakehashi/icon-192.png");
+  });
+
   it("CSS 変数を 4 つ出す", () => {
     const css = brandColorsToCss(DEFAULT_SITE_SETTINGS.brand.colors);
-    expect(css).toContain("--primary: #1f7a4d !important;");
-    expect(css).toContain("--color-mirai-gradient-end: #d9f2e3 !important;");
+    expect(css).toContain("--primary: #1a78a0 !important;");
+    expect(css).toContain("--color-mirai-gradient-end: #e8f6fa !important;");
+  });
+});
+
+describe("splitSiteName", () => {
+  it("＠ の前後に分ける", () => {
+    expect(splitSiteName("みらい議会＠相模原市")).toEqual({
+      base: "みらい議会",
+      suffix: "＠相模原市",
+    });
+    expect(splitSiteName("mirai@sagamihara")).toEqual({
+      base: "mirai",
+      suffix: "@sagamihara",
+    });
+  });
+
+  it("＠ が無い・先頭にあるときは分けない", () => {
+    expect(splitSiteName("さがみはら議会")).toEqual({
+      base: "さがみはら議会",
+      suffix: "",
+    });
+    expect(splitSiteName("＠相模原市")).toEqual({ base: "＠相模原市", suffix: "" });
   });
 });

@@ -180,6 +180,10 @@
       "types": "./src/site-settings/compliance.ts",
       "default": "./src/site-settings/compliance.ts"
     },
+    "./site-settings/brand-presets": {
+      "types": "./src/site-settings/brand-presets.ts",
+      "default": "./src/site-settings/brand-presets.ts"
+    },
     "./site-settings/presets": {
       "types": "./src/site-settings/presets/sagamihara.ts",
       "default": "./src/site-settings/presets/sagamihara.ts"

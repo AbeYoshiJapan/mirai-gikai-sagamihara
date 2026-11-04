@@ -6,6 +6,7 @@ import type {
   SectionDefinition,
 } from "../../shared/field-definitions";
 import { ArrayEditor } from "./array-editors";
+import { BrandPresetPicker } from "./brand-preset-picker";
 import { FieldRenderer } from "./field-renderer";
 
 interface SectionFieldsProps {
@@ -50,7 +51,14 @@ function GroupBlock({
           ))}
         </div>
       )}
-      {group.custom && (
+      {group.custom && group.custom.editor === "brand_preset" && (
+        <BrandPresetPicker
+          control={control}
+          name={`${namePrefix}${group.custom.name}`}
+          disabled={disabled}
+        />
+      )}
+      {group.custom && group.custom.editor !== "brand_preset" && (
         <ArrayEditor
           editor={group.custom.editor}
           control={control}

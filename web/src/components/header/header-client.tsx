@@ -1,6 +1,9 @@
 "use client";
 
-import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
+import {
+  brandAsset,
+  splitSiteName,
+} from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,6 +24,7 @@ interface HeaderClientProps {
 export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   const pathname = usePathname();
   const { site, brand } = useSiteSettings();
+  const siteName = splitSiteName(site.name);
   const showDifficultySelector = isMainPage(pathname);
   const showInterviewActions = isInterviewPage(pathname);
 
@@ -58,7 +62,10 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
                 />
               ) : (
                 <span className="text-[17px] font-extrabold tracking-wider text-black">
-                  {site.name}
+                  {siteName.base}
+                  {siteName.suffix && (
+                    <span className="text-primary">{siteName.suffix}</span>
+                  )}
                 </span>
               )}
             </Link>

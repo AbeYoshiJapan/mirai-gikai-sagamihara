@@ -1,5 +1,15 @@
+import {
+  type BrandAssetKey,
+  type BrandAssetPaths,
+  BRAND_PRESETS,
+  DEFAULT_BRAND_PRESET_ID,
+  isBrandPresetId,
+} from "./brand-presets";
 import type { SiteSettings } from "./schema";
+
 import { renderTemplate } from "./templates";
+
+export type { BrandAssetKey } from "./brand-presets";
 
 /**
  * 公開サイトのクライアントコンポーネントに渡してよい部分。
@@ -109,27 +119,34 @@ export function renderOperatorDisclaimer(s: SiteSettings): string {
   return renderTemplate(s.operator.disclaimer_md, templateValues(s));
 }
 
-/** public/ 配下の既定画像。設定が空のときに使う */
-export const DEFAULT_BRAND_ASSETS = {
-  logo_url: "/img/logo.svg",
-  /** 空のときはヘッダーにサイト名をテキストで出す */
-  service_logo_url: "",
-  ogp_image_url: "/ogp.jpg",
-  archive_hero_url: "/img/archive-hero.png",
-  icon_192_url: "/icons/pwa/icon_android_192.png",
-  icon_512_url: "/icons/pwa/icon_android_512.png",
-  icon_ios_url: "/icons/pwa/icon_ios.png",
-} as const;
+/**
+ * public/ 配下の既定画像。設定が空で、ブランド案も custom のときに使う
+ * （= 案1「かけはし」の同梱画像）
+ */
+export const DEFAULT_BRAND_ASSETS: BrandAssetPaths =
+  BRAND_PRESETS[DEFAULT_BRAND_PRESET_ID].assets;
 
-export type BrandAssetKey = keyof typeof DEFAULT_BRAND_ASSETS;
-
-/** 設定値が空なら既定の画像パスを返す */
+/** 設定値が空なら、選んでいるブランド案の同梱画像のパスを返す */
 export function brandAsset(
   brand: SiteSettings["brand"],
   key: BrandAssetKey
 ): string {
   const value = brand[key];
-  return value && value.length > 0 ? value : DEFAULT_BRAND_ASSETS[key];
+  if (value && value.length > 0) return value;
+  if (isBrandPresetId(brand.preset)) {
+    return BRAND_PRESETS[brand.preset].assets[key];
+  }
+  return DEFAULT_BRAND_ASSETS[key];
+}
+
+/**
+ * サイト名を「みらい議会」と「＠相模原市」に分ける（ヘッダーで後半だけ色を変える）。
+ * ＠ / @ が無ければ suffix は空。
+ */
+export function splitSiteName(name: string): { base: string; suffix: string } {
+  const index = name.search(/[＠@]/);
+  if (index <= 0) return { base: name, suffix: "" };
+  return { base: name.slice(0, index), suffix: name.slice(index) };
 }
 
 /** テーマ色を CSS 変数の宣言にする（RootLayout の <style> に入れる） */

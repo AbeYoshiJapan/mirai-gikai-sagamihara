@@ -39,8 +39,10 @@ export type FieldDefinition = {
   templated?: boolean;
 };
 
-/** 配列項目は専用エディタで扱う */
-export type CustomEditor = "sns" | "import_sources";
+/** 配列を表で編集する専用エディタ */
+export type ArrayEditorKind = "sns" | "import_sources";
+/** 専用エディタで扱う項目。配列の表か、ブランド案の選択 */
+export type CustomEditor = ArrayEditorKind | "brand_preset";
 
 export type FieldGroup = {
   title: string;
@@ -349,8 +351,16 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     section: "brand",
     label: "ブランド",
-    description: "ロゴ・画像・テーマ色。空欄の画像は同梱の既定画像を使います。",
+    description:
+      "ブランド案・テーマ色・ロゴと画像。空欄の画像は選んだ案の同梱画像を使います。",
     groups: [
+      {
+        title: "ブランド案",
+        description:
+          "ロゴ・アイコン・OGP 画像・会期ページの帯とテーマ色のセット。切り替えてから「保存」。",
+        fields: [],
+        custom: { editor: "brand_preset", name: "preset" },
+      },
       {
         title: "テーマ色",
         description:

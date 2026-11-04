@@ -107,8 +107,8 @@
   --color-mirai-progress-fill: #a9c8ee;
 
   /* Gradient endpoints（既定値。本番はサイト設定の色を RootLayout が :root に注入して上書きする） */
-  --color-mirai-gradient-start: #7fd3a8;
-  --color-mirai-gradient-end: #d9f2e3;
+  --color-mirai-gradient-start: #b7e3f0;
+  --color-mirai-gradient-end: #e8f6fa;
 
   /* Brand accents（primary から導く。本家のチームみらい色は使わない） */
   --color-mirai-brand-teal: var(--primary);
@@ -139,8 +139,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   /* 既定のテーマ色。サイト設定（ブランドタブ）の値で上書きされる */
-  --primary: #1f7a4d;
-  --primary-accent: #155c3a;
+  --primary: #1a78a0;
+  --primary-accent: #15607f;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

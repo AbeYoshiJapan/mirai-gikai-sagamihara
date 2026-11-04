@@ -1,4 +1,7 @@
-import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
+import {
+  brandAsset,
+  splitSiteName,
+} from "@mirai-gikai/shared/site-settings/public";
 import { FORK_NOTICE } from "@mirai-gikai/shared/site-settings/schema";
 import Image from "next/image";
 import { getSiteSettings } from "@/lib/site-settings/loader";
@@ -9,19 +12,23 @@ import { getSiteSettings } from "@/lib/site-settings/loader";
  */
 export async function ComingSoonPage() {
   const { site, council, links, brand, operator } = await getSiteSettings();
+  const siteName = splitSiteName(site.name);
 
   return (
     <main className="min-h-dvh flex flex-col items-center justify-center bg-mirai-surface px-6 py-16 text-center">
       <Image
         src={brandAsset(brand, "logo_url")}
         alt=""
-        width={72}
+        width={80}
         height={72}
         unoptimized
         className="mb-6"
       />
       <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-        {site.name}
+        {siteName.base}
+        {siteName.suffix && (
+          <span className="text-primary">{siteName.suffix}</span>
+        )}
       </h1>
       <p className="mt-3 text-base text-gray-700">
         {council.name}の議論をわかりやすく伝えるサイトを準備しています。

@@ -41,6 +41,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     disclaimer_md: DEFAULT_OPERATOR_DISCLAIMER_MD,
   },
   brand: {
+    preset: "kakehashi",
     logo_url: "",
     service_logo_url: "",
     ogp_image_url: "",
@@ -48,12 +49,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     icon_192_url: "",
     icon_512_url: "",
     icon_ios_url: "",
+    // 案1「かけはし」の色（packages/shared/src/site-settings/brand-presets.ts と同じ値）
     colors: {
-      primary: "#1f7a4d",
-      primary_accent: "#155c3a",
-      gradient_start: "#7fd3a8",
-      gradient_end: "#d9f2e3",
-      theme_color: "#1f7a4d",
+      primary: "#1a78a0",
+      primary_accent: "#15607f",
+      gradient_start: "#b7e3f0",
+      gradient_end: "#e8f6fa",
+      theme_color: "#1a78a0",
     },
   },
   links: {

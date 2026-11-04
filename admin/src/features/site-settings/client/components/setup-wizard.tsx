@@ -68,9 +68,10 @@ const STEPS: Step[] = [
   {
     id: "brand",
     title: "見た目とリンク",
-    description: "テーマ色・ロゴと、議会公式ページ・ソースコードへのリンク。",
+    description:
+      "ブランド案（ロゴ・画像・色のセット）と、議会公式ページ・ソースコードへのリンク。",
     parts: [
-      { section: "brand", groups: ["テーマ色", "ロゴ・画像"] },
+      { section: "brand", groups: ["ブランド案", "テーマ色", "ロゴ・画像"] },
       { section: "links" },
     ],
   },

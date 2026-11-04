@@ -6,9 +6,20 @@ import { StanceComment, StanceReason } from "./stance-reason";
 interface MiraiStanceCardProps {
   stance: MiraiStance;
   billStatus?: BillStatusEnum;
+  /** 見出し（例: 運営者の賛否）。サイト設定の呼び方に合わせて親が渡す */
+  title?: string;
+  /** カード上部に出すロゴ（サイト設定のロゴ） */
+  logoSrc?: string;
+  logoAlt?: string;
 }
 
-export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
+export function MiraiStanceCard({
+  stance,
+  billStatus,
+  title = "運営者の賛否",
+  logoSrc = "/brand/kakehashi/logo.svg",
+  logoAlt = "",
+}: MiraiStanceCardProps) {
   // 法案提出前の場合は専用のスタイルを使用
   const isPreparing = billStatus === "preparing";
 
@@ -16,18 +27,19 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
 
   return (
     <>
-      <h2 className="text-[22px] font-bold mb-4">🗳️チームみらいの賛否</h2>
+      <h2 className="text-[22px] font-bold mb-4">{title}</h2>
       <div className="relative p-1 rounded-2xl bg-mirai-gradient">
         <div className="bg-white rounded-lg px-6 pb-8 pt-10">
           <div className="flex flex-col gap-8">
             {/* ヘッダー部分：ロゴとスタンスバッジ */}
             <div className="flex flex-col items-center gap-8">
-              {/* チームみらいロゴ */}
+              {/* サイトのロゴ */}
               <div className="relative w-37 h-31">
                 <Image
-                  src="/img/logo.svg"
-                  alt="チームみらい"
+                  src={logoSrc}
+                  alt={logoAlt}
                   fill
+                  unoptimized
                   className="object-contain"
                 />
               </div>
@@ -44,7 +56,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
 
             {/* 判断の理由 */}
             {isPreparing ? (
-              <StanceComment comment="法案提出後、党内で検討のうえ賛否を表明します。" />
+              <StanceComment comment="提出後に内容を確認したうえで賛否を表明します。" />
             ) : (
               <StanceReason stance={stance} />
             )}

@@ -38,10 +38,18 @@ describe("SECTION_DEFINITIONS", () => {
           ).not.toBeUndefined();
         }
         if (group.custom) {
-          expect(
-            Array.isArray(getByPath(defaults, group.custom.name)),
-            `${definition.section}.${group.custom.name}`
-          ).toBe(true);
+          const value = getByPath(defaults, group.custom.name);
+          if (group.custom.editor === "brand_preset") {
+            expect(
+              typeof value,
+              `${definition.section}.${group.custom.name}`
+            ).toBe("string");
+          } else {
+            expect(
+              Array.isArray(value),
+              `${definition.section}.${group.custom.name}`
+            ).toBe(true);
+          }
         }
       }
     }

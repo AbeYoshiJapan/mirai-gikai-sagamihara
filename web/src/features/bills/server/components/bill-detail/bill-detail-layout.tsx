@@ -1,3 +1,4 @@
+import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import { Container } from "@/components/layouts/container";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { InterviewLandingSection } from "@/features/interview-config/client/components/interview-landing-section";
@@ -33,7 +34,7 @@ export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
-  const { features, council, operator } = await getSiteSettings();
+  const { features, council, operator, brand } = await getSiteSettings();
   // 利用者向け AI 機能（インタビュー・トピック分析）と意見・質問は機能フラグが立っているときだけ読む
   const [
     interviewConfig,
@@ -179,6 +180,8 @@ export async function BillDetailLayout({
             <MiraiStanceCard
               stance={bill.mirai_stance}
               billStatus={bill.status}
+              title={`${operator.name || "運営者"}の賛否`}
+              logoSrc={brandAsset(brand, "logo_url")}
             />
           </div>
         )}

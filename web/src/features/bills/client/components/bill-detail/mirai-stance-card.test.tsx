@@ -36,7 +36,7 @@ describe("MiraiStanceCard", () => {
 
     expect(screen.getByText("法案提出前")).toBeInTheDocument();
     expect(
-      screen.getByText("法案提出後、党内で検討のうえ賛否を表明します。")
+      screen.getByText("提出後に内容を確認したうえで賛否を表明します。")
     ).toBeInTheDocument();
     expect(screen.queryByText("賛成")).not.toBeInTheDocument();
     expect(screen.queryByText("賛成の理由")).not.toBeInTheDocument();

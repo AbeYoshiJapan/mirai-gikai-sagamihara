@@ -75,8 +75,16 @@ export const brandColorsSchema = z.object({
   theme_color: hexColor,
 });
 
+/** 同梱のブランド案（ロゴ・画像・色のセット）。custom は運営者が自分で組んだもの */
+export const BRAND_PRESET_IDS = ["kakehashi", "ajisai"] as const;
+export type BrandPresetId = (typeof BRAND_PRESET_IDS)[number];
+export const brandPresetChoiceSchema = z.enum(["kakehashi", "ajisai", "custom"]);
+export type BrandPresetChoice = z.infer<typeof brandPresetChoiceSchema>;
+
 export const brandSectionSchema = z.object({
-  /** 空なら public/ 配下の既定画像を使う */
+  /** 使っているブランド案。画像が空のときはこの案の同梱画像を使う */
+  preset: brandPresetChoiceSchema.default("kakehashi"),
+  /** 空なら選んだブランド案の同梱画像を使う */
   logo_url: optionalUrl,
   service_logo_url: optionalUrl,
   ogp_image_url: optionalUrl,
