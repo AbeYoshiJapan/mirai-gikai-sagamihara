@@ -250,6 +250,7 @@ describe("MCP bills tools", () => {
       const bill = await createTestBill({ name: "更新前" });
       billIds.push(bill.id);
 
+      // is_review_completed は MCP から変えられない（レビュー完了は管理画面だけ）。渡しても無視される
       const result = await registry.callTool<{ ok: boolean }>("update_bill", {
         billId: bill.id,
         name: "更新後",
@@ -271,7 +272,7 @@ describe("MCP bills tools", () => {
       expect(data?.name).toBe("更新後");
       expect(data?.status).toBe("enacted");
       expect(data?.originating_house).toBe("HC");
-      expect(data?.is_review_completed).toBe(true);
+      expect(data?.is_review_completed).toBe(false);
     });
 
     it("article_kind を ai_generated から standard に戻せる", async () => {
@@ -293,7 +294,8 @@ describe("MCP bills tools", () => {
         .eq("id", bill.id)
         .single();
       expect(data?.article_kind).toBe("standard");
-      expect(data?.is_review_completed).toBe(true);
+      // レビュー完了は MCP では付かない（公開ゲートは管理画面の確認を通す）
+      expect(data?.is_review_completed).toBe(false);
     });
 
     it("billId 以外を省略すると updated_at だけが更新される", async () => {
