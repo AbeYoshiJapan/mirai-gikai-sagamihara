@@ -144,6 +144,14 @@
       "types": "./src/reader-posts/labels.ts",
       "default": "./src/reader-posts/labels.ts"
     },
+    "./import/schema": {
+      "types": "./src/import/schema.ts",
+      "default": "./src/import/schema.ts"
+    },
+    "./import/plan": {
+      "types": "./src/import/plan.ts",
+      "default": "./src/import/plan.ts"
+    },
     "./bill-stage/labels": {
       "types": "./src/bill-stage/labels.ts",
       "default": "./src/bill-stage/labels.ts"

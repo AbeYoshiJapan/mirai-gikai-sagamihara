@@ -1,0 +1,6 @@
+# 取込ツール（tools/import）の依存。Python 3.11 以上
+pdfplumber>=0.11
+pypdfium2>=4
+requests>=2.31
+# OCR（スキャン PDF の陳情など）。tesseract 本体と日本語データ（jpn）が必要
+pytesseract>=0.3

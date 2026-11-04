@@ -1,0 +1,97 @@
+name: Import (dry run)
+
+# 議会サイトの「提出議案・発言通告」ページから PDF を取り、取込 JSON を artifact に残す。
+# DB には書かない。適用は管理画面の「取込」で JSON をアップロードして行う。
+on:
+  schedule:
+    # 毎週月曜 03:00 JST（= 日曜 18:00 UTC）
+    - cron: "0 18 * * 0"
+  workflow_dispatch:
+    inputs:
+      page_url:
+        description: "提出議案のページ URL（過去の会議なら年ごとのページ）"
+        default: "https://www.sagamihara-shigikai.jp/doc/2013120900011/"
+        required: true
+      meeting:
+        description: "ページ内の会議名で絞る（例: 6月定例会議。空なら最初の会議）"
+        default: ""
+        required: false
+      results_pdf_url:
+        description: "審議結果 PDF の URL（あれば結果の JSON も作る）"
+        default: ""
+        required: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: tools/import/requirements.txt
+
+      - name: Install tesseract (OCR for scanned petitions)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-jpn
+
+      - name: Install dependencies
+        working-directory: tools/import
+        run: pip install -r requirements.txt
+
+      - name: Build import bundle
+        working-directory: tools/import
+        env:
+          PAGE_URL: ${{ github.event.inputs.page_url || 'https://www.sagamihara-shigikai.jp/doc/2013120900011/' }}
+          MEETING: ${{ github.event.inputs.meeting }}
+        run: |
+          mkdir -p out
+          args=(--page-url "$PAGE_URL" --cache-dir downloads --out out/bundle.json)
+          if [ -n "$MEETING" ]; then args+=(--meeting "$MEETING"); fi
+          python -m gikai_import bundle "${args[@]}" 2> out/bundle.log
+          cat out/bundle.log
+
+      - name: Build results bundle
+        if: ${{ github.event.inputs.results_pdf_url != '' }}
+        working-directory: tools/import
+        env:
+          RESULTS_URL: ${{ github.event.inputs.results_pdf_url }}
+        run: |
+          python - <<'EOF'
+          import os
+          from gikai_import.site import download_pdf
+          path = download_pdf(os.environ["RESULTS_URL"], "downloads")
+          print(path)
+          EOF
+          python -m gikai_import results --pdf "downloads/$(basename "$RESULTS_URL")" --url "$RESULTS_URL" --out out/results.json 2> out/results.log
+          cat out/results.log
+
+      - name: Summary
+        working-directory: tools/import
+        run: |
+          {
+            echo "## 取込 JSON（dry run）"
+            echo
+            echo '```'
+            cat out/bundle.log
+            [ -f out/results.log ] && cat out/results.log
+            echo '```'
+            echo
+            echo "artifact の JSON を管理画面「取込」でアップロードし、差分を確認してから適用してください。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-bundle-${{ github.run_id }}
+          path: |
+            tools/import/out/*.json
+            tools/import/out/*.log
+          retention-days: 30

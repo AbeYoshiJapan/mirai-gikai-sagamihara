@@ -1,0 +1,13 @@
+[project]
+name = "gikai-import"
+version = "0.1.0"
+description = "相模原市議会サイトの付議事件一覧・議案集・審議結果 PDF を、みらい議会＠相模原市の取込 JSON に変換するツール"
+requires-python = ">=3.11"
+dependencies = ["pdfplumber>=0.11", "pypdfium2>=4", "requests>=2.31"]
+
+[project.optional-dependencies]
+ocr = ["pytesseract>=0.3"]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,42 @@
+name: Import Tool Check
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "tools/import/**"
+      - ".github/workflows/import_tool_check.yml"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "tools/import/**"
+      - ".github/workflows/import_tool_check.yml"
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: tools/import/requirements-dev.txt
+
+      - name: Install tesseract (OCR tests)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-jpn
+
+      - name: Install dependencies
+        working-directory: tools/import
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        working-directory: tools/import
+        run: python -m pytest -q
