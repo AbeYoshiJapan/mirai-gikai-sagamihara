@@ -49,6 +49,8 @@ pnpm dev
 
 `pnpm db:reset` の seed には相模原市議会プリセットのサイト設定（公開中・初期設定完了）が入るので、起動直後から `http://localhost:3000` でサイトが表示されます。
 
+本番（Supabase + Vercel）への設置手順と環境変数の一覧は [docs/deploy.md](docs/deploy.md) にあります。
+
 ## 立ち上げ後の最初の設定
 
 1. 管理画面（`http://localhost:3001`）に Admin ユーザーでログイン
