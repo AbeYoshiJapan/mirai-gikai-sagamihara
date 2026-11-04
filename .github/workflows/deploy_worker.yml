@@ -2,16 +2,9 @@ name: Deploy Topic Analysis Worker
 
 # worker / topic-analysis-core / その依存パッケージが変わったときだけ
 # イメージをビルドして Artifact Registry に push し、Cloud Run Job を更新する。
+# 相模原版: トピック分析（利用者向け AI 機能）は使わないので Cloud Run の worker は配備しない。手動実行だけ残す。
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - "worker/**"
-      - "packages/topic-analysis-core/**"
-      - "packages/shared/**"
-      - "packages/supabase/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/deploy_worker.yml"
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
