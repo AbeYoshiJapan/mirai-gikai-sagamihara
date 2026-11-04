@@ -1,4 +1,7 @@
-import type { PublicSiteSettings } from "@mirai-gikai/shared/site-settings/public";
+import {
+  hasSessionSystemPage,
+  type PublicSiteSettings,
+} from "@mirai-gikai/shared/site-settings/public";
 import { routes } from "@/lib/routes";
 
 export type FooterLink = {
@@ -15,6 +18,12 @@ export type FooterPolicyLink = FooterLink;
  */
 export function buildPrimaryLinks(settings: PublicSiteSettings): FooterLink[] {
   const links: FooterLink[] = [{ label: "TOP", href: routes.home() }];
+  if (hasSessionSystemPage(settings.council)) {
+    links.push({
+      label: `${settings.council.session_system_label}とは`,
+      href: routes.councilSystem(),
+    });
+  }
   if (settings.links.fork_repo) {
     links.push({
       label: "ソースコード",

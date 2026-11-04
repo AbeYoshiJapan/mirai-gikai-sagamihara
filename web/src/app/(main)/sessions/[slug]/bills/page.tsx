@@ -1,3 +1,4 @@
+import { parseMeetingPeriods } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -6,7 +7,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layouts/container";
 import { getBillsByDietSession } from "@/features/bills/server/loaders/get-bills-by-diet-session";
 import { getCouncilMeetings } from "@/features/council-meetings/server/loaders/get-council-meetings";
-import { extractCouncilPeriods } from "@/features/council-meetings/shared/utils/council-period";
+import { resolveCouncilPeriods } from "@/features/council-meetings/shared/utils/council-period";
 import { DietSessionBillList } from "@/features/diet-sessions/client/components/diet-session-bill-list";
 import { getDietSessionBySlug } from "@/features/diet-sessions/server/loaders/get-diet-session-by-slug";
 import { routes } from "@/lib/routes";
@@ -45,7 +46,11 @@ export default async function DietSessionBillsPage({ params }: Props) {
     getBillsByDietSession(session.id),
     getCouncilMeetings(councilYear),
   ]);
-  const periods = extractCouncilPeriods(meetings);
+  // 会期管理で入力した定例会議などの期間を優先し、無ければ会議予定の本会議名から導く
+  const periods = resolveCouncilPeriods(
+    parseMeetingPeriods(session.meeting_periods),
+    meetings
+  );
   const { brand } = await getSiteSettings();
 
   return (

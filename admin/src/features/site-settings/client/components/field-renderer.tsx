@@ -1,6 +1,7 @@
 "use client";
 
 import type { Control, FieldValues } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormDescription,
@@ -183,6 +184,23 @@ export function FieldRenderer({
           </FormControl>
           {def.description && (
             <FormDescription>{def.description}</FormDescription>
+          )}
+          {def.samples && def.samples.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <span>ひな形を入れる（いまの本文は置き換わります）:</span>
+              {def.samples.map((sample) => (
+                <Button
+                  key={sample.label}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={disabled}
+                  onClick={() => field.onChange(sample.value)}
+                >
+                  {sample.label}
+                </Button>
+              ))}
+            </div>
           )}
           <FormMessage />
         </FormItem>

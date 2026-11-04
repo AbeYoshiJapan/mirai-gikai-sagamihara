@@ -157,6 +157,24 @@ export const councilSectionSchema = z.object({
   year_start_day: z.number().int().min(1).max(31),
   /** 会議期間の呼び方（例: 定例会議、○月議会） */
   session_label: shortText(20),
+  /**
+   * 会期の制度の名前（例: 通年議会）。トップの議会カードに出し、説明ページへのリンクになる。
+   * 空なら制度の表示と説明ページを出さない。
+   */
+  session_system_label: shortText(20),
+  /** 制度の一行説明（例: 1年を1つの会期とし、年4回の定例会議を議長が招集して審議します） */
+  session_system_summary: shortText(120),
+  /** 制度の説明ページの本文（Markdown、{{key}} 差し込み可） */
+  session_system_md: z.string().max(20000),
+  /**
+   * 会議期間（定例会議など）に入っていない日の表示（例: 会期中（定例会議の間）、閉会中）。
+   * 空なら session_model から自動（通年議会: 会期中（{session_label}の間）／定例会制: 閉会中）
+   */
+  out_of_period_label: shortText(30),
+  /** 次の会議期間までの日数の見出し。空なら「開会まで」 */
+  countdown_open_label: shortText(20),
+  /** 会議期間の残り日数の見出し。空なら「閉会まで」 */
+  countdown_close_label: shortText(20),
   /** 住民の呼称（例: 市民） */
   resident_label: shortText(10),
   /** 「区議会・区政」のような説明に使う短い呼称（例: 市議会・市政） */

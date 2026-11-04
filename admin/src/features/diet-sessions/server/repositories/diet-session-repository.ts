@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { MeetingPeriod } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import { createAdminClient } from "@mirai-gikai/supabase";
 
 export async function findAllDietSessions() {
@@ -22,6 +23,7 @@ export async function createDietSessionRecord(input: {
   shugiin_url: string | null;
   start_date: string;
   end_date: string;
+  meeting_periods: MeetingPeriod[];
 }) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -32,6 +34,7 @@ export async function createDietSessionRecord(input: {
       shugiin_url: input.shugiin_url,
       start_date: input.start_date,
       end_date: input.end_date,
+      meeting_periods: input.meeting_periods,
     })
     .select()
     .single();
@@ -51,6 +54,7 @@ export async function updateDietSessionRecord(
     shugiin_url: string | null;
     start_date: string;
     end_date: string;
+    meeting_periods: MeetingPeriod[];
   }
 ) {
   const supabase = createAdminClient();
@@ -62,6 +66,7 @@ export async function updateDietSessionRecord(
       shugiin_url: input.shugiin_url,
       start_date: input.start_date,
       end_date: input.end_date,
+      meeting_periods: input.meeting_periods,
     })
     .eq("id", id)
     .select()

@@ -1,11 +1,7 @@
+import type { MeetingPeriod } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import type { Json } from "@mirai-gikai/supabase";
 
-/** 定例会議・臨時会議の期間（diet_sessions.meeting_periods の要素） */
-export type MeetingPeriod = {
-  name: string;
-  start_date: string;
-  end_date: string;
-};
+export type { MeetingPeriod };
 
 export type DietSession = {
   id: string;
@@ -15,7 +11,10 @@ export type DietSession = {
   start_date: string;
   end_date: string;
   is_active: boolean;
-  /** JSON 列。要素は MeetingPeriod。読むときは parseMeetingPeriods で検証する */
+  /**
+   * JSON 列。要素は MeetingPeriod（定例会議・臨時会議の期間）。
+   * 読むときは @mirai-gikai/shared/diet-sessions/meeting-periods の parseMeetingPeriods で検証する
+   */
   meeting_periods: Json;
   created_at: string;
   updated_at: string;

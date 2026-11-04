@@ -184,6 +184,10 @@
       "types": "./src/site-settings/brand-presets.ts",
       "default": "./src/site-settings/brand-presets.ts"
     },
+    "./diet-sessions/meeting-periods": {
+      "types": "./src/diet-sessions/meeting-periods.ts",
+      "default": "./src/diet-sessions/meeting-periods.ts"
+    },
     "./site-settings/presets": {
       "types": "./src/site-settings/presets/sagamihara.ts",
       "default": "./src/site-settings/presets/sagamihara.ts"

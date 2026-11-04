@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SITE_SETTINGS } from "./defaults";
+import { SAGAMIHARA_PRESET } from "./presets/sagamihara";
 import {
   brandAsset,
   brandColorsToCss,
+  councilWording,
+  hasSessionSystemPage,
   renderLegalText,
   renderOperatorDisclaimer,
+  renderSessionSystemText,
   splitSiteName,
   toPublicSiteSettings,
 } from "./public";
@@ -46,6 +50,59 @@ describe("toPublicSiteSettings", () => {
     expect(pub).not.toHaveProperty("seo");
     expect(pub.legal).toEqual({ modified_on: "" });
     expect(pub.features).toEqual(DEFAULT_SITE_SETTINGS.features);
+  });
+
+  it("会期の制度は短い項目だけ出し、説明本文はクライアントに載せない", () => {
+    const pub = toPublicSiteSettings(SAGAMIHARA_PRESET);
+    expect(pub.council.session_model).toBe("year_round");
+    expect(pub.council.session_system_label).toBe("通年議会");
+    expect(pub.council.session_system_summary).not.toBe("");
+    expect(pub.council).not.toHaveProperty("session_system_md");
+  });
+});
+
+describe("councilWording", () => {
+  it("設定が空なら会期の方式から決める（定例会制は閉会中）", () => {
+    expect(councilWording(DEFAULT_SITE_SETTINGS.council)).toEqual({
+      sessionLabel: "定例会",
+      outOfPeriod: "閉会中",
+      countdownOpen: "開会まで",
+      countdownClose: "閉会まで",
+    });
+  });
+
+  it("通年議会で設定が空なら「会期中（○○の間）」にする", () => {
+    expect(
+      councilWording({
+        ...DEFAULT_SITE_SETTINGS.council,
+        session_model: "year_round",
+        session_label: "定例会議",
+      }).outOfPeriod
+    ).toBe("会期中（定例会議の間）");
+  });
+
+  it("設定があればそれを使う（相模原のひな形）", () => {
+    expect(councilWording(SAGAMIHARA_PRESET.council)).toEqual({
+      sessionLabel: "定例会議",
+      outOfPeriod: "会期中（定例会議の間）",
+      countdownOpen: "開会まで",
+      countdownClose: "閉会まで",
+    });
+  });
+});
+
+describe("hasSessionSystemPage / renderSessionSystemText", () => {
+  it("制度名が空なら説明ページを出さない（既定値）", () => {
+    expect(hasSessionSystemPage(DEFAULT_SITE_SETTINGS.council)).toBe(false);
+    expect(hasSessionSystemPage(SAGAMIHARA_PRESET.council)).toBe(true);
+    expect(hasSessionSystemPage({ session_system_label: "  " })).toBe(false);
+  });
+
+  it("説明本文に議会名と会議期間の呼称が差し込まれる", () => {
+    const text = renderSessionSystemText(SAGAMIHARA_PRESET);
+    expect(text).toContain("相模原市議会は、1年間を1つの会期とする");
+    expect(text).toContain("年4回の定例会議");
+    expect(text).not.toContain("{{");
   });
 });
 

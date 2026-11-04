@@ -1,11 +1,7 @@
+import type { MeetingPeriod } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import type { Json } from "@mirai-gikai/supabase";
 
-/** 定例会議・臨時会議の期間（diet_sessions.meeting_periods の要素） */
-export type MeetingPeriod = {
-  name: string;
-  start_date: string;
-  end_date: string;
-};
+export type { MeetingPeriod };
 
 export type DietSession = {
   id: string;
@@ -27,6 +23,8 @@ export type CreateDietSessionInput = {
   shugiin_url: string | null;
   start_date: string;
   end_date: string;
+  /** 定例会議・臨時会議の期間。空なら公開サイトは会議予定から導出する */
+  meeting_periods: MeetingPeriod[];
 };
 
 export type UpdateDietSessionInput = {
@@ -36,6 +34,7 @@ export type UpdateDietSessionInput = {
   shugiin_url: string | null;
   start_date: string;
   end_date: string;
+  meeting_periods: MeetingPeriod[];
 };
 
 export type DeleteDietSessionInput = {

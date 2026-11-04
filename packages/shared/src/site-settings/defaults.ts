@@ -83,6 +83,14 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     year_start_month: 4,
     year_start_day: 1,
     session_label: "定例会",
+    // 制度名が空なので、トップの制度表示と説明ページは出ない。
+    // 表示の文言が空なら session_model から自動で決める（通年議会: 会期中（○○の間）／定例会制: 閉会中）
+    session_system_label: "",
+    session_system_summary: "",
+    session_system_md: "",
+    out_of_period_label: "",
+    countdown_open_label: "",
+    countdown_close_label: "",
     resident_label: "市民",
     scope_label: "市議会・市政",
     primary_source_label: "議会の会議録・議案",

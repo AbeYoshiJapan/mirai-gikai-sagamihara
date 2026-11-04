@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  parseMeetingPeriods,
+  validateMeetingPeriods,
+} from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
 import {
   invalidateWebCache,
@@ -39,12 +43,23 @@ export async function createDietSession(input: CreateDietSessionInput) {
       return { error: dateRangeError };
     }
 
+    const periodsError = validateMeetingPeriods(input.meeting_periods ?? [], {
+      start_date: input.start_date,
+      end_date: input.end_date,
+    });
+    if (periodsError) {
+      return { error: periodsError };
+    }
+    // 検証済みなので空にはならない。名前の前後の空白を落とし、開始日順にして保存する
+    const periods = parseMeetingPeriods(input.meeting_periods ?? []);
+
     const data = await createDietSessionRecord({
       name: input.name.trim(),
       slug: trimOrNull(input.slug),
       shugiin_url: trimOrNull(input.shugiin_url),
       start_date: input.start_date,
       end_date: input.end_date,
+      meeting_periods: periods,
     });
 
     await invalidateWebCache([WEB_CACHE_TAGS.DIET_SESSIONS]);

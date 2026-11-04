@@ -7,8 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createDietSession } from "../../server/actions/create-diet-session";
+import {
+  compactMeetingPeriods,
+  type MeetingPeriodRow,
+  MeetingPeriodsEditor,
+} from "./meeting-periods-editor";
 
-export function DietSessionForm() {
+type DietSessionFormProps = {
+  /** 会議期間の呼び方（例: 定例会議） */
+  sessionLabel?: string;
+};
+
+export function DietSessionForm({ sessionLabel }: DietSessionFormProps) {
   const nameId = useId();
   const slugId = useId();
   const shugiinUrlId = useId();
@@ -20,6 +30,7 @@ export function DietSessionForm() {
   const [shugiinUrl, setShugiinUrl] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [periods, setPeriods] = useState<MeetingPeriodRow[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -49,6 +60,7 @@ export function DietSessionForm() {
         shugiin_url: shugiinUrl || null,
         start_date: startDate,
         end_date: endDate,
+        meeting_periods: compactMeetingPeriods(periods),
       });
 
       if (result.error) {
@@ -60,6 +72,7 @@ export function DietSessionForm() {
         setShugiinUrl("");
         setStartDate("");
         setEndDate("");
+        setPeriods([]);
       }
     } catch (error) {
       console.error("Create diet session error:", error);
@@ -126,6 +139,12 @@ export function DietSessionForm() {
           disabled={isSubmitting}
         />
       </div>
+      <MeetingPeriodsEditor
+        value={periods}
+        onChange={setPeriods}
+        disabled={isSubmitting}
+        sessionLabel={sessionLabel}
+      />
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "追加中..." : "追加"}

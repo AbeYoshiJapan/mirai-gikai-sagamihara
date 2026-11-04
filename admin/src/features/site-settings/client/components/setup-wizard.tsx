@@ -56,7 +56,7 @@ const STEPS: Step[] = [
     description: "サイト名と、議会の名前や呼び方。",
     parts: [
       { section: "site", groups: ["基本情報"] },
-      { section: "council", groups: ["議会", "呼び方"] },
+      { section: "council", groups: ["議会", "呼び方", "会期の制度"] },
     ],
   },
   {

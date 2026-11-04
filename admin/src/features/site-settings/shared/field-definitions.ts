@@ -1,3 +1,7 @@
+import {
+  SAGAMIHARA_PRESET,
+  SAGAMIHARA_SESSION_SYSTEM_MD,
+} from "@mirai-gikai/shared/site-settings/presets";
 import type { SiteSettingsSection } from "@mirai-gikai/shared/site-settings/schema";
 import type { SiteAssetKind } from "./constants";
 
@@ -37,6 +41,8 @@ export type FieldDefinition = {
   fullWidth?: boolean;
   /** テンプレートの {{key}} 差し込みが使える */
   templated?: boolean;
+  /** 「ひな形を入れる」ボタンで入れられる文面（textarea / markdown 用） */
+  samples?: { label: string; value: string }[];
 };
 
 /** 配列を表で編集する専用エディタ */
@@ -226,6 +232,79 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             label: "審議中の表示",
             kind: "text",
             placeholder: "市議会審議中",
+          },
+        ],
+      },
+      {
+        title: "会期の制度",
+        description:
+          "通年議会など、会期の制度の表示と説明。制度の名前を入れると、トップの議会カードに制度名が出て「○○とは」の説明ページが開けるようになります。空なら出しません。",
+        fields: [
+          {
+            name: "session_system_label",
+            label: "制度の名前",
+            kind: "text",
+            placeholder: "通年議会",
+            description: "トップの議会カードの右上に出ます",
+            samples: [
+              {
+                label: "相模原市議会のひな形",
+                value: SAGAMIHARA_PRESET.council.session_system_label,
+              },
+            ],
+          },
+          {
+            name: "session_system_summary",
+            label: "制度の一行説明",
+            kind: "text",
+            placeholder:
+              "1年を1つの会期とし、その中で年4回の定例会議を議長が招集して審議します",
+            description: "説明ページの冒頭と、制度名のリンクの補足に出ます",
+            samples: [
+              {
+                label: "相模原市議会のひな形",
+                value: SAGAMIHARA_PRESET.council.session_system_summary,
+              },
+            ],
+          },
+          {
+            name: "out_of_period_label",
+            label: "会議期間の外の日の表示",
+            kind: "text",
+            placeholder:
+              "空なら自動（通年議会: 会期中（定例会議の間）／定例会制: 閉会中）",
+            description:
+              "定例会議などの期間に入っていない日に、議会カードの「本日は」の横に出す文言",
+          },
+          {
+            name: "countdown_open_label",
+            label: "次の会議期間までの日数の見出し",
+            kind: "text",
+            placeholder: "空なら「開会まで」",
+            description: "例: 「12月定例会議　開会まで 21 日」",
+          },
+          {
+            name: "countdown_close_label",
+            label: "会議期間の残り日数の見出し",
+            kind: "text",
+            placeholder: "空なら「閉会まで」",
+            description: "例: 「12月定例会議　閉会まで 5 日」",
+          },
+          {
+            name: "session_system_md",
+            label: "制度の説明（「○○とは」ページの本文）",
+            kind: "markdown",
+            rows: 18,
+            fullWidth: true,
+            templated: true,
+            description:
+              "Markdown で書けます。{{council_name}} {{session_label}} {{session_system_label}} {{operator_name}} などを差し込めます",
+            samples: [
+              {
+                label: "相模原市議会のひな形",
+                value: SAGAMIHARA_SESSION_SYSTEM_MD,
+              },
+            ],
           },
         ],
       },

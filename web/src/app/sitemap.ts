@@ -1,3 +1,4 @@
+import { hasSessionSystemPage } from "@mirai-gikai/shared/site-settings/public";
 import type { MetadataRoute } from "next";
 import { getBills } from "@/features/bills/server/loaders/get-bills";
 import { routes } from "@/lib/routes";
@@ -25,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [
+  const staticUrls: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -38,6 +39,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 0.9,
     },
-    ...billUrls,
   ];
+  if (settings.features.schedule) {
+    staticUrls.push({
+      url: `${baseUrl}${routes.schedule()}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    });
+  }
+  // 会期の制度（通年議会など）の説明ページ。制度名が空なら無い
+  if (hasSessionSystemPage(settings.council)) {
+    staticUrls.push({
+      url: `${baseUrl}${routes.councilSystem()}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    });
+  }
+
+  return [...staticUrls, ...billUrls];
 }

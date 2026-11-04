@@ -6,6 +6,34 @@ import type { SiteSettings } from "../schema";
  * この値がフォームに入る。URL は 2026-11-01 に確認したもの。
  * 運営者の連絡先・SNS・ソースコード公開先・会派などは運営者が入力する。
  */
+/**
+ * 「通年議会とは」ページの本文。相模原市議会は 1 年を 1 会期とする通年議会で、
+ * その中の定例会議（年 4 回）を単位に運営している。管理画面（議会タブ）で書き換えられる。
+ */
+export const SAGAMIHARA_SESSION_SYSTEM_MD = `## 1年を1つの会期にする「通年議会」
+
+{{council_name}}は、1年間を1つの会期とする「通年議会」を採用しています。
+
+通年議会でない議会では、定例会を開くたびに首長（市長）が議会を招集します。通年議会では会期が年度を通して続いているため、会期の中で開く各{{session_label}}を議長が招集することができます。議会が自らの判断でフットワーク良く会議を開けるので、首長が専決処分（議会の議決を経ずに決めること）を多用するような事態を防ぐことにもつながります。
+
+## 運営の単位は「{{session_label}}」
+
+通年議会といっても、1年中ずっと本会議を開いているわけではありません。{{council_name}}では、会期の中に年4回の{{session_label}}を設け、議案の審議や採決は{{session_label}}の期間に行っています。{{session_label}}という1つの単位が、議会運営の基本になっています。
+
+「通年議会」か「年4回の定例会」かの二者択一ではなく、通年の会期のしくみのもとで{{session_label}}のくくりを生かす、どちらの制度の良いところも取り入れた運営です。このサイトでも、「次の{{session_label}}の開会まで○日」「{{session_label}}の閉会まで○日」のように、{{session_label}}を単位として議会の動きを表示しています。
+
+## 委員会の活動と通年化
+
+平成18年（2006年）の地方自治法の改正により、委員会が議案を提出できるようになりました。{{council_name}}でも、「自殺対策条例」「いじめ防止条例」などの取組が委員会から生まれています。
+
+通年議会の導入を議論していた当時、こうした委員会の活動を、定例会のたびに議決するのではなく、通年の会期の中で委員会自体の判断を尊重して活発にしていこう、という議論がありました。通年化によって、定例会の閉会中の活動についてそのつど議決する必要がなくなり、委員会は会期を通して活動できるようになりました。
+
+## もっと詳しく
+
+- 議案の審議の流れや会議の予定は、「会議の予定」ページと{{council_name}}の公式サイトでご確認ください。
+- このページの説明は運営者（{{operator_name}}）が作成したものです。制度の正確な内容は{{council_name}}の会議規則・公式の案内をご確認ください。
+`;
+
 export const SAGAMIHARA_PRESET: SiteSettings = {
   ...DEFAULT_SITE_SETTINGS,
   site: {
@@ -38,11 +66,18 @@ export const SAGAMIHARA_PRESET: SiteSettings = {
     name: "相模原市議会",
     municipality: "相模原市",
     kind: "city",
-    // 通年議会。定例会は 4 月下旬の開会会議で始まり、3・6・9・12 月の定例会議と臨時会議で審議する。
+    // 通年議会。会期は年度を通して続き、その中の定例会議（年 4 回）と臨時会議で審議する。
     session_model: "year_round",
     year_start_month: 4,
     year_start_day: 1,
     session_label: "定例会議",
+    session_system_label: "通年議会",
+    session_system_summary:
+      "1年を1つの会期とし、その中で年4回の定例会議を議長が招集して審議します",
+    session_system_md: SAGAMIHARA_SESSION_SYSTEM_MD,
+    out_of_period_label: "会期中（定例会議の間）",
+    countdown_open_label: "開会まで",
+    countdown_close_label: "閉会まで",
     resident_label: "市民",
     scope_label: "市議会・市政",
     primary_source_label: "相模原市議会の議案書・会議録",

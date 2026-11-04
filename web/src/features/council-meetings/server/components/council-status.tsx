@@ -1,3 +1,8 @@
+import {
+  type CouncilWording,
+  councilWording,
+  hasSessionSystemPage,
+} from "@mirai-gikai/shared/site-settings/public";
 import Link from "next/link";
 import { Container } from "@/components/layouts/container";
 import { Progress } from "@/components/ui/progress";
@@ -26,9 +31,11 @@ type CouncilStatusProps = {
 /**
  * 議会の状況カード。
  *
- * 通年議会なので「閉会中」は出さない。議会期間（○月議会）の中なら
- * 進行バーを、外なら次の議会期間までの日数を出す。その上に次に会議が開かれる日を
- * 大きく出す。今日の会議があれば並べる。
+ * 通年議会（相模原市議会）では会期が年度を通して続き、その中の定例会議を単位に運営する。
+ * 定例会議の期間中なら進行バーと「閉会まで○日」、外なら次の定例会議と「開会まで○日」を出す。
+ * 右上には制度の名前（通年議会）を出し、説明ページへ案内する。
+ * 定例会制の議会でも同じ部品で「閉会中」「次の定例会 開会まで○日」と出せる。
+ * 文言はすべてサイト設定（議会タブ）で変えられる。
  */
 export async function CouncilStatus({
   status,
@@ -38,6 +45,9 @@ export async function CouncilStatus({
 }: CouncilStatusProps) {
   const { councilYear, currentPeriod, nextPeriod } = status;
   const { operator, council } = await getSiteSettings();
+  // 文言はサイト設定（議会タブ）から。空なら会期の方式から自動で決まる
+  const wording = councilWording(council);
+  const showSystem = hasSessionSystemPage(council);
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -54,19 +64,35 @@ export async function CouncilStatus({
           <span className="rounded-full bg-mirai-gradient px-3.5 py-1 text-[15px] font-bold text-mirai-text">
             {currentPeriod
               ? `${currentPeriod.name} 開催中`
-              : `${council.name} 会期中`}
+              : wording.outOfPeriod}
           </span>
-          <span className="text-[15px] font-bold text-mirai-brand-teal-deep md:ml-auto">
-            {formatCouncilYear(councilYear)}定例会（通年）
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px] font-bold text-mirai-brand-teal-deep md:ml-auto">
+            <span>{formatCouncilYear(councilYear)}</span>
+            {showSystem && (
+              <Link
+                href={routes.councilSystem()}
+                title={council.session_system_summary || undefined}
+                className="rounded-full border border-current px-2.5 py-0.5 text-xs underline-offset-2 hover:underline"
+              >
+                {council.session_system_label}
+                <span className="sr-only">とは</span>
+              </Link>
+            )}
           </span>
         </div>
 
         {nextMeetings.length > 0 && <NextMeetingDay meetings={nextMeetings} />}
 
         {currentPeriod ? (
-          <PeriodProgressBar period={currentPeriod} today={today} />
+          <PeriodProgressBar
+            period={currentPeriod}
+            today={today}
+            wording={wording}
+          />
         ) : (
-          nextPeriod && <NextPeriod period={nextPeriod} today={today} />
+          nextPeriod && (
+            <NextPeriod period={nextPeriod} today={today} wording={wording} />
+          )
         )}
 
         {todayMeetings.length > 0 && (
@@ -90,13 +116,23 @@ export async function CouncilStatus({
           </div>
         )}
       </div>
-      <div className="flex items-baseline justify-between gap-2 pt-2">
-        <Link
-          href={routes.schedule()}
-          className="text-xs font-bold text-primary underline underline-offset-2"
-        >
-          会議の予定を見る
-        </Link>
+      <div className="flex flex-wrap items-baseline justify-between gap-2 pt-2">
+        <span className="flex flex-wrap gap-x-4 gap-y-1">
+          <Link
+            href={routes.schedule()}
+            className="text-xs font-bold text-primary underline underline-offset-2"
+          >
+            会議の予定を見る
+          </Link>
+          {showSystem && (
+            <Link
+              href={routes.councilSystem()}
+              className="text-xs font-bold text-primary underline underline-offset-2"
+            >
+              {council.session_system_label}とは
+            </Link>
+          )}
+        </span>
         <p className="text-xs font-bold tracking-wide text-mirai-text-secondary">
           powered by {operator.name} &amp; AI
         </p>
@@ -108,9 +144,11 @@ export async function CouncilStatus({
 function PeriodProgressBar({
   period,
   today,
+  wording,
 }: {
   period: CouncilPeriod;
   today: string;
+  wording: CouncilWording;
 }) {
   const [y, m, d] = today.split("-").map(Number);
   const { percentage, daysLeft } = calculateSessionProgress(
@@ -126,7 +164,7 @@ function PeriodProgressBar({
         </span>
         <span className="flex items-baseline gap-1 whitespace-nowrap">
           <span className="text-[13px] font-bold text-mirai-text-secondary">
-            最終日まで
+            {wording.countdownClose}
           </span>
           <span className="font-lexend text-[28px] font-bold leading-none text-primary-accent">
             {daysLeft}
@@ -141,37 +179,45 @@ function PeriodProgressBar({
       />
       <div className="flex items-baseline justify-between gap-2 text-xs font-bold text-mirai-text-secondary">
         <span className="whitespace-nowrap">
-          {formatShortDate(period.start_date)} 初日
+          {formatShortDate(period.start_date)} 開会
         </span>
         <span className="whitespace-nowrap">
-          {formatShortDate(period.end_date)} 最終日
+          {formatShortDate(period.end_date)} 閉会
         </span>
       </div>
     </div>
   );
 }
 
+/** 次の議会期間（例: 12月定例会議 開会まで 21 日）。 */
 function NextPeriod({
   period,
   today,
+  wording,
 }: {
   period: CouncilPeriod;
   today: string;
+  wording: CouncilWording;
 }) {
   return (
-    <div className="-mt-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1.5">
-      <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-[15px] font-bold text-mirai-brand-teal-deep">
-          次の本会議は{period.name}
+    <div className="-mt-2 flex flex-wrap items-end justify-between gap-x-3 gap-y-1.5">
+      <span className="flex flex-col gap-0.5">
+        <span className="text-[13px] font-bold text-mirai-text-secondary">
+          次の{wording.sessionLabel}
         </span>
-        <span className="whitespace-nowrap text-[13px] font-bold text-mirai-text-secondary">
-          {formatShortDate(period.start_date)} -{" "}
-          {formatShortDate(period.end_date)}
+        <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="text-[22px] font-bold leading-tight text-mirai-brand-teal-deep">
+            {period.name}
+          </span>
+          <span className="whitespace-nowrap text-[13px] font-bold text-mirai-text-secondary">
+            {formatShortDate(period.start_date)} -{" "}
+            {formatShortDate(period.end_date)}
+          </span>
         </span>
       </span>
       <span className="flex items-baseline gap-1 whitespace-nowrap">
         <span className="text-[13px] font-bold text-mirai-text-secondary">
-          初日まで
+          {wording.countdownOpen}
         </span>
         <span className="font-lexend text-[28px] font-bold leading-none text-primary-accent">
           {daysBetween(today, period.start_date)}

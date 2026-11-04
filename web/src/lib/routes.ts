@@ -19,6 +19,8 @@ export const routes = {
 
   // ── 会議予定 ──────────────────────────────────────
   schedule: () => "/schedule" as const,
+  /** 会期の制度（通年議会など）の説明。制度名が空なら 404 */
+  councilSystem: () => "/council-system" as const,
 
   // ── 議案 ──────────────────────────────────────────
   billsList: () => "/bills" as const,

@@ -33,6 +33,23 @@ export function extractCouncilPeriods(
   return periods.sort((a, b) => a.start_date.localeCompare(b.start_date));
 }
 
+/**
+ * 使う議会期間を決める。会期管理で入力した期間（diet_sessions.meeting_periods）があれば
+ * それを使い、無ければ会議予定の本会議名から導く。
+ * 相模原市議会の会議日程は「本会議（○月議会初日）」の形ではないので、通常は入力した期間を使う。
+ */
+export function resolveCouncilPeriods(
+  configured: CouncilPeriod[],
+  meetings: Pick<CouncilMeeting, "name" | "meeting_date" | "category">[]
+): CouncilPeriod[] {
+  if (configured.length > 0) {
+    return [...configured].sort((a, b) =>
+      a.start_date.localeCompare(b.start_date)
+    );
+  }
+  return extractCouncilPeriods(meetings);
+}
+
 /** 日付を `YYYY-MM-DD` にする。日本時間の Date を渡す前提。 */
 export function toDateKey(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");

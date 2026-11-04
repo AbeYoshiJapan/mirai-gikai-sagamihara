@@ -7,6 +7,7 @@ import {
   formatMeetingDateRange,
   getCouncilStatus,
   isUpcoming,
+  resolveCouncilPeriods,
   takeFirstDays,
 } from "./council-period";
 
@@ -38,6 +39,28 @@ describe("extractCouncilPeriods", () => {
     expect(
       extractCouncilPeriods([plenary("2027-02-01", "本会議（2月議会初日）")])
     ).toEqual([]);
+  });
+});
+
+describe("resolveCouncilPeriods", () => {
+  it("会期管理で入力した期間があればそれを開始日順に使う", () => {
+    const configured = [
+      {
+        name: "12月定例会議",
+        start_date: "2026-11-26",
+        end_date: "2026-12-18",
+      },
+      { name: "6月定例会議", start_date: "2026-05-28", end_date: "2026-06-26" },
+    ];
+    expect(
+      resolveCouncilPeriods(configured, meetings).map((p) => p.name)
+    ).toEqual(["6月定例会議", "12月定例会議"]);
+  });
+
+  it("入力が無ければ会議予定の本会議名から導く", () => {
+    expect(resolveCouncilPeriods([], meetings)).toEqual(
+      extractCouncilPeriods(meetings)
+    );
   });
 });
 

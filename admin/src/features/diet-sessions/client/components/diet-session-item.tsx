@@ -1,5 +1,6 @@
 "use client";
 
+import { parseMeetingPeriods } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,13 +25,25 @@ import { deleteDietSession } from "../../server/actions/delete-diet-session";
 import { setActiveDietSession } from "../../server/actions/set-active-diet-session";
 import { updateDietSession } from "../../server/actions/update-diet-session";
 import type { DietSession } from "../../shared/types";
+import {
+  compactMeetingPeriods,
+  type MeetingPeriodRow,
+  MeetingPeriodsEditor,
+  toMeetingPeriodRows,
+} from "./meeting-periods-editor";
 
 type DietSessionItemProps = {
   session: DietSession;
+  /** 会議期間の呼び方（例: 定例会議） */
+  sessionLabel?: string;
 };
 
-export function DietSessionItem({ session }: DietSessionItemProps) {
+export function DietSessionItem({
+  session,
+  sessionLabel = "定例会議",
+}: DietSessionItemProps) {
   const router = useRouter();
+  const savedPeriods = parseMeetingPeriods(session.meeting_periods);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(session.name);
   const [editSlug, setEditSlug] = useState(session.slug ?? "");
@@ -39,6 +52,9 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
   );
   const [editStartDate, setEditStartDate] = useState(session.start_date);
   const [editEndDate, setEditEndDate] = useState(session.end_date);
+  const [editPeriods, setEditPeriods] = useState<MeetingPeriodRow[]>(() =>
+    toMeetingPeriodRows(savedPeriods)
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleUpdate = async () => {
@@ -57,13 +73,16 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
       return;
     }
 
+    const nextPeriods = compactMeetingPeriods(editPeriods);
+
     // 変更がない場合は編集モードを終了
     if (
       editName === session.name &&
       editSlug === (session.slug ?? "") &&
       editShugiinUrl === (session.shugiin_url ?? "") &&
       editStartDate === session.start_date &&
-      editEndDate === session.end_date
+      editEndDate === session.end_date &&
+      JSON.stringify(nextPeriods) === JSON.stringify(savedPeriods)
     ) {
       setIsEditing(false);
       return;
@@ -79,6 +98,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
         shugiin_url: editShugiinUrl || null,
         start_date: editStartDate,
         end_date: editEndDate,
+        meeting_periods: nextPeriods,
       });
 
       if (result.error) {
@@ -86,6 +106,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
       } else {
         toast.success("会期を更新しました");
         setIsEditing(false);
+        router.refresh();
       }
     } catch (error) {
       console.error("Update diet session error:", error);
@@ -120,6 +141,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
     setEditShugiinUrl(session.shugiin_url ?? "");
     setEditStartDate(session.start_date);
     setEditEndDate(session.end_date);
+    setEditPeriods(toMeetingPeriodRows(savedPeriods));
     setIsEditing(false);
   };
 
@@ -191,6 +213,12 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
               placeholder="議会サイトURL（https://www.sagamihara-shigikai.jp/...）"
               disabled={isSubmitting}
             />
+            <MeetingPeriodsEditor
+              value={editPeriods}
+              onChange={setEditPeriods}
+              disabled={isSubmitting}
+              sessionLabel={sessionLabel}
+            />
           </div>
         ) : (
           <div className="flex-1">
@@ -227,6 +255,25 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
                 </a>
               </div>
             )}
+            <div className="mt-2 text-sm text-gray-500">
+              {savedPeriods.length > 0 ? (
+                <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                  {savedPeriods.map((p) => (
+                    <li key={`${p.name}-${p.start_date}`}>
+                      <span className="font-medium text-gray-700">
+                        {p.name}
+                      </span>{" "}
+                      {formatDate(p.start_date)} 〜 {formatDate(p.end_date)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span>
+                  {sessionLabel}
+                  の期間は未登録（公開サイトは会議予定の本会議名から求めます）
+                </span>
+              )}
+            </div>
           </div>
         )}
 

@@ -1,7 +1,13 @@
+import {
+  councilWording,
+  hasSessionSystemPage,
+} from "@mirai-gikai/shared/site-settings/public";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/layouts/container";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { MeetingList } from "@/features/council-meetings/server/components/meeting-list";
+import { PeriodList } from "@/features/council-meetings/server/components/period-list";
 import { ScheduleSourceNote } from "@/features/council-meetings/server/components/schedule-source-note";
 import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/load-council-schedule";
 import type { CouncilMeeting } from "@/features/council-meetings/shared/types";
@@ -34,9 +40,11 @@ function groupByMonth(meetings: CouncilMeeting[]) {
 export default async function SchedulePage() {
   await requireFeature("schedule");
   const { council } = await getSiteSettings();
-  const { status, meetings, upcoming } = await loadCouncilSchedule(
-    getJapanTime()
-  );
+  const { status, periods, today, meetings, upcoming } =
+    await loadCouncilSchedule(getJapanTime());
+  const wording = councilWording(council);
+  const sessionLabel = wording.sessionLabel;
+  const systemName = council.session_system_label || "通年議会";
   const upcomingIds = new Set(upcoming.map((m) => m.id));
   // 終わった会議は新しい順に。直近の結果を探す人の方が多い。
   const past = meetings.filter((m) => !upcomingIds.has(m.id)).reverse();
@@ -54,12 +62,36 @@ export default async function SchedulePage() {
 
       <h1 className="mb-3 text-3xl font-bold">会議の予定</h1>
       <p className="mb-8 text-sm leading-6 text-mirai-text-secondary">
-        {formatCouncilYear(status.councilYear)}の{council.name}
-        の会議予定です。
+        {`${formatCouncilYear(status.councilYear)}の${council.name}の会議予定です。`}
         {council.session_model === "year_round"
-          ? `${council.name}は通年議会のため、会期は年度を通して続き、本会議は${council.session_label}の期間に開かれます。`
-          : `本会議は${council.session_label}の期間に開かれます。`}
+          ? `${council.name}は${systemName}のため、会期は年度を通して続き、本会議は${sessionLabel}の期間に開かれます。`
+          : `本会議は${sessionLabel}の期間に開かれます。`}
+        {hasSessionSystemPage(council) && (
+          <>
+            {" "}
+            <Link
+              href={routes.councilSystem()}
+              className="font-bold text-primary underline underline-offset-2"
+            >
+              {council.session_system_label}とは
+            </Link>
+          </>
+        )}
       </p>
+
+      {periods.length > 0 && (
+        <section className="mb-10 flex flex-col gap-4">
+          <h2 className="text-[22px] font-bold">
+            {formatCouncilYear(status.councilYear)}の{sessionLabel}
+          </h2>
+          <PeriodList
+            periods={periods}
+            today={today}
+            countdownOpenLabel={wording.countdownOpen}
+            countdownCloseLabel={wording.countdownClose}
+          />
+        </section>
+      )}
 
       {upcoming.length > 0 ? (
         <div className="flex flex-col gap-10">

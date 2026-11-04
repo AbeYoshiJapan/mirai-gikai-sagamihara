@@ -7,6 +7,22 @@ import { buildPolicyLinks, buildPrimaryLinks } from "./footer.config";
 const base = toPublicSiteSettings(DEFAULT_SITE_SETTINGS);
 
 describe("footer.config", () => {
+  it("会期の制度名があるときだけ「○○とは」ページへのリンクを出す", () => {
+    expect(buildPrimaryLinks(base).map((link) => link.href)).not.toContain(
+      routes.councilSystem()
+    );
+
+    const yearRound = {
+      ...base,
+      council: { ...base.council, session_system_label: "通年議会" },
+    };
+    const link = buildPrimaryLinks(yearRound).find(
+      (l) => l.href === routes.councilSystem()
+    );
+    expect(link?.label).toBe("通年議会とは");
+    expect(link?.external).toBeUndefined();
+  });
+
   it("policyLinks に規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
     const hrefs = buildPolicyLinks(base).map((link) => link.href);
 
