@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const SRC = process.env.BRAND_SRC || path.join(__dirname, 'assets');
 const OUT = process.env.BRAND_OUT || path.join(__dirname, '..', '..', 'web', 'public', 'brand');
-const MAP = { A: 'kakehashi', B: 'ajisai' };
+const MAP = { A: 'kakehashi', B: 'ajisai', D: 'gakudo', E: 'ginga' };
 if (!fs.existsSync(SRC)) {
   console.error(`SVG がありません: ${SRC}\n先に python3 generate.py を実行してください`);
   process.exit(1);

@@ -76,9 +76,15 @@ export const brandColorsSchema = z.object({
 });
 
 /** 同梱のブランド案（ロゴ・画像・色のセット）。custom は運営者が自分で組んだもの */
-export const BRAND_PRESET_IDS = ["kakehashi", "ajisai"] as const;
+export const BRAND_PRESET_IDS = ["kakehashi", "ajisai", "gakudo", "ginga"] as const;
 export type BrandPresetId = (typeof BRAND_PRESET_IDS)[number];
-export const brandPresetChoiceSchema = z.enum(["kakehashi", "ajisai", "custom"]);
+export const brandPresetChoiceSchema = z.enum([
+  "kakehashi",
+  "ajisai",
+  "gakudo",
+  "ginga",
+  "custom",
+]);
 export type BrandPresetChoice = z.infer<typeof brandPresetChoiceSchema>;
 
 export const brandSectionSchema = z.object({

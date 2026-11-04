@@ -19,6 +19,8 @@ LINE = "#e3e7ea"
 PLANS = [
     {
         "id": "A",
+        "key": "kakehashi",
+        "adopted": True,
         "no": "案1",
         "name": "かけはし",
         "motif": "吹き出しの中の橋（相模川にかかる橋）",
@@ -33,6 +35,8 @@ PLANS = [
     },
     {
         "id": "B",
+        "key": "ajisai",
+        "adopted": True,
         "no": "案2",
         "name": "あじさい",
         "motif": "あじさいの小花の集まり（市の花）",
@@ -47,6 +51,8 @@ PLANS = [
     },
     {
         "id": "C",
+        "key": "keyaki",
+        "adopted": False,
         "no": "案3",
         "name": "けやき",
         "motif": "けやきの木（市の木）",
@@ -58,6 +64,41 @@ PLANS = [
         "g1": "#fbdcb8",
         "g2": "#fff4e8",
         "sub": "#e9b35c",  # 朝日の黄（少量）
+    },
+    {
+        "id": "D",
+        "key": "gakudo",
+        "adopted": True,
+        "no": "案4",
+        "name": "咢堂さくら",
+        "motif": "演壇に立つ人の影と桜（尾崎咢堂・ワシントンの桜）",
+        "concept": "相模原（旧津久井郡又野）が生んだ「憲政の神様」尾崎咢堂。演壇に立つ人の影と、咢堂が贈った桜で「言葉で政治をつくる」を表す。",
+        "tone": ["凛とした", "品がある", "歴史を感じる"],
+        "fit": "式典・記念行事の時期や、議会の歴史を語るときに。藍鼠の主色で引き締め、桜は差し色だけに留めて軽く見せない。",
+        "primary": "#44507a",
+        "accent": "#2f3a63",
+        "g1": "#f7d4dc",
+        "g2": "#fdf3f5",
+        "sub": "#e89bb0",  # 桜色（画像の中だけ）
+        "quote": "人生の本舞台は常に将来に在り ― 尾崎咢堂",
+    },
+    {
+        "id": "E",
+        "key": "ginga",
+        "adopted": True,
+        "no": "案5",
+        "name": "ぎんが",
+        "motif": "人工衛星・小惑星・ロケット・星々（JAXA 相模原キャンパス、銀河連邦）",
+        "concept": "宇宙科学のまち相模原。星空に浮かぶ探査機と小惑星、打ち上がるロケットで「遠くを見る・未来を考える」を表す。",
+        "tone": ["わくわく", "未来志向", "子どもにも"],
+        "fit": "子ども向けの企画や科学・教育の話題が多い時期に。UI は紺の 1 色で落ち着かせ、星空は OGP と帯の中だけにする。",
+        "primary": "#2b3f9e",
+        "accent": "#1d2c70",
+        "g1": "#c9d3f6",
+        "g2": "#eef1fb",
+        "sub": "#f2c94c",  # 星の黄（画像の中だけ）
+        "dark": True,
+        "sky": "#0f1a3f",
     },
 ]
 
@@ -108,6 +149,38 @@ def mark_svg(p, size=(40, 36), variant="light", label=None, extra_attr=""):
             + floret(9.5, 24.5, 0.62, small)
             + floret(30.5, 24.5, 0.62, small)
         )
+    elif p["id"] == "D":
+        if variant == "light":
+            bg, fig, petal = P, "#ffffff", S
+        else:
+            bg, fig, petal = "#ffffff", P, S
+        body = (
+            f'<rect x="1" y="1" width="38" height="34" rx="10" fill="{bg}"/>'
+            f'<circle cx="18" cy="11.5" r="4.4" fill="{fig}"/>'
+            f'<path d="M10.5 24C11 18.5 25 18.5 25.5 24Z" fill="{fig}"/>'
+            f'<path d="M7 33.5L9.5 23H26.5L29 33.5Z" fill="{fig}"/>'
+            f'<path d="M9.5 23H26.5" stroke="{bg}" stroke-width="1.6" stroke-linecap="round"/>'
+            f'<g transform="translate(31.5 9.5)" fill="{petal}"><path d="{SAKURA}"/><circle r="1" fill="{bg}"/></g>'
+        )
+    elif p["id"] == "E":
+        if variant == "light":
+            bg, body_c, panel, star = P, "#ffffff", G1, "#ffffff"
+        else:
+            bg, body_c, panel, star = "#ffffff", P, G1, P
+        body = (
+            f'<rect x="1" y="1" width="38" height="34" rx="10" fill="{bg}"/>'
+            f'<circle cx="8.5" cy="8.5" r="1.6" fill="{star}"/>'
+            f'<circle cx="31" cy="6.5" r="1.1" fill="{star}"/>'
+            f'<circle cx="33.5" cy="27" r="1.3" fill="{star}"/>'
+            f'<circle cx="7" cy="27.5" r="1" fill="{star}"/>'
+            f'<path d="M27 11.5l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z" fill="{star}"/>'
+            f'<rect x="4" y="16.5" width="9" height="5" rx="1.2" fill="{panel}"/>'
+            f'<rect x="27" y="16.5" width="9" height="5" rx="1.2" fill="{panel}"/>'
+            f'<rect x="15" y="14" width="10" height="10" rx="2" fill="{body_c}"/>'
+            f'<path d="M20 14V10.5" stroke="{body_c}" stroke-width="1.6" stroke-linecap="round"/>'
+            f'<circle cx="20" cy="10" r="1.3" fill="{body_c}"/>'
+            f'<rect x="18" y="24" width="4" height="3" rx="1" fill="{panel}"/>'
+        )
     else:  # C けやき
         if variant == "light":
             canopy, trunk, ground = P, A, G1
@@ -141,9 +214,85 @@ def icon_svg(p, size=512, standalone=False):
     )
 
 
+SAKURA = "M0 -5.2C1.8 -5.2 2.8 -3.6 2.2 -2.2C3.8 -2.6 5.2 -1.4 5 0.4C3.6 0.2 2.6 1.4 2.8 2.9C1.4 2.6 0.6 1.6 0 0.6C-0.6 1.6 -1.4 2.6 -2.8 2.9C-2.6 1.4 -3.6 0.2 -5 0.4C-5.2 -1.4 -3.8 -2.6 -2.2 -2.2C-2.8 -3.6 -1.8 -5.2 0 -5.2Z"
+PETAL = "M0 -4C2.4 -4 3.4 -1.6 2.6 0.8C1.8 2.6 0.8 3.6 0 4C-0.8 3.6 -1.8 2.6 -2.6 0.8C-3.4 -1.6 -2.4 -4 0 -4Z"
+
+
+def sakura(cx, cy, s, fill, center="#ffffff", opacity=1, rot=0):
+    return (
+        f'<g transform="translate({cx} {cy}) rotate({rot}) scale({s})" opacity="{opacity}">'
+        f'<path d="{SAKURA}" fill="{fill}"/><circle r="1" fill="{center}"/></g>'
+    )
+
+
+def petal(cx, cy, s, fill, opacity=1, rot=0):
+    return (
+        f'<path d="{PETAL}" transform="translate({cx} {cy}) rotate({rot}) scale({s})" fill="{fill}" opacity="{opacity}"/>'
+    )
+
+
+def speaker(cx, cy, s, fill):
+    """演壇に立つ人の影（頭・肩・演壇）。cx, cy は演壇の底の中央"""
+    return (
+        f'<g transform="translate({cx} {cy}) scale({s})" fill="{fill}">'
+        f'<circle cx="0" cy="-23" r="4.6"/>'
+        f'<path d="M-8 -10C-7.5 -15.5 7.5 -15.5 8 -10Z"/>'
+        f'<path d="M-11 0L-8.5 -10H8.5L11 0Z"/>'
+        f"</g>"
+    )
+
+
+def star4(cx, cy, s, fill, opacity=1):
+    return (
+        f'<path d="M0 -4l1.1 2.9L4 0l-2.9 1.1L0 4l-1.1-2.9L-4 0l2.9-1.1z" transform="translate({cx} {cy}) scale({s})" fill="{fill}" opacity="{opacity}"/>'
+    )
+
+
+def starfield(points, fill="#ffffff"):
+    return "".join(
+        f'<circle cx="{x}" cy="{y}" r="{r}" fill="{fill}" opacity="{o}"/>' for x, y, r, o in points
+    )
+
+
+def satellite(cx, cy, s, body, panel):
+    """探査機（本体＋両翼の太陽電池パネル＋アンテナ）。cx, cy は本体の中心"""
+    return (
+        f'<g transform="translate({cx} {cy}) scale({s})">'
+        f'<rect x="-30" y="-6" width="22" height="12" rx="2" fill="{panel}"/>'
+        f'<rect x="8" y="-6" width="22" height="12" rx="2" fill="{panel}"/>'
+        f'<rect x="-8" y="-8" width="16" height="16" rx="3" fill="{body}"/>'
+        f'<path d="M0 -8V-15" stroke="{body}" stroke-width="2.4" stroke-linecap="round"/>'
+        f'<circle cx="0" cy="-16" r="2.2" fill="{body}"/>'
+        f'<rect x="-3" y="8" width="6" height="4" rx="1.5" fill="{panel}"/>'
+        f"</g>"
+    )
+
+
+def asteroid(cx, cy, s, fill, crater):
+    """小惑星（イトカワのような細長い形）"""
+    return (
+        f'<g transform="translate({cx} {cy}) scale({s})">'
+        f'<path d="M-60 -6C-52 -30 -10 -36 20 -28C44 -22 62 -8 56 10C50 26 20 34 -6 30C-34 26 -66 16 -60 -6Z" fill="{fill}"/>'
+        f'<circle cx="-24" cy="2" r="7" fill="{crater}"/><circle cx="14" cy="-10" r="5" fill="{crater}"/><circle cx="26" cy="12" r="4" fill="{crater}"/>'
+        f"</g>"
+    )
+
+
+def rocket(cx, cy, s, body, fin, flame):
+    """上向きのロケット。cx, cy は機体の中心"""
+    return (
+        f'<g transform="translate({cx} {cy}) scale({s})">'
+        f'<path d="M0 -34C10 -24 12 -4 10 14H-10C-12 -4 -10 -24 0 -34Z" fill="{body}"/>'
+        f'<path d="M-10 4L-20 18L-10 14Z" fill="{fin}"/><path d="M10 4L20 18L10 14Z" fill="{fin}"/>'
+        f'<circle cx="0" cy="-10" r="4" fill="{fin}"/>'
+        f'<path d="M-5 14C-3 24 3 24 5 14Z" fill="{flame}"/>'
+        f"</g>"
+    )
+
+
 # ---------------------------------------------------------------- OGP
 def ogp_svg(p, width=1200, height=630, scale=1.0):
-    P, A, G1, G2 = p["primary"], p["accent"], p["g1"], p["g2"]
+    P, A, G1, G2, S = p["primary"], p["accent"], p["g1"], p["g2"], p["sub"]
     W, H = width, height
     # 右側のモチーフ
     if p["id"] == "A":
@@ -158,13 +307,13 @@ def ogp_svg(p, width=1200, height=630, scale=1.0):
             f'<path d="M700 566c40-30 80-30 120 0s80 30 120 0 80-30 120 0 80 30 120 0" fill="none" stroke="{P}" stroke-width="12" stroke-linecap="round" opacity="0.16"/>'
         )
     elif p["id"] == "B":
-        petal = "M0 -8C3 -8 4.6 -4 0 0C-4.6 -4 -3 -8 0 -8Z"
+        hpetal = "M0 -8C3 -8 4.6 -4 0 0C-4.6 -4 -3 -8 0 -8Z"
 
         def fl(cx, cy, s, fill, op):
             return (
                 f'<g transform="translate({cx} {cy}) scale({s})" fill="{fill}" opacity="{op}">'
-                f'<path d="{petal}"/><path d="{petal}" transform="rotate(90)"/>'
-                f'<path d="{petal}" transform="rotate(180)"/><path d="{petal}" transform="rotate(270)"/>'
+                f'<path d="{hpetal}"/><path d="{hpetal}" transform="rotate(90)"/>'
+                f'<path d="{hpetal}" transform="rotate(180)"/><path d="{hpetal}" transform="rotate(270)"/>'
                 f'<circle r="1.7" fill="#ffffff"/></g>'
             )
 
@@ -177,6 +326,31 @@ def ogp_svg(p, width=1200, height=630, scale=1.0):
             + fl(1120, 540, 5, G1, 0.8)
             + fl(760, 150, 4, G1, 0.8)
         )
+    elif p["id"] == "D":
+        motif = (
+            sakura(900, 230, 16, G1)
+            + sakura(1060, 330, 11, G1)
+            + sakura(790, 380, 9, G1)
+            + sakura(1030, 150, 6, S, opacity=0.9)
+            + petal(760, 170, 5, S, 0.8, 30)
+            + petal(1130, 470, 6, S, 0.7, -20)
+            + petal(860, 520, 4, S, 0.8, 60)
+            + speaker(880, 500, 6, P)
+        )
+    elif p["id"] == "E":
+        sky = p["sky"]
+        pts = [(700, 80, 3, 1), (760, 300, 2, .8), (820, 160, 4, 1), (900, 60, 2, .7), (980, 230, 3, .9),
+               (1060, 110, 2, .8), (1130, 60, 3, 1), (1160, 320, 2, .7), (1040, 420, 2, .8), (720, 470, 3, .9),
+               (880, 560, 2, .7), (1150, 540, 3, .9), (640, 240, 2, .6), (960, 500, 2, .6)]
+        motif = (
+            f'<rect x="600" y="0" width="{W-600}" height="{H-14}" fill="{sky}"/>'
+            f'<path d="M600 0C640 200 640 420 600 {H-14}Z" fill="{sky}"/>'
+            + starfield(pts)
+            + star4(1100, 170, 3, S) + star4(740, 390, 2.2, S, 0.9)
+            + asteroid(980, 400, 1.6, "#8b93a7", "#6b7389")
+            + satellite(820, 250, 1.3, "#ffffff", G1)
+            + rocket(1120, 440, 1.6, "#ffffff", S, S)
+        )
     else:
         motif = (
             f'<g fill="{G1}">'
@@ -186,17 +360,31 @@ def ogp_svg(p, width=1200, height=630, scale=1.0):
             f'<rect x="908" y="430" width="44" height="150" rx="18" fill="{G1}"/>'
             f'<path d="M700 585h460" stroke="{G1}" stroke-width="14" stroke-linecap="round"/>'
         )
-    logo = mark_svg(p, (150, 135), "light", extra_attr='x="84" y="92"')
+    dark = p.get("dark", False)
+    bg = p["sky"] if dark else G2
+    ink = "#ffffff" if dark else INK
+    sub_ink = G1 if dark else A
+    muted = "#c7cde6" if dark else MUTED
+    name_accent = S if dark else P
+    bar = S if dark else P
+    logo = mark_svg(p, (150, 135), "tile" if dark else "light", extra_attr='x="84" y="92"')
+    quote = p.get("quote")
+    quote_svg = (
+        f'<text x="{W-84}" y="560" text-anchor="end" font-family="{FONT}" font-weight="500" font-size="22" fill="{muted}">{quote}</text>'
+        if quote
+        else ""
+    )
     return (
         f'<svg viewBox="0 0 {W} {H}" width="{round(W*scale)}" height="{round(H*scale)}" role="img" aria-label="OGP画像 {p["name"]}" xmlns="http://www.w3.org/2000/svg">'
-        f'<rect width="{W}" height="{H}" fill="{G2}"/>'
-        f'<rect x="0" y="{H-14}" width="{W}" height="14" fill="{P}"/>'
+        f'<rect width="{W}" height="{H}" fill="{bg}"/>'
         f"{motif}"
+        f'<rect x="0" y="{H-14}" width="{W}" height="14" fill="{bar}"/>'
         f"{logo}"
-        f'<text x="84" y="330" font-family="{FONT}" font-weight="900" font-size="66" fill="{INK}">みらい議会<tspan fill="{P}">＠相模原市</tspan></text>'
-        f'<text x="86" y="396" font-family="{FONT}" font-weight="700" font-size="30" fill="{A}">相模原市議会の議論をわかりやすく</text>'
-        f'<text x="86" y="452" font-family="{FONT}" font-weight="500" font-size="24" fill="{MUTED}">いま審議されている議案・審議の結果・請願と陳情の案内</text>'
-        f'<text x="86" y="560" font-family="{FONT}" font-weight="500" font-size="22" fill="{MUTED}">市議会議員が個人で運営・公式サイトではありません</text>'
+        f'<text x="84" y="330" font-family="{FONT}" font-weight="900" font-size="66" fill="{ink}">みらい議会<tspan fill="{name_accent}">＠相模原市</tspan></text>'
+        f'<text x="86" y="396" font-family="{FONT}" font-weight="700" font-size="30" fill="{sub_ink}">相模原市議会の議論をわかりやすく</text>'
+        f'<text x="86" y="452" font-family="{FONT}" font-weight="500" font-size="24" fill="{muted}">いま審議されている議案・審議の結果・請願と陳情の案内</text>'
+        f'<text x="86" y="560" font-family="{FONT}" font-weight="500" font-size="22" fill="{muted}">市議会議員が個人で運営・公式サイトではありません</text>'
+        f"{quote_svg}"
         f"</svg>"
     )
 
@@ -219,13 +407,13 @@ def hero_svg(p, width=2880, height=570, scale=1.0):
             f'<circle cx="2420" cy="150" r="70" fill="{S}" opacity="0.85"/>'
         )
     elif p["id"] == "B":
-        petal = "M0 -8C3 -8 4.6 -4 0 0C-4.6 -4 -3 -8 0 -8Z"
+        hpetal = "M0 -8C3 -8 4.6 -4 0 0C-4.6 -4 -3 -8 0 -8Z"
 
         def fl(cx, cy, s, fill, op):
             return (
                 f'<g transform="translate({cx} {cy}) scale({s})" fill="{fill}" opacity="{op}">'
-                f'<path d="{petal}"/><path d="{petal}" transform="rotate(90)"/>'
-                f'<path d="{petal}" transform="rotate(180)"/><path d="{petal}" transform="rotate(270)"/>'
+                f'<path d="{hpetal}"/><path d="{hpetal}" transform="rotate(90)"/>'
+                f'<path d="{hpetal}" transform="rotate(180)"/><path d="{hpetal}" transform="rotate(270)"/>'
                 f'<circle r="1.7" fill="#ffffff"/></g>'
             )
 
@@ -238,6 +426,37 @@ def hero_svg(p, width=2880, height=570, scale=1.0):
         motif = "".join(fl(x, y, s, G1, o) for x, y, s, o in spots)
         motif += (
             f'<path d="M1480 560C1540 500 1640 500 1680 560C1620 600 1520 600 1480 560Z" fill="{S}" opacity="0.35"/>'
+        )
+    elif p["id"] == "D":
+        blossoms = [
+            (300, 300, 17, G1, 1), (560, 160, 10, G1, .9), (760, 420, 13, G1, 1), (1020, 220, 8, G1, .9),
+            (1300, 360, 16, G1, 1), (1560, 150, 9, G1, .9), (1800, 440, 11, G1, 1), (2060, 230, 15, G1, 1),
+            (2320, 420, 9, G1, .9), (2560, 180, 12, G1, 1), (2800, 380, 10, G1, .9),
+        ]
+        petals = [
+            (450, 480, 6, S, .8, 20), (900, 120, 5, S, .8, -30), (1150, 500, 7, S, .7, 50), (1700, 300, 5, S, .8, 10),
+            (1950, 520, 6, S, .7, -40), (2450, 500, 6, S, .8, 30), (2700, 100, 5, S, .8, -10), (150, 120, 5, S, .7, 40),
+        ]
+        motif = (
+            "".join(sakura(x, y, sc, f, opacity=o) for x, y, sc, f, o in blossoms)
+            + "".join(petal(x, y, sc, f, o, r) for x, y, sc, f, o, r in petals)
+            + speaker(2600, 545, 8, P)
+            + f'<path d="M0 548H{W}" stroke="{P}" stroke-width="6" stroke-linecap="round" opacity="0.18"/>'
+        )
+    elif p["id"] == "E":
+        sky = p["sky"]
+        import random as _r
+
+        rnd = _r.Random(7)
+        pts = [(rnd.randint(0, W), rnd.randint(0, H), rnd.choice([1.5, 2, 2.5, 3]), rnd.choice([.5, .7, .9, 1])) for _ in range(140)]
+        motif = (
+            f'<rect width="{W}" height="{H}" fill="{sky}"/>'
+            + starfield(pts)
+            + star4(420, 120, 3.5, S) + star4(1700, 90, 2.5, S, .9) + star4(2550, 160, 3, S)
+            + f'<path d="M1880 480C1960 300 2120 250 2330 240" fill="none" stroke="{G1}" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 22" opacity="0.8"/>'
+            + rocket(2360, 230, 2.0, "#ffffff", S, S)
+            + asteroid(1180, 360, 2.2, "#8b93a7", "#6b7389")
+            + satellite(640, 300, 2.0, "#ffffff", G1)
         )
     else:
         trees = ""

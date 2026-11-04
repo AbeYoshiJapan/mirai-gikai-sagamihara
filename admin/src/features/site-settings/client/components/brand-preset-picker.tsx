@@ -139,6 +139,49 @@ export function BrandPresetPicker({
                 </Button>
               );
             })}
+            <Button
+              type="button"
+              variant="outline"
+              aria-pressed={field.value === "custom"}
+              disabled={disabled}
+              onClick={() =>
+                setValue(paths.preset, "custom", {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              className={`h-auto w-full items-start justify-start gap-4 whitespace-normal p-4 text-left ${
+                field.value === "custom"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary"
+                  : ""
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className="mt-1 flex h-[50px] w-14 shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 text-xs text-gray-400"
+              >
+                自由
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="flex items-center gap-2">
+                  <span className="text-base font-semibold text-gray-900">
+                    カスタム
+                  </span>
+                  {field.value === "custom" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-white">
+                      <Check className="h-3 w-3" aria-hidden="true" />
+                      使用中
+                    </span>
+                  )}
+                </span>
+                <span className="text-xs text-gray-500">
+                  自分で用意した画像と色
+                </span>
+                <span className="text-sm font-normal leading-relaxed text-gray-700">
+                  下のテーマ色とロゴ・画像をそのまま使います。画像が空の欄は「かけはし」の同梱画像になります。
+                </span>
+              </span>
+            </Button>
           </div>
           <p className="text-xs text-gray-500">
             案を選ぶとテーマ色が入り、アップロード済みのロゴ・画像は空に戻ります（空のあいだは案の同梱画像を使います）。選んだあとで色や画像を変えることもできます。「保存」を押すまで公開サイトには反映されません。
