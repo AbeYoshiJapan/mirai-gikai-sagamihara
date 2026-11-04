@@ -1,6 +1,6 @@
 name: Migrate DB then Deploy
 
-# 相模原版: デプロイは Vercel の GitHub 連携で行い、マイグレーションは手元の `npx supabase db push` で当てる。
+# 相模原版: デプロイは Vercel の GitHub 連携で行い、マイグレーションは手元の `npx supabase db push --remote` で当てる。
 # Supabase のシークレット（SUPABASE_ACCESS_TOKEN など）を GitHub に登録したら、push での実行に戻してよい。
 on:
   workflow_dispatch:

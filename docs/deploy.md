@@ -13,8 +13,12 @@
    ```bash
    npx supabase login
    npx supabase link --project-ref <ref>   # ref は Project Settings → General の Project ID
-   npx supabase db push                    # supabase/migrations をすべて適用。site-assets バケットもここで作られる
+   npx supabase db push --remote           # supabase/migrations をすべて適用。site-assets バケットもここで作られる
    ```
+
+   Supabase CLI は v3 から `db push` が手元のローカル環境向けになったので、本番に当てるときは必ず `--remote` を付けます（`link` 済みのプロジェクトが対象）。
+   マイグレーションの一覧が出て「Do you want to push these migrations to the remote database?」と聞かれたら **y**。DB パスワードを聞かれたらプロジェクト作成時のものを入力します
+   （忘れた場合は Project Settings → Database → Reset database password）。最後に `Finished supabase db push.` と出れば完了です。
 
 4. **Authentication → Sign In / Providers → Email**：「Allow new users to sign up」をオフ。**Anonymous sign-ins** もオフ
    （ローカルの `supabase/config.toml` はオンのままで構いません）。
@@ -79,6 +83,6 @@
 ## 補足
 
 - 以後のデプロイは Vercel の GitHub 連携に任せます（`main` への push で web・admin が自動でビルドされます）。
-  マイグレーションを足したときだけ `npx supabase db push` を手で実行します。順序は **DB が先、コードが後** です。
+  マイグレーションを足したときだけ `npx supabase db push --remote` を手で実行します。順序は **DB が先、コードが後** です。
 - 本家由来の `deploy.yml`・`deploy_worker.yml`・`supabase_preview.yml` は手動実行だけにしてあり、Cloud Run の worker（トピック分析）は使いません。
 - バックアップ：無料プランには自動バックアップが無いので、`npx supabase db dump --data-only -f backup.sql` を週 1 で取るか、Pro にして日次バックアップを使います。
