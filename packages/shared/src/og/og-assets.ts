@@ -75,6 +75,32 @@ export function buildOgFontOptions(data: ArrayBuffer | null, weight: FontWeight)
     : {};
 }
 
+const fontFilePromises = new Map<string, Promise<ArrayBuffer | null>>();
+
+/**
+ * 同梱したフォント（woff / ttf / otf。Satori は woff2 を読めない）を読む。
+ * ネットワークに出ないので、Google Fonts の応答に左右されない。失敗時は null を返し、次回また試す。
+ */
+export function loadBundledFont(fontPath: string): Promise<ArrayBuffer | null> {
+  const cached = fontFilePromises.get(fontPath);
+  if (cached) return cached;
+  const promise = readFile(fontPath)
+    .then(
+      (buf) =>
+        buf.buffer.slice(
+          buf.byteOffset,
+          buf.byteOffset + buf.byteLength
+        ) as ArrayBuffer
+    )
+    .catch((error) => {
+      console.warn("[OgAssets] Failed to load bundled font:", error);
+      fontFilePromises.delete(fontPath);
+      return null;
+    });
+  fontFilePromises.set(fontPath, promise);
+  return promise;
+}
+
 const logoPromises = new Map<string, Promise<string | null>>();
 
 export function loadOgpLogoDataUrl(logoPath: string): Promise<string | null> {

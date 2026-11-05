@@ -7,8 +7,17 @@ const nextConfig: NextConfig = {
     serverSourceMaps: true,
   },
   typedRoutes: true,
+  // OGP 画像の生成（Satori）がファイルから読む素材。ビルド時・実行時にネットワークへ出ない
   outputFileTracingIncludes: {
-    "/api/og/report": ["../packages/shared/src/og/ogp-logo.png"],
+    "/api/og/report": [
+      "../packages/shared/src/og/ogp-logo.png",
+      "./src/assets/fonts/*.woff",
+    ],
+    "/api/og/site": [
+      "./src/assets/fonts/*.woff",
+      "./public/brand/*/ogp-bg.png",
+      "./public/brand/*/logo.svg",
+    ],
   },
   redirects: async () => [
     {

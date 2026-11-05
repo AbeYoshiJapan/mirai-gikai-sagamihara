@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildOgFontOptions,
   extractFontUrlFromCss,
+  loadBundledFont,
   loadOgpLogoDataUrl,
 } from "./og-assets";
 
@@ -34,6 +35,26 @@ describe("buildOgFontOptions", () => {
 
   it("フォントがなければ fonts を省略する", () => {
     expect(buildOgFontOptions(null, 700)).toEqual({});
+  });
+});
+
+describe("loadBundledFont", () => {
+  it("web に同梱した woff を ArrayBuffer で返す（先頭が wOFF）", async () => {
+    const data = await loadBundledFont(
+      fileURLToPath(
+        new URL(
+          "../../../../web/src/assets/fonts/noto-sans-jp-japanese-700.woff",
+          import.meta.url
+        )
+      )
+    );
+    expect(data).not.toBeNull();
+    const head = new TextDecoder().decode(new Uint8Array(data as ArrayBuffer, 0, 4));
+    expect(head).toBe("wOFF");
+  });
+
+  it("読めなければ null", async () => {
+    expect(await loadBundledFont("/nonexistent/font.woff")).toBeNull();
   });
 });
 

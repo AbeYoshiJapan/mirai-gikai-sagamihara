@@ -94,7 +94,7 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             name: "name",
             label: "サイト名",
             kind: "text",
-            placeholder: "みらい議会＠相模原市",
+            placeholder: "さがみはら市議会ナウ！",
             description:
               "「みらい議会」の名称を使うときは、フォークガイドラインにより「みらい議会＠地域名」の形式にします。独自の名前（「みらい議会」を含まない名前）でもかまいません。ヘッダーに 1 行で入るのは 16 文字くらいまでです",
           },
@@ -102,7 +102,7 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             name: "tagline",
             label: "キャッチコピー",
             kind: "text",
-            placeholder: "相模原市議会の議論をわかりやすく",
+            placeholder: "議案に意見！議会をもっと身近に。",
             description: "ヘッダーのサイト名の下に出ます（スマホでも表示）",
           },
           {
@@ -508,6 +508,8 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             label: "OGP 画像（1200×630）",
             kind: "image",
             assetKind: "ogp",
+            description:
+              "空なら、サイト名・キャッチコピー・説明をブランド案の背景の上に自動で描いた画像（/api/og/site）を使います",
           },
           {
             name: "archive_hero_url",

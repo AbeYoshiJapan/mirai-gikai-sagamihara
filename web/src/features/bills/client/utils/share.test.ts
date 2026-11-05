@@ -82,6 +82,13 @@ describe("createShareHashtag", () => {
     expect(createShareHashtag("みらい議会@テスト区")).toBe(
       "#みらい議会テスト区"
     );
+    // 感嘆符・句点が残るとタグがそこで切れる
+    expect(createShareHashtag("さがみはら市議会ナウ！")).toBe(
+      "#さがみはら市議会ナウ"
+    );
+    expect(createShareHashtag("議案に意見！議会をもっと身近に。")).toBe(
+      "#議案に意見議会をもっと身近に"
+    );
   });
 
   it("空なら空文字", () => {

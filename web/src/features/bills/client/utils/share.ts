@@ -5,10 +5,15 @@ import { getOrigin } from "@/lib/utils/url";
 import type { BillWithContent } from "../../shared/types";
 
 /**
- * サイト名からハッシュタグを作る。記号・空白を落とす（例: みらい議会＠相模原市 → #みらい議会相模原市）
+ * サイト名からハッシュタグを作る。記号・空白を落とす
+ * （例: みらい議会＠相模原市 → #みらい議会相模原市、さがみはら市議会ナウ！ → #さがみはら市議会ナウ）。
+ * 「！」「。」などが残ると SNS 側でタグがそこで切れるので、句読点・感嘆符も落とす。
  */
 export function createShareHashtag(siteName: string): string {
-  const cleaned = siteName.replace(/[\s@＠#＃・/／()（）「」]/g, "");
+  const cleaned = siteName.replace(
+    /[\s@＠#＃・/／()（）「」『』!！?？.。,、，:：;；~〜～-]/g,
+    ""
+  );
   return cleaned ? `#${cleaned}` : "";
 }
 

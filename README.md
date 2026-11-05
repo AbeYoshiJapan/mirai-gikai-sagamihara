@@ -81,7 +81,7 @@ pnpm dev
 
 ## ブランド案（ロゴ・画像・色のセット）
 
-ロゴ・ホーム画面アイコン・OGP 画像・会期ページの帯・テーマ色をまとめた「ブランド案」を 2 つ同梱しています（`web/public/brand/`）。
+ロゴ・ホーム画面アイコン・OGP 画像の背景・会期ページの帯・テーマ色をまとめた「ブランド案」を 4 つ同梱しています（`web/public/brand/`）。
 
 | 案 | モチーフ | 主色 |
 |----|----------|------|
@@ -92,7 +92,9 @@ pnpm dev
 
 切り替えは管理画面「サイト設定」→「ブランド」→「ブランド案」で案を選んで保存するだけです。案を選ぶとテーマ色が入り、画像の設定が空のあいだはその案の同梱画像が使われます。画像をアップロードすればその画像が優先されます（「カスタム」を選ぶと自分の画像と色だけを使います）。
 
-案を増やすには、`packages/shared/src/site-settings/schema.ts` の `BRAND_PRESET_IDS` に id を足し、`packages/shared/src/site-settings/brand-presets.ts` に名前・説明・色を足し、`web/public/brand/<id>/` に 6 つの画像（`logo.svg`・`icon-192.png`・`icon-512.png`・`icon-180.png`・`ogp.png` 1200×630・`hero.png` 2880×570）を置きます。画像の生成スクリプトは `tools/brand/` にあり、テストが色の読みやすさと画像の置き忘れを確かめます。
+**画像にはサイト名などの文字を入れません。** ロゴは図柄だけで、ヘッダーのサイト名とキャッチコピーは設定の文字で描きます。OGP 画像（SNS に貼ったときのカード）は `/api/og/site` がサイト名・キャッチコピー・説明・運営者の肩書きを設定から読み、案の文字なし背景（`ogp-bg.png`）とロゴの上に描きます。そのため、サイト名やキャッチコピーを変えても画像を作り直す必要はありません（OGP 画像をアップロードすればそちらが優先されます）。
+
+案を増やすには、`packages/shared/src/site-settings/schema.ts` の `BRAND_PRESET_IDS` に id を足し、`packages/shared/src/site-settings/brand-presets.ts` に名前・説明・色・OGP の文字色（`og`）を足し、`web/public/brand/<id>/` に 6 つの画像（`logo.svg`・`icon-192.png`・`icon-512.png`・`icon-180.png`・`ogp-bg.png` 1200×630（文字なし）・`hero.png` 2880×570）を置きます。画像の生成スクリプトは `tools/brand/` にあり、テストが色の読みやすさと画像の置き忘れを確かめます。
 
 ## 環境変数
 
@@ -133,7 +135,7 @@ WHERE email = '<1で作成したユーザーのemail>';
 
 ## フォント
 
-Web は Noto Sans JP・Noto Serif JP・Lexend Giga（`@fontsource-variable/*`）、admin は Geist（`geist` パッケージ）を同梱しています。`next/font/google` はビルドのたびに Google Fonts を取りに行き、GitHub Actions や Vercel で取得に失敗してビルドが落ちることがあったため使っていません。フォントを足すときも同梱（`@fontsource` か `next/font/local`）にしてください。
+Web は Noto Sans JP・Noto Serif JP・Lexend Giga（`@fontsource-variable/*`）、admin は Geist（`geist` パッケージ）を同梱しています。OGP 画像の生成（`/api/og/site`・`/api/og/report`、Satori）には `web/src/assets/fonts/` の Noto Sans JP Bold（woff、OFL）を使い、実行時にも Google Fonts へ取りに行きません。`next/font/google` はビルドのたびに Google Fonts を取りに行き、GitHub Actions や Vercel で取得に失敗してビルドが落ちることがあったため使っていません。フォントを足すときも同梱（`@fontsource` か `next/font/local`）にしてください。
 
 ## 開発時の確認
 

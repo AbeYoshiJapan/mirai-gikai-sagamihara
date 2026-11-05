@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""みらい議会＠相模原市 ロゴ・画像 3 案のアートボードと、素材 SVG を生成する。"""
+"""さがみはら市議会ナウ！（旧 みらい議会＠相模原市）ロゴ・画像案のアートボードと、素材 SVG を生成する。"""
 import json
 import os
 from datetime import datetime, timezone
@@ -15,6 +15,10 @@ FONT = "'Noto Sans JP', 'Noto Sans CJK JP', 'Hiragino Sans', 'Yu Gothic', sans-s
 INK = "#1f2933"
 MUTED = "#5b6670"
 LINE = "#e3e7ea"
+# シート（見本）に入れるサイト名。実際の画像には文字を入れない（ヘッダー・OGP は設定の文字を描く）
+SITE_NAME = "さがみはら市議会ナウ！"
+SITE_TAGLINE = "議案に意見！議会をもっと身近に。"
+SITE_DESCRIPTION = "いま審議されている議案・審議の結果・請願と陳情の案内"
 
 PLANS = [
     {
@@ -291,7 +295,9 @@ def rocket(cx, cy, s, body, fin, flame):
 
 
 # ---------------------------------------------------------------- OGP
-def ogp_svg(p, width=1200, height=630, scale=1.0):
+def ogp_svg(p, width=1200, height=630, scale=1.0, text=True):
+    """OGP 画像。text=False なら背景（地色・モチーフ・下の帯）だけで、ロゴと文字を入れない。
+    同梱する ogp-bg.png は text=False。文字は web の /api/og/site が設定から描く。"""
     P, A, G1, G2, S = p["primary"], p["accent"], p["g1"], p["g2"], p["sub"]
     W, H = width, height
     # 右側のモチーフ
@@ -374,17 +380,22 @@ def ogp_svg(p, width=1200, height=630, scale=1.0):
         if quote
         else ""
     )
+    foreground = (
+        f"{logo}"
+        f'<text x="84" y="330" font-family="{FONT}" font-weight="900" font-size="66" fill="{ink}">{SITE_NAME}</text>'
+        f'<text x="86" y="396" font-family="{FONT}" font-weight="700" font-size="30" fill="{sub_ink}">{SITE_TAGLINE}</text>'
+        f'<text x="86" y="452" font-family="{FONT}" font-weight="500" font-size="24" fill="{muted}">{SITE_DESCRIPTION}</text>'
+        f'<text x="86" y="560" font-family="{FONT}" font-weight="500" font-size="22" fill="{muted}">市議会議員が個人で運営・公式サイトではありません</text>'
+        f"{quote_svg}"
+        if text
+        else ""
+    )
     return (
         f'<svg viewBox="0 0 {W} {H}" width="{round(W*scale)}" height="{round(H*scale)}" role="img" aria-label="OGP画像 {p["name"]}" xmlns="http://www.w3.org/2000/svg">'
         f'<rect width="{W}" height="{H}" fill="{bg}"/>'
         f"{motif}"
         f'<rect x="0" y="{H-14}" width="{W}" height="14" fill="{bar}"/>'
-        f"{logo}"
-        f'<text x="84" y="330" font-family="{FONT}" font-weight="900" font-size="66" fill="{ink}">みらい議会<tspan fill="{name_accent}">＠相模原市</tspan></text>'
-        f'<text x="86" y="396" font-family="{FONT}" font-weight="700" font-size="30" fill="{sub_ink}">相模原市議会の議論をわかりやすく</text>'
-        f'<text x="86" y="452" font-family="{FONT}" font-weight="500" font-size="24" fill="{muted}">いま審議されている議案・審議の結果・請願と陳情の案内</text>'
-        f'<text x="86" y="560" font-family="{FONT}" font-weight="500" font-size="22" fill="{muted}">市議会議員が個人で運営・公式サイトではありません</text>'
-        f"{quote_svg}"
+        f"{foreground}"
         f"</svg>"
     )
 
@@ -532,7 +543,7 @@ def wordmark(p, size=17, gap=8, mark=(40, 36)):
     return (
         f'<div style="display:flex;align-items:center;gap:{gap}px">'
         f'{mark_svg(p, mark, "light")}'
-        f'<span style="font-size:{size}px;font-weight:900;letter-spacing:.06em;white-space:nowrap">みらい議会<span style="color:{p["primary"]}">＠相模原市</span></span>'
+        f'<span style="font-size:{size}px;font-weight:900;letter-spacing:.06em;white-space:nowrap">{SITE_NAME}</span>'
         f"</div>"
     )
 
@@ -640,15 +651,15 @@ def usage_board(example):
     ogp_card = (
         f'<div style="border:1px solid {LINE};border-radius:14px;overflow:hidden;background:#fff;width:420px">'
         f'<div style="line-height:0">{ogp_svg(p, scale=420/1200)}</div>'
-        f'<div style="padding:10px 14px;display:flex;flex-direction:column;gap:3px"><div style="font-size:14px;font-weight:700">みらい議会＠相模原市</div><div style="font-size:12px;color:{MUTED}">相模原市議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。</div><div style="font-size:12px;color:{MUTED}">mirai-gikai-sagamihara.vercel.app</div></div>'
+        f'<div style="padding:10px 14px;display:flex;flex-direction:column;gap:3px"><div style="font-size:14px;font-weight:700">{SITE_NAME}</div><div style="font-size:12px;color:{MUTED}">相模原市議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。</div><div style="font-size:12px;color:{MUTED}">mirai-gikai-sagamihara.vercel.app</div></div>'
         f"</div>"
     )
     phone_icons = (
         f'<div style="display:flex;gap:22px;align-items:flex-end">'
-        f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px">{icon_svg(p, 60)}<span style="font-size:11px">みらい議会</span></div>'
+        f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px">{icon_svg(p, 60)}<span style="font-size:11px">議会ナウ</span></div>'
         f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:60px;height:60px;border-radius:14px;background:#d9dde2"></div><span style="font-size:11px;color:{MUTED}">他のアプリ</span></div>'
         f'<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:60px;height:60px;border-radius:14px;background:#d9dde2"></div><span style="font-size:11px;color:{MUTED}">他のアプリ</span></div>'
-        f'<div style="display:flex;align-items:center;gap:8px;margin-left:10px;padding:8px 12px;border-radius:10px;background:#fff;border:1px solid {LINE}">{icon_svg(p, 16)}<span style="font-size:12px">みらい議会＠相模原市 — ブラウザのタブ</span></div>'
+        f'<div style="display:flex;align-items:center;gap:8px;margin-left:10px;padding:8px 12px;border-radius:10px;background:#fff;border:1px solid {LINE}">{icon_svg(p, 16)}<span style="font-size:12px">{SITE_NAME} — ブラウザのタブ</span></div>'
         f"</div>"
     )
     hero_mock = (
@@ -805,6 +816,9 @@ def main():
             f.write(icon_svg(p, 512, standalone=True))
         with open(os.path.join(d, "ogp.svg"), "w", encoding="utf-8") as f:
             f.write(ogp_svg(p))
+        # 同梱用。文字を入れない背景（文字は web の /api/og/site が設定から描く）
+        with open(os.path.join(d, "ogp-bg.svg"), "w", encoding="utf-8") as f:
+            f.write(ogp_svg(p, text=False))
         with open(os.path.join(d, "hero.svg"), "w", encoding="utf-8") as f:
             f.write(hero_svg(p))
     print("ok", list(files), order)

@@ -15,8 +15,9 @@ if (!fs.existsSync(SRC)) {
     fs.mkdirSync(dir, { recursive: true });
     // logo.svg: copy as-is (standalone svg with xmlns)
     fs.copyFileSync(path.join(SRC, key, 'logo.svg'), path.join(dir, 'logo.svg'));
+    // ogp.svg（文字入り）は見本用で同梱しない。同梱するのは文字なしの ogp-bg.svg
     const jobs = [
-      { svg: 'ogp.svg', out: 'ogp.png', w: 1200, h: 630 },
+      { svg: 'ogp-bg.svg', out: 'ogp-bg.png', w: 1200, h: 630 },
       { svg: 'hero.svg', out: 'hero.png', w: 2880, h: 570 },
       { svg: 'icon.svg', out: 'icon-512.png', w: 512, h: 512 },
       { svg: 'icon.svg', out: 'icon-192.png', w: 192, h: 192 },

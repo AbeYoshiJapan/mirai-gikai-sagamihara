@@ -8,10 +8,14 @@ import { BRAND_PRESET_IDS } from "./schema";
  *
  * 案を増やすときは次の 3 か所だけ：
  *   1. schema.ts の BRAND_PRESET_IDS と brandPresetChoiceSchema に id を足す
- *   2. この表に id・名前・説明・色を足す（画像のパスは assetsFor(id) が作る）
+ *   2. この表に id・名前・説明・色・OGP の文字色（og）を足す（画像のパスは assetsFor(id) が作る）
  *   3. web/public/brand/<id>/ に logo.svg / icon-192.png / icon-512.png / icon-180.png /
- *      ogp.png（1200×630）/ hero.png（2880×570）を置く（生成は tools/brand/）
+ *      ogp-bg.png（1200×630、文字なしの背景）/ hero.png（2880×570）を置く（生成は tools/brand/）
  * テストが「本家の色を使っていない」「白文字が読める濃さ」を自動で確かめる。
+ *
+ * 画像にはサイト名などの文字を入れない。ロゴは図柄だけで、ヘッダーのサイト名は文字で描く。
+ * OGP 画像は /api/og/site がサイト名・キャッチコピーを設定から読んで ogp-bg.png の上に描くので、
+ * サイト名を変えても画像を作り直さなくてよい。
  *
  * 色は白文字が読める濃さ（コントラスト比 4.5:1 以上）で選んであり、
  * 本家「みらい議会」の色（#2aa693 / #2a5ea8）は使っていない。
@@ -40,6 +44,16 @@ export const BRAND_ASSET_KEYS: readonly BrandAssetKey[] = [
   "icon_ios_url",
 ] as const;
 
+/** OGP 画像（/api/og/site）で ogp-bg.png の上に置く文字の色 */
+export type BrandOgText = {
+  /** サイト名 */
+  ink: string;
+  /** キャッチコピー */
+  sub: string;
+  /** 説明文・注記 */
+  muted: string;
+};
+
 export type BrandPreset = {
   id: BrandPresetId;
   label: string;
@@ -50,19 +64,35 @@ export type BrandPreset = {
   colors: BrandColors;
   /** web/public 配下のパス。service_logo_url は空（ヘッダーはサイト名の文字） */
   assets: BrandAssetPaths;
+  og: BrandOgText;
 };
+
+/** 設定が空のときの OGP 画像。サイト名・キャッチコピーを設定から読んで動的に描く */
+export const DYNAMIC_OGP_PATH = "/api/og/site";
+
+/** 文字なしの OGP 背景（/api/og/site が使う） */
+export function brandOgBackgroundPath(id: BrandPresetId): string {
+  return `/brand/${id}/ogp-bg.png`;
+}
 
 function assetsFor(id: BrandPresetId): BrandAssetPaths {
   return {
     logo_url: `/brand/${id}/logo.svg`,
     service_logo_url: "",
-    ogp_image_url: `/brand/${id}/ogp.png`,
+    ogp_image_url: DYNAMIC_OGP_PATH,
     archive_hero_url: `/brand/${id}/hero.png`,
     icon_192_url: `/brand/${id}/icon-192.png`,
     icon_512_url: `/brand/${id}/icon-512.png`,
     icon_ios_url: `/brand/${id}/icon-180.png`,
   };
 }
+
+/** 明るい背景の案の文字色（tools/brand/generate.py の INK / MUTED と同じ） */
+const LIGHT_OG_TEXT = (accent: string): BrandOgText => ({
+  ink: "#1f2933",
+  sub: accent,
+  muted: "#5b6670",
+});
 
 export const BRAND_PRESETS: Record<BrandPresetId, BrandPreset> = {
   kakehashi: {
@@ -79,6 +109,7 @@ export const BRAND_PRESETS: Record<BrandPresetId, BrandPreset> = {
       theme_color: "#1a78a0",
     },
     assets: assetsFor("kakehashi"),
+    og: LIGHT_OG_TEXT("#15607f"),
   },
   ajisai: {
     id: "ajisai",
@@ -94,6 +125,7 @@ export const BRAND_PRESETS: Record<BrandPresetId, BrandPreset> = {
       theme_color: "#5660b5",
     },
     assets: assetsFor("ajisai"),
+    og: LIGHT_OG_TEXT("#434a94"),
   },
   gakudo: {
     id: "gakudo",
@@ -109,6 +141,7 @@ export const BRAND_PRESETS: Record<BrandPresetId, BrandPreset> = {
       theme_color: "#44507a",
     },
     assets: assetsFor("gakudo"),
+    og: LIGHT_OG_TEXT("#2f3a63"),
   },
   ginga: {
     id: "ginga",
@@ -124,6 +157,8 @@ export const BRAND_PRESETS: Record<BrandPresetId, BrandPreset> = {
       theme_color: "#2b3f9e",
     },
     assets: assetsFor("ginga"),
+    // 背景が紺の星空なので白い文字（キャッチコピーは淡い青、注記は薄い灰青）
+    og: { ink: "#ffffff", sub: "#c9d3f6", muted: "#c7cde6" },
   },
 };
 

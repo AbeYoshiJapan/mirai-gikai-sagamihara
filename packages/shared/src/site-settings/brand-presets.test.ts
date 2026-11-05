@@ -4,7 +4,9 @@ import {
   BRAND_PRESET_LIST,
   BRAND_PRESETS,
   brandColorsMatchPreset,
+  brandOgBackgroundPath,
   buildBrandPresetPatch,
+  DYNAMIC_OGP_PATH,
   isBrandPresetId,
 } from "./brand-presets";
 import { UPSTREAM_PRIMARY_COLORS } from "./compliance";
@@ -31,6 +33,12 @@ describe("BRAND_PRESETS", () => {
         const value = preset.assets[key];
         if (key === "service_logo_url") {
           expect(value).toBe("");
+        } else if (key === "ogp_image_url") {
+          // OGP はサイト名を設定から描く動的な画像（文字を焼き込んだ静的画像を持たない）
+          expect(value).toBe(DYNAMIC_OGP_PATH);
+          expect(brandOgBackgroundPath(preset.id)).toBe(
+            `/brand/${preset.id}/ogp-bg.png`
+          );
         } else {
           expect(value.startsWith(`/brand/${preset.id}/`), `${preset.id}.${key}`).toBe(true);
         }

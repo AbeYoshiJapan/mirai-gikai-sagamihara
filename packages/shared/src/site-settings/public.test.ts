@@ -114,9 +114,16 @@ describe("brandAsset / brandColorsToCss", () => {
     expect(
       brandAsset(
         { ...DEFAULT_SITE_SETTINGS.brand, preset: "ajisai" },
+        "archive_hero_url"
+      )
+    ).toBe("/brand/ajisai/hero.png");
+    // OGP は文字入りの静的画像ではなく、サイト名を設定から描く動的な画像
+    expect(
+      brandAsset(
+        { ...DEFAULT_SITE_SETTINGS.brand, preset: "ajisai" },
         "ogp_image_url"
       )
-    ).toBe("/brand/ajisai/ogp.png");
+    ).toBe("/api/og/site");
     expect(
       brandAsset(
         { ...DEFAULT_SITE_SETTINGS.brand, logo_url: "https://x.test/l.svg" },

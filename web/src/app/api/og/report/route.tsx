@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import {
   buildOgFontOptions,
-  loadNotoSansJp,
+  loadBundledFont,
   loadOgpLogoDataUrl,
 } from "@mirai-gikai/shared/og/assets";
 import { ImageResponse } from "next/og";
@@ -13,6 +13,11 @@ import { getSiteSettings, isFeatureEnabled } from "@/lib/site-settings/loader";
 const OGP_LOGO_PATH = join(
   process.cwd(),
   "../packages/shared/src/og/ogp-logo.png"
+);
+// 同梱フォント（Google Fonts には取りに行かない）
+const FONT_PATH = join(
+  process.cwd(),
+  "src/assets/fonts/noto-sans-jp-japanese-700.woff"
 );
 
 /**
@@ -51,11 +56,12 @@ export async function GET(request: Request) {
   );
 
   const [fontData, logoDataUrl, { site }] = await Promise.all([
-    loadNotoSansJp(800),
+    loadBundledFont(FONT_PATH),
     loadOgpLogoDataUrl(OGP_LOGO_PATH),
     getSiteSettings(),
   ]);
-  const fontOptions = buildOgFontOptions(fontData, 800);
+  // 同梱は 700 だけ。スタイルの 800 指定には一番近い 700 が使われる
+  const fontOptions = buildOgFontOptions(fontData, 700);
 
   return new ImageResponse(
     <div
