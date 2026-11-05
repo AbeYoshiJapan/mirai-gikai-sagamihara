@@ -130,6 +130,10 @@ WHERE email = '<1で作成したユーザーのemail>';
 > このAdminユーザーは `SUPABASE_URL` が localhost を指している場合のみ作成され、ホスト環境（staging・preview ブランチ等）には作成されません。
 > メールアドレス・パスワードを変えたい場合は `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` を設定してください。
 
+## フォント
+
+Web は Noto Sans JP・Noto Serif JP・Lexend Giga（`@fontsource-variable/*`）、admin は Geist（`geist` パッケージ）を同梱しています。`next/font/google` はビルドのたびに Google Fonts を取りに行き、GitHub Actions や Vercel で取得に失敗してビルドが落ちることがあったため使っていません。フォントを足すときも同梱（`@fontsource` か `next/font/local`）にしてください。
+
 ## 開発時の確認
 
 ```bash

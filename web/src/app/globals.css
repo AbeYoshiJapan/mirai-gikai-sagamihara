@@ -8,6 +8,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * フォント。@fontsource の可変フォント（layout.tsx で読み込み）を同梱し、
+ * ビルド時に Google Fonts を取りに行かない。読み込み前は OS の日本語フォントで代替する。
+ */
+:root {
+  --font-noto-sans-jp:
+    "Noto Sans JP Variable", "Noto Sans JP", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  --font-lexend-giga:
+    "Lexend Giga Variable", "Lexend Giga", system-ui, sans-serif;
+  --font-noto-serif-jp:
+    "Noto Serif JP Variable", "Noto Serif JP", "Hiragino Mincho ProN",
+    "Yu Mincho", serif;
+}
+
 @theme inline {
   --breakpoint-sm: 500px;
   --breakpoint-md: 700px;

@@ -1,10 +1,15 @@
 import "./globals.css";
+// フォントは同梱（@fontsource）。next/font/google はビルドのたびに Google Fonts を取りに行き、
+// CI・Vercel で取得に失敗してビルドが落ちることがあったため使わない。
+// CSS 変数（--font-noto-sans-jp など）は globals.css で定義している。
+import "@fontsource-variable/noto-sans-jp";
+import "@fontsource-variable/noto-serif-jp";
+import "@fontsource-variable/lexend-giga";
 import {
   brandAsset,
   brandColorsToCss,
 } from "@mirai-gikai/shared/site-settings/public";
 import type { Metadata, Viewport } from "next";
-import { Lexend_Giga, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import type { ReactNode } from "react";
 import {
@@ -13,25 +18,6 @@ import {
   getSiteUrl,
 } from "@/lib/site-settings/loader";
 import { SiteSettingsProvider } from "@/lib/site-settings/provider";
-
-const notoSansJP = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
-
-const lexendGiga = Lexend_Giga({
-  variable: "--font-lexend-giga",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800", "900"],
-});
-
-// トピックの代表意見など、引用文を明朝体で表示するために使用
-const notoSerifJP = Noto_Serif_JP({
-  variable: "--font-noto-serif-jp",
-  subsets: ["latin"],
-  weight: ["500", "600"],
-});
 
 const isDev = process.env.NODE_ENV === "development";
 const isStaging = process.env.VERCEL_TARGET_ENV === "staging";
@@ -153,9 +139,7 @@ export default async function RootLayout({
         {/* テーマ色は設定から。globals.css のトークン名はそのまま */}
         <style>{`:root { ${brandColorsToCss(brand.colors)} }`}</style>
       </head>
-      <body
-        className={`${notoSansJP.variable} ${lexendGiga.variable} ${notoSerifJP.variable} font-sans antialiased bg-mirai-surface-light`}
-      >
+      <body className="font-sans antialiased bg-mirai-surface-light">
         <NextTopLoader showSpinner={false} color={brand.colors.primary} />
         <script
           type="application/ld+json"

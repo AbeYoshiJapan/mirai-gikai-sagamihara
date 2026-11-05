@@ -38,8 +38,6 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_dummy-for-build-check
-          # ランナーからの Google Fonts 取得が不安定でビルドが落ちるため、CI ではモックに差し替える
-          NEXT_FONT_GOOGLE_MOCKED_RESPONSES: ${{ github.workspace }}/tools/ci/next-font-mock.cjs
 
       - name: Run Test with Coverage
         run: pnpm run test:coverage
