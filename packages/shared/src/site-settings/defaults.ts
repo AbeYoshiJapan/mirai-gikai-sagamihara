@@ -18,6 +18,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   site: {
     name: "みらい議会＠○○",
     tagline: "○○議会の議論をわかりやすく",
+    name_note_md: "",
     description:
       "○○議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。",
     canonical_url: "",

@@ -16,9 +16,20 @@ export default async function DietSessionsPage() {
       <h1 className="text-2xl font-bold mb-8">会期管理</h1>
 
       {council.session_model === "year_round" && (
-        <p className="mb-6 text-sm text-gray-600">
-          {`${council.name}は通年議会です。会期は議会年度ごとに 1 件（例: 4月1日〜翌年3月31日）作り、その中の${sessionLabel}の期間を会期ごとに登録します。公開サイトのトップでは「次の${sessionLabel}の開会まで○日」のように表示されます。`}
-        </p>
+        <div className="mb-6 rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+          <p className="font-semibold">{council.name}は通年議会です</p>
+          <ul className="mt-2 list-inside list-disc space-y-1">
+            <li>
+              {`会期は議会年度ごとに 1 件だけ作ります（例: 令和8年度 4月1日〜翌年3月31日）。議案はこの会期に紐づきます。`}
+            </li>
+            <li>
+              {`${sessionLabel}（6月・9月・12月・3月など）は会期として「追加」せず、年度の会期の「編集」→「${sessionLabel}などの期間」→「期間を追加」で登録します。`}
+            </li>
+            <li>
+              {`登録すると公開サイトのトップに「次の${sessionLabel}の開会まで○日」が出て、議案一覧も${sessionLabel}ごとにまとまります。`}
+            </li>
+          </ul>
+        </div>
       )}
 
       {/* 会期追加セクション */}

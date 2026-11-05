@@ -3,6 +3,20 @@ import "server-only";
 import type { MeetingPeriod } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import { createAdminClient } from "@mirai-gikai/supabase";
 
+/**
+ * DB のエラーを運営者向けの文に直す。
+ * スラッグの重複（unique 制約 diet_sessions_slug_key）は起きやすいので、原因と直し方を書く。
+ */
+function describeDietSessionError(
+  error: { code?: string; message: string },
+  action: string
+): string {
+  if (error.code === "23505" && error.message.includes("slug")) {
+    return `スラッグが別の会期ですでに使われています。会期ごとに違うスラッグ（例: r8、r7）にするか、空欄にしてください。通年議会で定例会議を登録する場合は、会期を追加せず、年度の会期を「編集」して「定例会議などの期間」に入れてください`;
+  }
+  return `会期の${action}に失敗しました: ${error.message}`;
+}
+
 export async function findAllDietSessions() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -40,7 +54,7 @@ export async function createDietSessionRecord(input: {
     .single();
 
   if (error) {
-    throw new Error(`会期の作成に失敗しました: ${error.message}`);
+    throw new Error(describeDietSessionError(error, "作成"));
   }
 
   return data;
@@ -73,7 +87,7 @@ export async function updateDietSessionRecord(
     .single();
 
   if (error) {
-    throw new Error(`会期の更新に失敗しました: ${error.message}`);
+    throw new Error(describeDietSessionError(error, "更新"));
   }
 
   return data;

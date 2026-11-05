@@ -1,8 +1,14 @@
+import { renderSiteNameNote } from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
+import { parseMarkdown } from "@/lib/markdown";
 import { getSiteSettings } from "@/lib/site-settings/loader";
 
 export async function About() {
-  const { site, operator, council } = await getSiteSettings();
+  const settings = await getSiteSettings();
+  const { site, operator, council } = settings;
+  // サイト名の由来・込めた思い（サイト設定「サイト名について」。空なら出さない）
+  const nameNote = renderSiteNameNote(settings);
+  const nameNoteContent = nameNote ? await parseMarkdown(nameNote) : null;
   return (
     <div id="about" className="scroll-mt-24 py-10">
       <div className="flex flex-col gap-4">
@@ -40,6 +46,17 @@ export async function About() {
               が、チームみらいの「みらい議会」を元に作成したものです。チームみらいが運営しているものではありません。
             </p>
           </div>
+
+          {nameNoteContent && (
+            <section className="flex flex-col gap-2 rounded-2xl bg-white px-5 py-4">
+              <h4 className="text-sm font-bold text-primary-accent">
+                サイト名について
+              </h4>
+              <div className="markdown-content text-[15px] leading-[28px] text-black [&_a]:underline [&_a]:underline-offset-2 [&_p]:mb-3 [&_p:last-child]:mb-0">
+                {nameNoteContent}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>

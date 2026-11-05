@@ -1,4 +1,5 @@
 import {
+  SAGAMIHARA_NAME_NOTE_MD,
   SAGAMIHARA_PRESET,
   SAGAMIHARA_SESSION_SYSTEM_MD,
 } from "@mirai-gikai/shared/site-settings/presets";
@@ -95,13 +96,30 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             kind: "text",
             placeholder: "みらい議会＠相模原市",
             description:
-              "フォークガイドラインにより「みらい議会＠地域名」の形式にします",
+              "「みらい議会」の名称を使うときは、フォークガイドラインにより「みらい議会＠地域名」の形式にします。独自の名前（「みらい議会」を含まない名前）でもかまいません。ヘッダーに 1 行で入るのは 16 文字くらいまでです",
           },
           {
             name: "tagline",
             label: "キャッチコピー",
             kind: "text",
             placeholder: "相模原市議会の議論をわかりやすく",
+            description: "ヘッダーのサイト名の下に出ます（スマホでも表示）",
+          },
+          {
+            name: "name_note_md",
+            label: "サイト名について（由来・込めた思い）",
+            kind: "markdown",
+            rows: 6,
+            fullWidth: true,
+            templated: true,
+            description:
+              "トップの「このサイトについて」に出します。チームみらいの「みらい議会」をもとにしていることと、名前の由来を書きます。空なら出しません",
+            samples: [
+              {
+                label: "相模原市議会のひな形",
+                value: SAGAMIHARA_NAME_NOTE_MD,
+              },
+            ],
           },
           {
             name: "description",

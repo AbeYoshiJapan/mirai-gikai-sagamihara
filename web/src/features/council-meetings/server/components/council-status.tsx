@@ -235,7 +235,7 @@ function NextMeetingDay({ meetings }: { meetings: CouncilMeeting[] }) {
   return (
     <div className="-mt-2 flex flex-col gap-1">
       <span className="text-[13px] font-bold text-mirai-text-secondary">
-        次の開会日
+        次に開かれる会議
       </span>
       <span className="text-[26px] font-bold leading-tight text-mirai-brand-teal-deep">
         {formatMeetingDateRange(first.meeting_date, first.end_date)}

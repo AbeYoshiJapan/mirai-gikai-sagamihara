@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { checkForkCompliance, hasComplianceErrors } from "./compliance";
+import {
+  checkForkCompliance,
+  hasComplianceErrors,
+  isSiteNameCompliant,
+  usesMiraiGikaiName,
+} from "./compliance";
 import { DEFAULT_SITE_SETTINGS } from "./defaults";
 import { SAGAMIHARA_PRESET } from "./presets/sagamihara";
 import type { SiteSettings } from "./schema";
@@ -61,15 +66,37 @@ describe("checkForkCompliance", () => {
     expect(issues[0]).toMatchObject({ level: "error", section: "brand" });
   });
 
-  it("サイト名が「みらい議会＠地域名」の形式でないとエラーになる", () => {
-    const settings = withOverrides(SAGAMIHARA_PRESET, {
-      site: { name: "相模原市議会ウォッチ", canonical_url: "https://a.b" },
-      links: { fork_repo: "https://example.org/repo" },
-      operator: { name: "x" },
-    });
-    const issues = checkForkCompliance(settings);
-    expect(issues).toHaveLength(1);
-    expect(issues[0].message).toContain("みらい議会＠地域名");
+  it("「みらい議会」を名乗るのに「みらい議会＠地域名」の形式でないとエラーになる", () => {
+    for (const name of ["みらい議会", "相模原みらい議会", "みらい議会ナビ＠相模原"]) {
+      const settings = withOverrides(SAGAMIHARA_PRESET, {
+        site: { name, canonical_url: "https://a.b" },
+        links: { fork_repo: "https://example.org/repo" },
+        operator: { name: "x" },
+      });
+      const issues = checkForkCompliance(settings);
+      expect(issues, name).toHaveLength(1);
+      expect(issues[0].message).toContain("みらい議会＠地域名");
+    }
+  });
+
+  it("独自のサービス名（「みらい議会」を含まない）は形式を問わない", () => {
+    for (const name of ["相模原市議会ウォッチ", "さがみはら議会ナビ＠相模原市"]) {
+      const settings = withOverrides(SAGAMIHARA_PRESET, {
+        site: { name, canonical_url: "https://a.b" },
+        links: { fork_repo: "https://example.org/repo" },
+        operator: { name: "x" },
+      });
+      expect(checkForkCompliance(settings), name).toHaveLength(0);
+    }
+  });
+
+  it("isSiteNameCompliant / usesMiraiGikaiName", () => {
+    expect(usesMiraiGikaiName("みらい議会＠相模原市")).toBe(true);
+    expect(usesMiraiGikaiName("相模原市議会ウォッチ")).toBe(false);
+    expect(isSiteNameCompliant("みらい議会＠相模原市")).toBe(true);
+    expect(isSiteNameCompliant("みらい議会@Sagamihara")).toBe(true);
+    expect(isSiteNameCompliant("みらい議会")).toBe(false);
+    expect(isSiteNameCompliant("相模原市議会ウォッチ")).toBe(true);
   });
 
   it("改変日が空なら警告（エラーではない）", () => {

@@ -23,10 +23,15 @@ const optionalUrl = z
 const shortText = (max: number) => z.string().trim().max(max);
 
 export const siteSectionSchema = z.object({
-  /** サイト名。フォークガイドラインの形式は「みらい議会＠地域名」 */
+  /**
+   * サイト名。「みらい議会」の名称を使う場合はフォークガイドラインにより「みらい議会＠地域名」の形式。
+   * 独自の名前なら形式は自由（compliance.ts が点検する）
+   */
   name: shortText(60),
-  /** ロゴ横の一行（例: 相模原市議会の議論をわかりやすく） */
+  /** サイト名の下の一行（例: 相模原市議会の議論をわかりやすく）。ヘッダーに出る */
   tagline: shortText(120),
+  /** サイト名の由来・込めた思い（Markdown、{{key}} 差し込み可）。トップの「このサイトについて」に出す。空なら出さない */
+  name_note_md: z.string().max(4000),
   /** メタ説明文・OGP の説明 */
   description: shortText(300),
   /** 本番 URL（sitemap・canonical・OGP に使う）。空なら環境変数の値 */

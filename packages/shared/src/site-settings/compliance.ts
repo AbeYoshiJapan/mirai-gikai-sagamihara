@@ -18,7 +18,21 @@ export type ComplianceIssue = {
 /** 本家「みらい議会」のテーマ色。フォークはこの色を使ってはいけない */
 export const UPSTREAM_PRIMARY_COLORS = ["#2aa693", "#2a5ea8"] as const;
 
-const SITE_NAME_PATTERN = /^みらい議会[＠@].+/;
+/** 「みらい議会」の名称を使うときに求められる形式（フォークガイドライン 必須要件 1） */
+const MIRAI_GIKAI_NAME_PATTERN = /^みらい議会[＠@].+/;
+
+/**
+ * サイト名がフォークガイドラインに合うか。
+ * 「みらい議会」の名称を使う場合だけ「みらい議会＠地域名」の形式が必須で、
+ * 独自のサービス名（「みらい議会」を含まない名前）は形式を問わない。
+ */
+export function usesMiraiGikaiName(name: string): boolean {
+  return name.includes("みらい議会");
+}
+
+export function isSiteNameCompliant(name: string): boolean {
+  return !usesMiraiGikaiName(name) || MIRAI_GIKAI_NAME_PATTERN.test(name);
+}
 
 export function checkForkCompliance(
   settings: SiteSettings
@@ -26,12 +40,12 @@ export function checkForkCompliance(
   const issues: ComplianceIssue[] = [];
   const { site, brand, links, legal } = settings;
 
-  if (!SITE_NAME_PATTERN.test(site.name)) {
+  if (!isSiteNameCompliant(site.name)) {
     issues.push({
       level: "error",
       section: "site",
       message:
-        "サイト名は「みらい議会＠地域名」の形式にしてください（フォークガイドライン）",
+        "「みらい議会」の名称を使うサイト名は「みらい議会＠地域名」の形式にしてください（フォークガイドライン）。独自の名前にする場合は形式は問いません",
     });
   }
   if (/[○〇]{2}/.test(site.name)) {

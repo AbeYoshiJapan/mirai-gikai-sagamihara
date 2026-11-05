@@ -34,12 +34,21 @@ export const SAGAMIHARA_SESSION_SYSTEM_MD = `## 1年を1つの会期にする「
 - このページの説明は運営者（{{operator_name}}）が作成したものです。制度の正確な内容は{{council_name}}の会議規則・公式の案内をご確認ください。
 `;
 
+/**
+ * トップの「このサイトについて」に出す、サイト名の由来。運営者が自分の言葉に書き換える前提のひな形。
+ * 「みらい議会」を名乗る場合、フォークガイドラインの「みらい議会＠地域名」の形式であることを説明する。
+ */
+export const SAGAMIHARA_NAME_NOTE_MD = `サイト名「{{site_name}}」は、政党チームみらいが公開しているオープンソース「みらい議会」（AGPL-3.0）をもとに作っていることを示すため、本家のフォークガイドラインが定める「みらい議会＠地域名」の形にしました。本家「みらい議会」が国会の議案を扱うのに対し、このサイトは{{council_name}}の議案を扱います。チームみらいが運営しているものではなく、{{operator_title}}の{{operator_name}}が個人で運営しています。
+
+「＠相模原市」には、{{council_name}}で何が話し合われているかを、{{municipality}}に暮らすみなさんに「自分のまちのこと」として届けたい、という思いを込めています。`;
+
 export const SAGAMIHARA_PRESET: SiteSettings = {
   ...DEFAULT_SITE_SETTINGS,
   site: {
     ...DEFAULT_SITE_SETTINGS.site,
     name: "みらい議会＠相模原市",
     tagline: "相模原市議会の議論をわかりやすく",
+    name_note_md: SAGAMIHARA_NAME_NOTE_MD,
     description:
       "相模原市議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。",
   },

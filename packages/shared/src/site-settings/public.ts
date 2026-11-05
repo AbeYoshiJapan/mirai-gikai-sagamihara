@@ -174,6 +174,11 @@ export function councilWording(
   };
 }
 
+/** サイト名の由来（テンプレート展開済み）。空なら "" */
+export function renderSiteNameNote(s: SiteSettings): string {
+  return renderTemplate(s.site.name_note_md, templateValues(s)).trim();
+}
+
 /** 運営者の免責文（テンプレート展開済み） */
 export function renderOperatorDisclaimer(s: SiteSettings): string {
   return renderTemplate(s.operator.disclaimer_md, templateValues(s));

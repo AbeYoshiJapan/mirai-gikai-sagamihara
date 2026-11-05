@@ -15,6 +15,11 @@ interface DifficultySelectorProps {
   labelStyle?: CSSProperties;
   scrollToTop?: boolean;
   maintainScrollFromBottom?: boolean;
+  /**
+   * ヘッダー用。スマホ幅（sm 未満）ではラベルをスイッチの下に小さく出して横幅を節約し、
+   * サイト名とキャッチコピーの場所を確保する。
+   */
+  compact?: boolean;
 }
 
 export function DifficultySelector({
@@ -22,6 +27,7 @@ export function DifficultySelector({
   labelStyle,
   scrollToTop,
   maintainScrollFromBottom,
+  compact = false,
 }: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
     useState<DifficultyLevelEnum>(currentLevel);
@@ -69,8 +75,21 @@ export function DifficultySelector({
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-bold" style={labelStyle}>
+    <div
+      className={
+        compact
+          ? "flex shrink-0 flex-col items-center gap-0.5 sm:flex-row sm:gap-2"
+          : "flex items-center gap-2"
+      }
+    >
+      <span
+        className={
+          compact
+            ? "order-2 whitespace-nowrap text-[10px] font-bold leading-none sm:order-1 sm:text-sm sm:leading-normal"
+            : "whitespace-nowrap text-sm font-bold"
+        }
+        style={labelStyle}
+      >
         <span className="hidden md:inline-block">説明をもっと</span>
         詳しく
       </span>
@@ -80,6 +99,7 @@ export function DifficultySelector({
         onCheckedChange={handleToggle}
         disabled={isChanging}
         aria-label="説明をもっと詳しく"
+        className={compact ? "order-1 sm:order-2" : undefined}
       />
     </div>
   );
