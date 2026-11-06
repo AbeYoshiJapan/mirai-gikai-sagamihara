@@ -26,6 +26,42 @@ describe("getBillOutcomeLabel", () => {
     ).toBe("市議会審議中");
   });
 
+  it("定例会議の間で結論が持ち越されている議案は「継続中」、開会前の新しい議案は「審議予定」", () => {
+    expect(getBillOutcomeLabel(bill(), undefined, "carried_over")).toBe(
+      "継続中"
+    );
+    expect(getBillOutcomeLabel(bill(), undefined, "upcoming")).toBe(
+      "審議予定"
+    );
+    expect(getBillOutcomeLabel(bill(), undefined, "in_session")).toBe(
+      "審議中"
+    );
+    expect(
+      getBillOutcomeLabel(
+        bill(),
+        { carriedOver: "継続審査中", upcoming: "次回審議" },
+        "carried_over"
+      )
+    ).toBe("継続審査中");
+  });
+
+  it("時期が分かっていても、議決済みは結果、正式な継続審査は「継続審査」のまま", () => {
+    expect(
+      getBillOutcomeLabel(
+        bill({ stage: "decided", result: "passed" }),
+        undefined,
+        "carried_over"
+      )
+    ).toBe("可決");
+    expect(
+      getBillOutcomeLabel(
+        bill({ stage: "decided", result: "continued" }),
+        undefined,
+        "carried_over"
+      )
+    ).toBe("継続審査");
+  });
+
   it("議決済みは結果を出し、設定で言い換えられる", () => {
     const decided = bill({ stage: "decided", result: "passed" });
     expect(getBillOutcomeLabel(decided)).toBe("可決");

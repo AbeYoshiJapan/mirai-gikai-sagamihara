@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  buildPendingStatusMessage,
   calculateProgressWidth,
   getCurrentStep,
   getStatusMessage,
@@ -72,5 +73,21 @@ describe("getStepState / calculateProgressWidth", () => {
     expect(calculateProgressWidth(3)).toBeGreaterThan(
       calculateProgressWidth(2)
     );
+  });
+});
+
+describe("buildPendingStatusMessage", () => {
+  test("継続中・審議予定は付託先と合わせる", () => {
+    expect(buildPendingStatusMessage("継続中", "民生委員会に付託")).toBe(
+      "継続中（民生委員会に付託）"
+    );
+  });
+
+  test("どちらか片方だけならそれを出し、両方なければ空", () => {
+    expect(buildPendingStatusMessage("審議予定", null)).toBe("審議予定");
+    expect(buildPendingStatusMessage(null, "総務委員会に付託")).toBe(
+      "総務委員会に付託"
+    );
+    expect(buildPendingStatusMessage(null, null)).toBe("");
   });
 });

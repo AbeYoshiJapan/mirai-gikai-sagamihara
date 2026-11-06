@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
+import { loadSiteSettings } from "@/features/site-settings/server/loaders/load-site-settings";
 import { env } from "@/lib/env";
 import { getErrorMessage } from "@/lib/utils/get-error-message";
 import {
@@ -57,7 +58,12 @@ export async function generateShareImage(
       };
     }
 
-    const image = await renderShareImage({ ...input, assets });
+    const { settings } = await loadSiteSettings();
+    const image = await renderShareImage({
+      ...input,
+      assets,
+      siteName: settings.site.name,
+    });
     const url = await uploadBillThumbnailFile({
       fileName: `share_${billId}_${Date.now()}.png`,
       body: await image.arrayBuffer(),

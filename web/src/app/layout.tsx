@@ -12,6 +12,8 @@ import {
 import type { Metadata, Viewport } from "next";
 import NextTopLoader from "nextjs-toploader";
 import type { ReactNode } from "react";
+import { getDeliberationTimeline } from "@/features/diet-sessions/server/loaders/get-deliberation-timeline";
+import { DeliberationTimelineProvider } from "@/lib/deliberation-timeline/provider";
 import {
   getPublicSiteSettings,
   getSiteSettings,
@@ -107,10 +109,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const [settings, publicSettings, siteUrl] = await Promise.all([
+  const [settings, publicSettings, siteUrl, timeline] = await Promise.all([
     getSiteSettings(),
     getPublicSiteSettings(),
     getSiteUrl(),
+    getDeliberationTimeline(),
   ]);
   const { site, operator, brand, council } = settings;
 
@@ -146,7 +149,9 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <SiteSettingsProvider value={publicSettings}>
-          {children}
+          <DeliberationTimelineProvider value={timeline}>
+            {children}
+          </DeliberationTimelineProvider>
         </SiteSettingsProvider>
       </body>
     </html>

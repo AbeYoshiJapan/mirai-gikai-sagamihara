@@ -5,12 +5,18 @@ import type { PublicSiteSettings } from "@mirai-gikai/shared/site-settings/publi
 export function toBillLabelOverrides(
   council: Pick<
     PublicSiteSettings["council"],
-    "stage_labels" | "result_labels" | "in_progress_label"
+    | "stage_labels"
+    | "result_labels"
+    | "in_progress_label"
+    | "carried_over_label"
+    | "upcoming_label"
   >
 ): BillLabelOverrides {
   return {
     stage: council.stage_labels,
     result: council.result_labels,
     inProgress: council.in_progress_label,
+    carriedOver: council.carried_over_label,
+    upcoming: council.upcoming_label,
   };
 }

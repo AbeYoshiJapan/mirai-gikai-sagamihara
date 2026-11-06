@@ -11,16 +11,16 @@ import { ImageResponse } from "next/og";
 import { readStreamWithLimit } from "../../shared/utils/read-stream-with-limit";
 import {
   SHARE_IMAGE_HEIGHT,
-  SHARE_IMAGE_TITLE_FONT_SIZE,
   SHARE_IMAGE_TITLE_LEFT,
   SHARE_IMAGE_TITLE_LETTER_SPACING_EM,
-  SHARE_IMAGE_TITLE_LINE_HEIGHT,
   SHARE_IMAGE_TITLE_MAX_WIDTH,
   SHARE_IMAGE_TITLE_OFFSET_Y,
   SHARE_IMAGE_WIDTH,
+  type ShareImageTitleLayout,
 } from "../../shared/utils/share-image";
 import {
   buildShareImageFrameSvg,
+  layoutShareImageTab,
   SHARE_IMAGE_FRAME,
   SHARE_IMAGE_LOGO,
   SHARE_IMAGE_TAB,
@@ -40,9 +40,11 @@ const FALLBACK_BACKGROUND = "#C8C8C8";
 const TEXT_COLOR = "#1F2937";
 const FONT_WEIGHT = 700;
 
-const frameDataUrl = `data:image/svg+xml;base64,${Buffer.from(
-  buildShareImageFrameSvg()
-).toString("base64")}`;
+function frameDataUrl(tabLeft: number): string {
+  return `data:image/svg+xml;base64,${Buffer.from(
+    buildShareImageFrameSvg(tabLeft)
+  ).toString("base64")}`;
+}
 
 /** photoUrl は呼び出し側で isAllowedSharePhotoUrl を通したものに限る */
 async function loadPhoto(photoUrl: string): Promise<string> {
@@ -74,16 +76,19 @@ export async function loadShareImageAssets() {
 
 export type ShareImageAssets = Awaited<ReturnType<typeof loadShareImageAssets>>;
 
-export async function renderShareImage(params: {
-  lines: string[];
-  photoUrl?: string | null;
-  assets: ShareImageAssets;
-}): Promise<ImageResponse> {
+export async function renderShareImage(
+  params: ShareImageTitleLayout & {
+    photoUrl?: string | null;
+    assets: ShareImageAssets;
+    /** 右上のタブに入れるサイト名 */
+    siteName: string;
+  }
+): Promise<ImageResponse> {
   const { font, logo } = params.assets;
   const photo = params.photoUrl ? await loadPhoto(params.photoUrl) : null;
 
   const frame = SHARE_IMAGE_FRAME;
-  const tab = SHARE_IMAGE_TAB;
+  const tab = { ...SHARE_IMAGE_TAB, ...layoutShareImageTab(params.siteName) };
   const logoBox = SHARE_IMAGE_LOGO;
 
   return new ImageResponse(
@@ -122,7 +127,7 @@ export async function renderShareImage(params: {
       {/* biome-ignore lint/performance/noImgElement: Satori は img のみ対応 */}
       <img
         alt=""
-        src={frameDataUrl}
+        src={frameDataUrl(tab.left)}
         width={SHARE_IMAGE_WIDTH}
         height={SHARE_IMAGE_HEIGHT}
         style={{ position: "absolute", top: 0, left: 0 }}
@@ -139,13 +144,13 @@ export async function renderShareImage(params: {
           justifyContent: "center",
           paddingLeft: 6,
           paddingBottom: 4,
-          fontSize: 46,
+          fontSize: tab.fontSize,
           fontWeight: FONT_WEIGHT,
           color: TEXT_COLOR,
           letterSpacing: "0.08em",
         }}
       >
-        みらい議会
+        {params.siteName}
       </div>
       <div
         style={{
@@ -158,9 +163,9 @@ export async function renderShareImage(params: {
           flexDirection: "column",
           justifyContent: "center",
           color: "white",
-          fontSize: SHARE_IMAGE_TITLE_FONT_SIZE,
+          fontSize: params.fontSize,
           fontWeight: FONT_WEIGHT,
-          lineHeight: `${SHARE_IMAGE_TITLE_LINE_HEIGHT}px`,
+          lineHeight: `${params.lineHeight}px`,
           letterSpacing: `${SHARE_IMAGE_TITLE_LETTER_SPACING_EM}em`,
         }}
       >

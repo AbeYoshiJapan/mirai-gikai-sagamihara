@@ -14,7 +14,7 @@ export function checkPublishPreconditions(
     return "AI自動生成版のままでは公開できません。内容を確認して「通常版」に変えてください";
   }
   if (!bill.is_review_completed) {
-    return "記事レビューを完了してから公開してください";
+    return "公開するには、議案の編集画面で記事（解説）を一次資料と照らして確かめ、「記事レビュー完了」をオンにしてください";
   }
   return null;
 }

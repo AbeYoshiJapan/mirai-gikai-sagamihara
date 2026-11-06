@@ -1,3 +1,4 @@
+import type { DeliberationTiming } from "@mirai-gikai/shared/bill-stage/deliberation-timing";
 import {
   getBillDecisionLabel,
   getBillOutcomeLabel,
@@ -66,12 +67,18 @@ export const ARTICLE_KIND_LABELS: Record<BillArticleKind, string> = {
 /**
  * 一覧の審議状況ラベル。種類・段階・結果から決める（共通語彙）。
  * 議決済みなら「可決（賛成多数）」のように採決結果も添える。
+ * 結論が出ていない議案は、時期（timing）で「審議中」「継続中」「審議予定」を出し分ける。
  */
-export function getBillStageLabel(bill: {
-  bill_kind: Bill["bill_kind"];
-  stage: Bill["stage"];
-  result: Bill["result"];
-  vote_outcome: Bill["vote_outcome"];
-}): string {
-  return getBillDecisionLabel(bill) ?? getBillOutcomeLabel(bill);
+export function getBillStageLabel(
+  bill: {
+    bill_kind: Bill["bill_kind"];
+    stage: Bill["stage"];
+    result: Bill["result"];
+    vote_outcome: Bill["vote_outcome"];
+  },
+  timing?: DeliberationTiming | null
+): string {
+  return (
+    getBillDecisionLabel(bill) ?? getBillOutcomeLabel(bill, undefined, timing)
+  );
 }

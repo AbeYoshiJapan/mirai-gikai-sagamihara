@@ -1,9 +1,14 @@
 "use client";
 
-import { getBillDecisionLabel } from "@mirai-gikai/shared/bill-stage/labels";
+import {
+  getBillDecisionLabel,
+  getPendingLabel,
+} from "@mirai-gikai/shared/bill-stage/labels";
+import { useDeliberationTiming } from "@/lib/deliberation-timeline/provider";
 import { toBillLabelOverrides } from "@/lib/site-settings/bill-labels";
 import { useSiteSettings } from "@/lib/site-settings/provider";
 import {
+  buildPendingStatusMessage,
   calculateProgressWidth,
   getCurrentStep,
   getStatusMessage,
@@ -16,7 +21,11 @@ import {
 } from "../../../shared/utils/bill-status";
 
 interface BillStatusProgressProps {
-  bill: BillStageFields & { committee_name?: string | null };
+  bill: BillStageFields & {
+    committee_name?: string | null;
+    submitted_date?: string | null;
+    diet_session_id?: string | null;
+  };
   statusNote?: string | null;
 }
 
@@ -98,6 +107,7 @@ export function BillStatusProgress({
 }: BillStatusProgressProps) {
   const { council } = useSiteSettings();
   const overrides = toBillLabelOverrides(council);
+  const timing = useDeliberationTiming(bill);
   const currentStep = getCurrentStep(bill);
 
   // 委員会報告・特別委員会は採決がないので、進捗ではなく補足だけを示す
@@ -130,8 +140,15 @@ export function BillStatusProgress({
     bill.committee_name && currentStep >= 2 && currentStep < 5
       ? `${bill.committee_name}に付託`
       : null;
+  // 定例会議の間の「継続中」、開会前の「審議予定」は、審議中と見分けられるよう言葉で出す
+  const pendingLabel =
+    !decision && timing && timing !== "in_session" && currentStep > 0
+      ? getPendingLabel(timing, overrides)
+      : null;
   const statusMessage =
-    getStatusMessage(bill, statusNote) || decision || committeeNote || "";
+    getStatusMessage(bill, statusNote) ||
+    decision ||
+    buildPendingStatusMessage(pendingLabel, committeeNote);
 
   return (
     <>

@@ -156,6 +156,10 @@
       "types": "./src/bill-stage/labels.ts",
       "default": "./src/bill-stage/labels.ts"
     },
+    "./bill-stage/deliberation-timing": {
+      "types": "./src/bill-stage/deliberation-timing.ts",
+      "default": "./src/bill-stage/deliberation-timing.ts"
+    },
     "./site-settings/schema": {
       "types": "./src/site-settings/schema.ts",
       "default": "./src/site-settings/schema.ts"

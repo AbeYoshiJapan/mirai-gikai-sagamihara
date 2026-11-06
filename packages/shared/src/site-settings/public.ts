@@ -50,6 +50,8 @@ export type PublicSiteSettings = {
     | "stage_labels"
     | "result_labels"
     | "in_progress_label"
+    | "carried_over_label"
+    | "upcoming_label"
   >;
   features: SiteSettings["features"];
   legal: Pick<SiteSettings["legal"], "modified_on">;
@@ -91,6 +93,8 @@ export function toPublicSiteSettings(s: SiteSettings): PublicSiteSettings {
       stage_labels: s.council.stage_labels,
       result_labels: s.council.result_labels,
       in_progress_label: s.council.in_progress_label,
+      carried_over_label: s.council.carried_over_label,
+      upcoming_label: s.council.upcoming_label,
     },
     features: s.features,
     legal: { modified_on: s.legal.modified_on },

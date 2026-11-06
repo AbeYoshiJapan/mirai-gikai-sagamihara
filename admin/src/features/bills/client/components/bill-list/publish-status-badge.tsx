@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronDown, Clock, Eye, EyeOff, Loader2 } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { routes } from "@/lib/routes";
 import { updatePublishStatusAction } from "../../../server/actions/update-publish-status";
 import type { BillPublishStatus } from "../../../shared/types";
 import {
@@ -38,6 +41,7 @@ const PUBLISH_STATUS_CONFIG: Record<
     badgeClass: "bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200",
   },
   coming_soon: {
+    // 議案名だけを「これから掲載する議案」として出す（本文は出さない）
     label: "Coming Soon",
     icon: Clock,
     badgeClass:
@@ -109,7 +113,7 @@ export function PublishStatusBadge({
           <ChevronDown className="h-3 w-3 ml-0.5" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-56">
+      <PopoverContent className="w-72">
         <div className="space-y-2">
           <h4 className="text-xs leading-none font-medium text-gray-500">
             公開ステータス
@@ -146,8 +150,20 @@ export function PublishStatusBadge({
             })}
           </div>
           {publishBlocker && publishStatus !== "published" && (
-            <p className="text-xs text-amber-700">{publishBlocker}</p>
+            <div className="space-y-1">
+              <p className="text-xs text-amber-700">{publishBlocker}</p>
+              <Link
+                href={routes.billEdit(billId) as Route}
+                className="text-xs font-medium text-blue-700 underline underline-offset-2"
+              >
+                編集画面を開く
+              </Link>
+            </div>
           )}
+          <p className="text-xs text-gray-500">
+            Coming Soon
+            は議案名だけを「これから掲載する議案」として出します（本文は出しません）
+          </p>
         </div>
       </PopoverContent>
     </Popover>

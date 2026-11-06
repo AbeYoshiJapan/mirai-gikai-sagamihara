@@ -1,3 +1,4 @@
+import type { DeliberationTiming } from "@mirai-gikai/shared/bill-stage/deliberation-timing";
 import {
   type BillLabelOverrides,
   type BillStageInfo,
@@ -22,12 +23,16 @@ export function toStageInfo(bill: BillStageFields): BillStageInfo {
   };
 }
 
-/** カード用の短い審議状況ラベル。サイト設定の表示名で上書きできる */
+/**
+ * カード用の短い審議状況ラベル。サイト設定の表示名で上書きできる。
+ * 結論が出ていない議案は、時期（timing）で「審議中」「継続中」「審議予定」を出し分ける。
+ */
 export function getCardStatusLabel(
   bill: BillStageFields,
-  overrides?: BillLabelOverrides
+  overrides?: BillLabelOverrides,
+  timing?: DeliberationTiming | null
 ): string {
-  return getBillOutcomeLabel(toStageInfo(bill), overrides);
+  return getBillOutcomeLabel(toStageInfo(bill), overrides, timing);
 }
 
 /** ステータスに対応するBadgeのvariantを取得 */

@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   buildShareImageFrameSvg,
+  layoutShareImageTab,
   SHARE_IMAGE_FRAME,
+  SHARE_IMAGE_TAB,
+  SHARE_IMAGE_TAB_FONT_SIZE,
 } from "./share-image-frame";
 
 describe("buildShareImageFrameSvg", () => {
@@ -20,5 +23,35 @@ describe("buildShareImageFrameSvg", () => {
 
   it("タブの右上の角丸を枠の外側の角丸と揃える", () => {
     expect(svg).toContain("A42,42 0 0 1 1761,93");
+  });
+});
+
+describe("layoutShareImageTab", () => {
+  it("雛形のタブに入る短い名前なら、雛形の位置と大きさのまま", () => {
+    expect(layoutShareImageTab("議会")).toEqual({
+      left: SHARE_IMAGE_TAB.left,
+      fontSize: SHARE_IMAGE_TAB_FONT_SIZE,
+    });
+  });
+
+  it("入らない名前（さがみはら市議会ナウ！）は、タブを左へ広げる", () => {
+    const tab = layoutShareImageTab("さがみはら市議会ナウ！");
+    expect(tab.fontSize).toBe(SHARE_IMAGE_TAB_FONT_SIZE);
+    expect(tab.left).toBeLessThan(SHARE_IMAGE_TAB.left);
+    // 11 文字 × 46px × (1 + 字間 0.08) と左右の余白が入る幅
+    expect(SHARE_IMAGE_FRAME.right - tab.left).toBeGreaterThanOrEqual(
+      Math.ceil(11 * 1.08 * SHARE_IMAGE_TAB_FONT_SIZE)
+    );
+  });
+
+  it("とても長い名前は、広げすぎずに文字を小さくする", () => {
+    const tab = layoutShareImageTab("あ".repeat(40));
+    expect(tab.left).toBe(700);
+    expect(tab.fontSize).toBeLessThan(SHARE_IMAGE_TAB_FONT_SIZE);
+  });
+
+  it("広げたタブの位置で枠の SVG を描ける", () => {
+    const tab = layoutShareImageTab("さがみはら市議会ナウ！");
+    expect(buildShareImageFrameSvg(tab.left)).toContain(`M${tab.left},`);
   });
 });

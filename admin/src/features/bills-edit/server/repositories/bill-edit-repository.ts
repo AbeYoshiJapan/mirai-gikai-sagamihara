@@ -207,3 +207,28 @@ export async function uploadBillThumbnailFile(params: {
   return supabase.storage.from(BILL_THUMBNAILS_BUCKET).getPublicUrl(data.path)
     .data.publicUrl;
 }
+
+/** 議案のシェア画像に使った背景写真のファイル名（新しい順に最大 100 件） */
+export async function listShareSourcePhotoNames(
+  billId: string
+): Promise<string[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.storage
+    .from(BILL_THUMBNAILS_BUCKET)
+    .list("", {
+      search: `share-src_${billId}_`,
+      limit: 100,
+      sortBy: { column: "name", order: "desc" },
+    });
+  if (error) {
+    console.error("Failed to list share source photos:", error);
+    return [];
+  }
+  return (data ?? []).map((item) => item.name);
+}
+
+export function getBillThumbnailPublicUrl(fileName: string): string {
+  const supabase = createAdminClient();
+  return supabase.storage.from(BILL_THUMBNAILS_BUCKET).getPublicUrl(fileName)
+    .data.publicUrl;
+}

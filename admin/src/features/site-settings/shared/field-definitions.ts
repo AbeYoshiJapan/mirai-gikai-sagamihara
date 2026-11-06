@@ -254,6 +254,23 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             label: "審議中の表示",
             kind: "text",
             placeholder: "市議会審議中",
+            description: "定例会議の期間中で、まだ結論が出ていない議案",
+          },
+          {
+            name: "carried_over_label",
+            label: "継続中の表示",
+            kind: "text",
+            placeholder: "継続中",
+            description:
+              "定例会議と定例会議の間で、結論が次へ持ち越されている議案。期間は「会期管理」の定例会議などの期間で決まります",
+          },
+          {
+            name: "upcoming_label",
+            label: "審議予定の表示",
+            kind: "text",
+            placeholder: "審議予定",
+            description:
+              "次の定例会議に向けて出され、まだ開会前の議案（開会の2週間前以降に出されたもの）",
           },
         ],
       },

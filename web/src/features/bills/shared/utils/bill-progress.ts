@@ -30,6 +30,19 @@ export function getStatusMessage(
 }
 
 /**
+ * 結論が出ていない議案のメッセージ。継続中・審議予定なら付託先と合わせる。
+ * 例：「継続中（民生委員会に付託）」。審議中（期間中）は付託先だけ。
+ */
+export function buildPendingStatusMessage(
+  pendingLabel: string | null,
+  committeeNote: string | null
+): string {
+  if (pendingLabel && committeeNote)
+    return `${pendingLabel}（${committeeNote}）`;
+  return pendingLabel || committeeNote || "";
+}
+
+/**
  * ステップ番号と現在のステップからステップの状態を判定する
  */
 export function getStepState(

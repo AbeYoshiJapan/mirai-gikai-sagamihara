@@ -99,6 +99,8 @@ export async function BillDetailLayout({
                   result: bill.result,
                   vote_outcome: bill.vote_outcome,
                   committee_name: bill.committee?.name ?? null,
+                  submitted_date: bill.submitted_date,
+                  diet_session_id: bill.diet_session_id,
                 }}
                 statusNote={bill.status_note}
               />

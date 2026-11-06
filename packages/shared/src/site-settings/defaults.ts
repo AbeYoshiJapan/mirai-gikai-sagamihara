@@ -115,6 +115,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
       withdrawn: "撤回",
     },
     in_progress_label: "審議中",
+    carried_over_label: "継続中",
+    upcoming_label: "審議予定",
   },
   ai: {
     generation_model: "openai/gpt-4.1-mini",

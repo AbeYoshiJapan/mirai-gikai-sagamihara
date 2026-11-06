@@ -190,6 +190,10 @@ export const councilSectionSchema = z.object({
   result_labels: resultLabelsSchema,
   /** 審議中の議案のカード表示（例: 市議会審議中） */
   in_progress_label: shortText(20),
+  /** 定例会議と定例会議の間で、結論が持ち越されている議案の表示（例: 継続中） */
+  carried_over_label: shortText(20),
+  /** 次の定例会議に向けて出され、まだ開会前の議案の表示（例: 審議予定） */
+  upcoming_label: shortText(20),
 });
 
 export const aiSectionSchema = z.object({

@@ -1,3 +1,8 @@
+import {
+  buildDeliberationTimeline,
+  type DeliberationTimeline,
+  getDeliberationTiming,
+} from "@mirai-gikai/shared/bill-stage/deliberation-timing";
 import { toBillStageGroup } from "@mirai-gikai/shared/bill-stage/labels";
 import { Plus } from "lucide-react";
 import type { Route } from "next";
@@ -13,6 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { jstDateKey } from "@/features/council-meetings/shared/utils/meeting-rows";
+import { findAllDietSessions } from "@/features/diet-sessions/server/repositories/diet-session-repository";
 import { routes } from "@/lib/routes";
 import { BillActionsMenu } from "../../../client/components/bill-actions-menu/bill-actions-menu";
 import { PreviewButton } from "../../../client/components/bill-list/preview-button";
@@ -27,7 +34,13 @@ import { getBillStageLabel } from "../../../shared/types";
 import { summarizeReviewQueue } from "../../../shared/utils/review-queue";
 import { getBills } from "../../loaders/get-bills";
 
-function StageBadge({ bill }: { bill: BillWithDietSession }) {
+function StageBadge({
+  bill,
+  timeline,
+}: {
+  bill: BillWithDietSession;
+  timeline: DeliberationTimeline;
+}) {
   const group = toBillStageGroup(bill);
   const config = BILL_STAGE_GROUP_CONFIG[group];
   const Icon = config.icon;
@@ -35,7 +48,9 @@ function StageBadge({ bill }: { bill: BillWithDietSession }) {
   return (
     <div className="inline-flex items-center gap-1.5 py-1 rounded-full text-sm font-bold">
       <Icon className="h-4 w-4" />
-      <span>{getBillStageLabel(bill)}</span>
+      <span>
+        {getBillStageLabel(bill, getDeliberationTiming(bill, timeline))}
+      </span>
     </div>
   );
 }
@@ -55,7 +70,12 @@ function ReviewQueueSummary({ bills }: { bills: BillWithDietSession[] }) {
 }
 
 export async function BillList({ sortConfig }: { sortConfig: BillSortConfig }) {
-  const bills = await getBills(sortConfig);
+  const [bills, sessions] = await Promise.all([
+    getBills(sortConfig),
+    findAllDietSessions(),
+  ]);
+  // 結論が出ていない議案を「審議中・継続中・審議予定」に分けるための材料（公開サイトと同じ判断）
+  const timeline = buildDeliberationTimeline(sessions, jstDateKey());
 
   return (
     <div>
@@ -94,14 +114,14 @@ export async function BillList({ sortConfig }: { sortConfig: BillSortConfig }) {
                 currentField={sortConfig.field}
                 currentOrder={sortConfig.order}
               >
-                法案提出日
+                提出日
               </SortableTableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {bills.map((bill) => (
-              <BillRow key={bill.id} bill={bill} />
+              <BillRow key={bill.id} bill={bill} timeline={timeline} />
             ))}
           </TableBody>
         </Table>
@@ -110,7 +130,13 @@ export async function BillList({ sortConfig }: { sortConfig: BillSortConfig }) {
   );
 }
 
-function BillRow({ bill }: { bill: BillWithDietSession }) {
+function BillRow({
+  bill,
+  timeline,
+}: {
+  bill: BillWithDietSession;
+  timeline: DeliberationTimeline;
+}) {
   return (
     <TableRow>
       <TableCell className="max-w-[400px]">
@@ -144,7 +170,7 @@ function BillRow({ bill }: { bill: BillWithDietSession }) {
         </div>
       </TableCell>
       <TableCell>
-        <StageBadge bill={bill} />
+        <StageBadge bill={bill} timeline={timeline} />
       </TableCell>
       <TableCell className="text-gray-600">
         {bill.submitted_date

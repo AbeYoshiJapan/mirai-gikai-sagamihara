@@ -7,6 +7,8 @@
  * 表示はこの語彙だけで決める。
  */
 
+import type { DeliberationTiming } from "./deliberation-timing";
+
 export const BILL_KINDS = [
   "ordinance",
   "budget",
@@ -159,7 +161,7 @@ export type BillStageGroup = (typeof BILL_STAGE_GROUPS)[number];
 
 export const BILL_STAGE_GROUP_LABELS: Record<BillStageGroup, string> = {
   all: "すべて",
-  deliberating: "審議中",
+  deliberating: "審議中・継続中",
   waiting: "提出前",
   enacted: "可決・承認",
   rejected: "否決・不採択",
@@ -168,13 +170,37 @@ export const BILL_STAGE_GROUP_LABELS: Record<BillStageGroup, string> = {
   special_committee: "特別委員会",
 };
 
-/** 表示名の上書き（サイト設定 council.stage_labels / result_labels / in_progress_label） */
+/** 表示名の上書き（サイト設定 council.stage_labels / result_labels / in_progress_label など） */
 export type BillLabelOverrides = {
   stage?: Partial<Record<BillStage, string>>;
   result?: Partial<Record<BillResult, string>>;
   /** 審議中の議案のカードに出す短い表示（例: 市議会審議中） */
   inProgress?: string;
+  /** 定例会議と定例会議の間で、結論が持ち越されている議案の表示（既定「継続中」） */
+  carriedOver?: string;
+  /** 次の定例会議に向けて出され、まだ開会前の議案の表示（既定「審議予定」） */
+  upcoming?: string;
 };
+
+export const DELIBERATION_TIMING_LABELS: Record<DeliberationTiming, string> = {
+  in_session: "審議中",
+  carried_over: "継続中",
+  upcoming: "審議予定",
+};
+
+/** 結論が出ていない議案の表示。時期が分からなければ「審議中」 */
+export function getPendingLabel(
+  timing: DeliberationTiming | null | undefined,
+  overrides?: BillLabelOverrides
+): string {
+  if (timing === "carried_over") {
+    return overrides?.carriedOver || DELIBERATION_TIMING_LABELS.carried_over;
+  }
+  if (timing === "upcoming") {
+    return overrides?.upcoming || DELIBERATION_TIMING_LABELS.upcoming;
+  }
+  return overrides?.inProgress || DELIBERATION_TIMING_LABELS.in_session;
+}
 
 export function getStageLabel(
   stage: BillStage,
@@ -208,11 +234,13 @@ export function isInDeliberation(bill: BillStageInfo): boolean {
 
 /**
  * 一覧カードの短い表示。
- * 報告・計画・特別委員会はその種類名、議決済みは結果、審議中は inProgress（既定「審議中」）。
+ * 報告・計画・特別委員会はその種類名、議決済みは結果、結論が出ていないものは
+ * 時期（timing）に応じて「審議中」「継続中」「審議予定」。
  */
 export function getBillOutcomeLabel(
   bill: BillStageInfo,
-  overrides?: BillLabelOverrides
+  overrides?: BillLabelOverrides,
+  timing?: DeliberationTiming | null
 ): string {
   if (!isDeliberationKind(bill.bill_kind)) {
     return BILL_KIND_LABELS[bill.bill_kind];
@@ -223,7 +251,7 @@ export function getBillOutcomeLabel(
   if (bill.stage === null || bill.stage === "preparing") {
     return getStageLabel("preparing", overrides);
   }
-  return overrides?.inProgress || "審議中";
+  return getPendingLabel(timing, overrides);
 }
 
 /**

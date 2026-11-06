@@ -147,3 +147,32 @@ export async function findDietSessionsBefore(
   // クエリで除外済みだが、slug を non-null に型で絞るために filter する
   return data.filter((s): s is SluggedDietSession => s.slug !== null);
 }
+
+/**
+ * 議案の「審議中・継続中・審議予定」を決めるのに使う、すべての会期の日付と定例会議などの期間。
+ */
+export async function findDietSessionsForTimeline(): Promise<
+  Pick<
+    DietSession,
+    "id" | "start_date" | "end_date" | "is_active" | "meeting_periods"
+  >[]
+> {
+  // 全ページの土台（ルートのレイアウト）から呼ぶので、DB に届かないとき（ビルド時など）も
+  // 例外を出さず、従来どおり「審議中」と出すだけにする
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("diet_sessions")
+      .select("id, start_date, end_date, is_active, meeting_periods")
+      .order("start_date", { ascending: true });
+
+    if (error) {
+      console.error("Failed to fetch diet sessions for timeline:", error);
+      return [];
+    }
+    return data ?? [];
+  } catch (error) {
+    console.error("Failed to fetch diet sessions for timeline:", error);
+    return [];
+  }
+}

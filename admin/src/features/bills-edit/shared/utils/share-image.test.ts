@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  autoBreakShareImageTitle,
   buildShareImagePreviewPath,
   estimateLineWidthInEm,
+  findTitleBreakOpportunities,
   isAllowedSharePhotoUrl,
   listMissingShareImageAssets,
   parseShareImageInput,
+  pickLatestShareSourceName,
+  SHARE_IMAGE_TITLE_MAX_WIDTH,
   splitShareImageTitle,
   validateShareImageTitle,
+  wrapTitleLine,
 } from "./share-image";
 
 const SUPABASE_URL = "https://example.supabase.co";
@@ -30,7 +35,7 @@ describe("estimateLineWidthInEm", () => {
 });
 
 describe("validateShareImageTitle", () => {
-  it("3行以内・60文字以内なら行の配列を返す", () => {
+  it("3行以内・60文字以内なら行の配列を返す（入れた改行はそのまま、標準の大きさ）", () => {
     expect(
       validateShareImageTitle(
         "通信制・定時制高校で\nきちんとした教育が\n行われるようにする法案"
@@ -42,6 +47,8 @@ describe("validateShareImageTitle", () => {
         "きちんとした教育が",
         "行われるようにする法案",
       ],
+      fontSize: 105,
+      lineHeight: 150,
     });
   });
 
@@ -69,10 +76,51 @@ describe("validateShareImageTitle", () => {
     expect(validateShareImageTitle("あ".repeat(14)).ok).toBe(true);
   });
 
-  it("1行が画像幅に収まらない場合は行番号つきでエラー", () => {
-    expect(validateShareImageTitle(`短い\n${"あ".repeat(15)}`)).toEqual({
+  it("幅に収まらない行は、文のまとまりの切れ目で自動で折り返す", () => {
+    const result = validateShareImageTitle(
+      "相模原市国民健康保険診療所条例の一部を改正する条例について"
+    );
+    expect(result).toEqual({
+      ok: true,
+      lines: [
+        "相模原市国民健康保険診療所",
+        "条例の一部を改正する",
+        "条例について",
+      ],
+      fontSize: 105,
+      lineHeight: 150,
+    });
+  });
+
+  it("3行に収まらない長さなら文字を小さくして収める", () => {
+    const result = validateShareImageTitle(
+      "生活保護利用者及び低所得者に対する物価高騰対策として、直接的な現金給付を求めることについて"
+    );
+    expect(result).toMatchObject({
+      ok: true,
+      lines: [
+        "生活保護利用者及び低所得者に対する",
+        "物価高騰対策として、直接的な",
+        "現金給付を求めることについて",
+      ],
+    });
+    if (!result.ok) throw new Error("収まるはず");
+    expect(result.fontSize).toBeLessThan(105);
+    for (const line of result.lines) {
+      expect(estimateLineWidthInEm(line) * result.fontSize).toBeLessThanOrEqual(
+        SHARE_IMAGE_TITLE_MAX_WIDTH
+      );
+    }
+  });
+
+  it("いちばん小さい文字でも3行に収まらなければ、直し方を添えたエラー", () => {
+    const result = validateShareImageTitle(
+      `${"あ".repeat(20)}\n${"い".repeat(20)}\n${"う".repeat(19)}`
+    );
+    expect(result).toEqual({
       ok: false,
-      error: "2行目が長すぎて画像に収まりません。改行を入れてください",
+      error:
+        "長すぎて3行に収まりません。改行の位置を変えるか、言い換えて短くしてください",
     });
   });
 });
@@ -124,7 +172,13 @@ describe("parseShareImageInput", () => {
         supabaseUrl: SUPABASE_URL,
         requirePhoto: false,
       })
-    ).toEqual({ ok: true, lines: ["法案"], photoUrl: null });
+    ).toEqual({
+      ok: true,
+      lines: ["法案"],
+      fontSize: 105,
+      lineHeight: 150,
+      photoUrl: null,
+    });
   });
 
   it("requirePhoto が true で写真がなければエラー", () => {
@@ -196,5 +250,93 @@ describe("listMissingShareImageAssets", () => {
       "font",
       "logo",
     ]);
+  });
+});
+
+describe("findTitleBreakOpportunities", () => {
+  const breaksOf = (text: string) => {
+    const chars = [...text];
+    return [...findTitleBreakOpportunities(chars)]
+      .sort((a, b) => a - b)
+      .map((i) => chars.slice(0, i).join(""));
+  };
+
+  it("句読点の後、ひらがなの後に漢字が続くところで区切れる", () => {
+    expect(breaksOf("国に対し、意見書を出す")).toEqual([
+      "国に",
+      "国に対し、",
+      "国に対し、意見書を",
+    ]);
+  });
+
+  it("行頭に来てはいけない文字の前と、短いかっこの中では区切らない", () => {
+    const breaks = breaksOf("防災無線(ひばり放送)更新");
+    expect(breaks).toContain("防災無線");
+    expect(breaks.some((b) => b.endsWith("ひばり"))).toBe(false);
+  });
+
+  it("議案名によく出る言葉の前でも区切れる", () => {
+    expect(breaksOf("区画整理事業特別会計決算")).toEqual([
+      "区画整理",
+      "区画整理事業",
+      "区画整理事業特別会計",
+    ]);
+  });
+});
+
+describe("wrapTitleLine", () => {
+  it("収まる行はそのまま", () => {
+    expect(wrapTitleLine("生活保護基準の引き上げ", 14.8)).toEqual({
+      lines: ["生活保護基準の引き上げ"],
+      hardBreaks: 0,
+      orphans: 0,
+    });
+  });
+
+  it("最後の行に数文字だけ残す割り付けは避ける", () => {
+    const { lines, orphans } = wrapTitleLine(
+      "相模原市国民健康保険診療所条例の一部を改正する条例について",
+      14.8
+    );
+    expect(orphans).toBe(0);
+    expect(lines.at(-1)?.length).toBeGreaterThan(4);
+  });
+
+  it("切れ目の無い長い漢字の並びは文字の途中で区切り、その数を返す", () => {
+    const { lines, hardBreaks } = wrapTitleLine("漢".repeat(20), 14.8);
+    expect(lines.map((l) => l.length)).toEqual([14, 6]);
+    expect(hardBreaks).toBe(1);
+  });
+});
+
+describe("autoBreakShareImageTitle", () => {
+  it("今の改行をいったん外し、自動の位置で改行した文字にする", () => {
+    expect(
+      autoBreakShareImageTitle(
+        "相模原市国民\n健康保険診療所条例の一部を改正する条例について"
+      )
+    ).toBe("相模原市国民健康保険診療所\n条例の一部を改正する\n条例について");
+  });
+});
+
+describe("pickLatestShareSourceName", () => {
+  const BILL_ID = "a435c85d-62ee-4fb7-b866-37a23185f0f9";
+
+  it("その議案の背景写真のうち、いちばん新しいものを選ぶ", () => {
+    expect(
+      pickLatestShareSourceName(
+        [
+          `share-src_${BILL_ID}_1700000000000.jpg`,
+          `share-src_${BILL_ID}_1800000000000.png`,
+          `share_${BILL_ID}_1900000000000.png`,
+          "share-src_00000000-0000-4000-8000-000000000000_1990000000000.jpg",
+        ],
+        BILL_ID
+      )
+    ).toBe(`share-src_${BILL_ID}_1800000000000.png`);
+  });
+
+  it("無ければ null", () => {
+    expect(pickLatestShareSourceName(["thumb.jpg"], BILL_ID)).toBeNull();
   });
 });

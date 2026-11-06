@@ -4,6 +4,7 @@ import {
   renderShareImage,
 } from "@/features/bills-edit/server/utils/render-share-image";
 import { parseShareImageInput } from "@/features/bills-edit/shared/utils/share-image";
+import { loadSiteSettings } from "@/features/site-settings/server/loaders/load-site-settings";
 import { env } from "@/lib/env";
 
 export async function GET(request: Request) {
@@ -25,9 +26,14 @@ export async function GET(request: Request) {
   }
 
   try {
+    const [{ settings }, assets] = await Promise.all([
+      loadSiteSettings(),
+      loadShareImageAssets(),
+    ]);
     const image = await renderShareImage({
       ...input,
-      assets: await loadShareImageAssets(),
+      assets,
+      siteName: settings.site.name,
     });
     return new Response(await image.arrayBuffer(), {
       headers: {

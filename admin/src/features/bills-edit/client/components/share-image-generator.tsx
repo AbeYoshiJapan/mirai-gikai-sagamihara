@@ -1,6 +1,12 @@
 "use client";
 
-import { CircleAlert, CircleCheck, ImageIcon, Loader2 } from "lucide-react";
+import {
+  CircleAlert,
+  CircleCheck,
+  ImageIcon,
+  Loader2,
+  WrapText,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,10 +14,13 @@ import { Dropzone } from "@/components/ui/dropzone";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { findLatestSharePhoto } from "../../server/actions/find-latest-share-photo";
 import { generateShareImage } from "../../server/actions/generate-share-image";
 import {
+  autoBreakShareImageTitle,
   buildShareImagePreviewPath,
   SHARE_IMAGE_HEIGHT,
+  SHARE_IMAGE_TITLE_FONT_SIZE,
   SHARE_IMAGE_TITLE_MAX_LENGTH,
   SHARE_IMAGE_TITLE_MAX_LINES,
   SHARE_IMAGE_WIDTH,
@@ -35,7 +44,11 @@ export function ShareImageGenerator({
   onGenerated,
 }: ShareImageGeneratorProps) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [title, setTitle] = useState(defaultTitle);
+  const [isReusedPhoto, setIsReusedPhoto] = useState(false);
+  // 議案名を、画像に収まる位置で自動で改行して入れておく（手直しできる）
+  const [title, setTitle] = useState(() =>
+    autoBreakShareImageTitle(defaultTitle)
+  );
   const [previewPath, setPreviewPath] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,6 +56,23 @@ export function ShareImageGenerator({
   const [previewFailed, setPreviewFailed] = useState(false);
 
   const validation = validateShareImageTitle(title);
+
+  // 作り直すとき、前にアップロードした背景写真をそのまま使えるようにする
+  useEffect(() => {
+    let cancelled = false;
+    findLatestSharePhoto(billId)
+      .then(({ url }) => {
+        if (cancelled || !url) return;
+        setPhotoUrl((current) => current ?? url);
+        setIsReusedPhoto(true);
+      })
+      .catch(() => {
+        // 見つからなくても、写真を選べば作れる
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [billId]);
 
   useEffect(() => {
     if (!validateShareImageTitle(title).ok) {
@@ -71,6 +101,7 @@ export function ShareImageGenerator({
         return;
       }
       setPhotoUrl(result.url);
+      setIsReusedPhoto(false);
     } finally {
       setIsUploading(false);
     }
@@ -114,6 +145,11 @@ export function ShareImageGenerator({
         {isUploading && (
           <p className="text-sm text-blue-600">アップロード中...</p>
         )}
+        {isReusedPhoto && photoUrl && !isUploading && (
+          <p className="text-sm text-muted-foreground">
+            前にアップロードした背景写真を使います。変えるときは新しい写真を選んでください。
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -125,10 +161,27 @@ export function ShareImageGenerator({
           className="min-h-[100px]"
         />
         <p className="text-sm text-muted-foreground">
-          改行した位置で折り返します。{SHARE_IMAGE_TITLE_MAX_LINES}
-          行・改行を除いて{SHARE_IMAGE_TITLE_MAX_LENGTH}文字まで。
+          議案名を、画像に収まる位置で自動で改行して入れています。改行の位置や言い回しは自由に直せます（入れた改行はそのまま使い、長すぎる行は自動で折り返します）。
+          {SHARE_IMAGE_TITLE_MAX_LINES}行・改行を除いて
+          {SHARE_IMAGE_TITLE_MAX_LENGTH}文字まで。
         </p>
-        {!validation.ok && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setTitle(autoBreakShareImageTitle(title))}
+        >
+          <WrapText className="h-4 w-4 mr-2" />
+          自動の改行に戻す
+        </Button>
+        {validation.ok ? (
+          <p className="text-sm text-muted-foreground">
+            画像では {validation.lines.length} 行になります
+            {validation.fontSize < SHARE_IMAGE_TITLE_FONT_SIZE &&
+              "（長いので文字を少し小さくしています）"}
+            ：{validation.lines.map((line) => `「${line}」`).join("")}
+          </p>
+        ) : (
           <p className="text-sm text-destructive">{validation.error}</p>
         )}
       </div>
