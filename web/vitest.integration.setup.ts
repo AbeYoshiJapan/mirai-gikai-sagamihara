@@ -32,6 +32,8 @@ vi.mock("next/cache", () => ({
 // 本家由来の API ルートのテストは、利用者向け AI 機能（インタビュー・トピック分析・チャット）と
 // オープンデータ API が有効な前提で書かれている。この相模原版では既定が OFF なので、
 // テスト用の DB にだけ「機能」の設定を入れて有効にする（サイト設定の読み込みは本物を通す）。
+// ただし AI チャット・AI インタビューは掲載方針で常に無効（locked-features.ts）なので、
+// ここで true を入れても読み込み時に false に戻る。その挙動もルートのテストで確かめている。
 import { DEFAULT_SITE_SETTINGS } from "@mirai-gikai/shared/site-settings/defaults";
 import { beforeAll } from "vitest";
 import { adminClient } from "@test-utils/utils";
