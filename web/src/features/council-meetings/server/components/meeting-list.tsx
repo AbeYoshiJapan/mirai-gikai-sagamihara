@@ -13,9 +13,23 @@ const CATEGORY_STYLES: Record<CouncilMeeting["category"], string> = {
   other: "bg-mirai-surface-muted text-mirai-text-secondary",
 };
 
-/** 会議を日付ごとにまとめて並べる。同じ日の会議は区サイトの並び順のまま。 */
-export function MeetingList({ meetings }: { meetings: CouncilMeeting[] }) {
-  const days: { key: string; label: string; items: CouncilMeeting[] }[] = [];
+/**
+ * 会議を日付ごとにまとめて並べる。同じ日の会議は議会サイトの並び順のまま。
+ * `withAnchors` を付けると、日ごとに `#d-YYYY-MM-DD` で飛べるようにする（カレンダーから使う）。
+ */
+export function MeetingList({
+  meetings,
+  withAnchors = false,
+}: {
+  meetings: CouncilMeeting[];
+  withAnchors?: boolean;
+}) {
+  const days: {
+    key: string;
+    date: string;
+    label: string;
+    items: CouncilMeeting[];
+  }[] = [];
   for (const m of meetings) {
     const key = `${m.meeting_date}_${m.end_date ?? ""}`;
     const last = days.at(-1);
@@ -24,29 +38,38 @@ export function MeetingList({ meetings }: { meetings: CouncilMeeting[] }) {
     } else {
       days.push({
         key,
+        date: m.meeting_date,
         label: formatMeetingDateRange(m.meeting_date, m.end_date),
         items: [m],
       });
     }
   }
+  const anchored = new Set<string>();
 
   return (
     <div className="flex flex-col gap-3">
-      {days.map((day) => (
-        <div
-          key={day.key}
-          className="flex flex-col gap-3 rounded-2xl bg-white px-5 py-4 md:flex-row md:gap-6"
-        >
-          <div className="shrink-0 text-[15px] font-bold text-mirai-brand-teal-deep md:w-44">
-            {day.label}
+      {days.map((day) => {
+        // 同じ日に始まる複数日の会議があっても、id は最初の 1 つにだけ付ける
+        const id =
+          withAnchors && !anchored.has(day.date) ? `d-${day.date}` : undefined;
+        if (id) anchored.add(day.date);
+        return (
+          <div
+            key={day.key}
+            id={id}
+            className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-white px-5 py-4 md:flex-row md:gap-6"
+          >
+            <div className="shrink-0 text-[15px] font-bold text-mirai-brand-teal-deep md:w-44">
+              {day.label}
+            </div>
+            <ul className="flex flex-1 flex-col gap-3">
+              {day.items.map((m) => (
+                <MeetingItem key={m.id} meeting={m} />
+              ))}
+            </ul>
           </div>
-          <ul className="flex flex-1 flex-col gap-3">
-            {day.items.map((m) => (
-              <MeetingItem key={m.id} meeting={m} />
-            ))}
-          </ul>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

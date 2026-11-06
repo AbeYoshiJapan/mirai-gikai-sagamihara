@@ -659,10 +659,34 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
           { name: "member_votes", label: "議員ごとの賛否", kind: "boolean" },
           { name: "petitions", label: "請願・陳情の一覧", kind: "boolean" },
           { name: "past_sessions", label: "過去の会期", kind: "boolean" },
-          { name: "schedule", label: "会議日程", kind: "boolean" },
+          {
+            name: "schedule",
+            label: "会議の予定（カレンダー）",
+            kind: "boolean",
+          },
           { name: "glossary", label: "用語解説", kind: "boolean" },
-          { name: "furigana", label: "ふりがな切替", kind: "boolean" },
           { name: "pwa", label: "ホーム画面への追加（PWA）", kind: "boolean" },
+        ],
+      },
+      {
+        title: "ふりがな",
+        description:
+          "ふりがなは外部サービス（Rubyful）が漢字に自動で付けます。人名・地名などは読みが違うことがあります。",
+        fields: [
+          {
+            name: "furigana",
+            label: "ふりがなを使えるようにする",
+            kind: "boolean",
+            description:
+              "オンにすると、メニューと画面右上に「ふりがな表示」の切り替えを出します。オフにすると切り替えを出さず、だれにもふりがなを表示しません",
+          },
+          {
+            name: "furigana_default_on",
+            label: "最初からふりがなを表示する",
+            kind: "boolean",
+            description:
+              "オンにすると、まだ切り替えていない人にも最初からふりがなを表示します。見る人は自分でオフにできます（選んだ内容はその人の端末に残ります）",
+          },
         ],
       },
       {
@@ -863,6 +887,29 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             kind: "text",
             placeholder: "sagamihara",
             description: "kaigiroku.net の URL に含まれる名前",
+          },
+        ],
+      },
+      {
+        title: "会議予定の取得（仮登録）",
+        description:
+          "議会サイトのカレンダーから会議予定を読み、管理画面「会議予定」に仮登録します。公開サイトに出るのは、運営者が確認して公開したものだけです。",
+        fields: [
+          {
+            name: "calendar_auto_fetch",
+            label: "毎日自動で取得して仮登録する",
+            kind: "boolean",
+            description:
+              "朝 6 時ごろ（日本時間）に今月から 3 か月分を読みます。admin の Vercel に CRON_SECRET が必要です",
+          },
+          {
+            name: "calendar_month_url",
+            label: "カレンダーの月のページの URL",
+            kind: "text",
+            fullWidth: true,
+            placeholder: "https://www.sagamihara-shigikai.jp/top/{yyyy}/{mm}/",
+            description:
+              "{yyyy} に年、{mm} に月（2 桁）を差し込みます。空なら「議会の公式サイト」の URL から作ります（相模原市議会の形）",
           },
         ],
       },

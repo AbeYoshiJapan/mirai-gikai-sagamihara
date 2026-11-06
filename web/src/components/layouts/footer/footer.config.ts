@@ -18,6 +18,9 @@ export type FooterPolicyLink = FooterLink;
  */
 export function buildPrimaryLinks(settings: PublicSiteSettings): FooterLink[] {
   const links: FooterLink[] = [{ label: "TOP", href: routes.home() }];
+  if (settings.features.schedule) {
+    links.push({ label: "会議の予定", href: routes.schedule() });
+  }
   if (hasSessionSystemPage(settings.council)) {
     links.push({
       label: `${settings.council.session_system_label}とは`,

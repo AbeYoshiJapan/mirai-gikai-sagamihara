@@ -3,7 +3,11 @@
  * ふりがな表示を管理するクライアントユーティリティ
  */
 
-import { getRubyEnabledFromStorage, setRubyEnabledToStorage } from "./storage";
+import {
+  type FuriganaSettings,
+  getRubyEnabledFromStorage,
+  setRubyEnabledToStorage,
+} from "./storage";
 
 // DOM操作用の定数
 const SELECTORS = {
@@ -70,10 +74,10 @@ class RubyfulClient {
   }
 
   /**
-   * LocalStorageから表示状態を取得
+   * LocalStorageから表示状態を取得（未保存ならサイトの既定。使えない設定なら常に false）
    */
-  getIsEnabledFromStorage(): boolean {
-    return getRubyEnabledFromStorage();
+  getIsEnabledFromStorage(settings?: FuriganaSettings): boolean {
+    return getRubyEnabledFromStorage(settings);
   }
 }
 

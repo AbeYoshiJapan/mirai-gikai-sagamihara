@@ -8,7 +8,8 @@ interface RubyToggleProps {
 }
 
 export function RubyToggle({ className }: RubyToggleProps) {
-  const { rubyEnabled, handleRubyToggle } = useRubyToggle();
+  const { available, rubyEnabled, handleRubyToggle } = useRubyToggle();
+  if (!available) return null;
 
   return (
     <div className={`flex items-center justify-between space-x-4 ${className}`}>

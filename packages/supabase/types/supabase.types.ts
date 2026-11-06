@@ -515,19 +515,27 @@ export type Database = {
           agenda_pdf_url: string | null
           category: string
           committee_id: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
           council_year: number
           created_at: string
           document_url: string | null
           end_date: string | null
+          fetched_at: string | null
           gallery: string | null
           id: string
           is_published: boolean
           meeting_date: string
           minutes_url: string | null
           name: string
+          operator_edited_at: string | null
+          pending_update: Json | null
           place: string | null
           result_pdf_url: string | null
           session_label: string | null
+          site_label: string | null
+          site_snapshot: Json | null
+          source: string
           source_url: string
           start_time: string | null
           stream_url: string | null
@@ -538,19 +546,27 @@ export type Database = {
           agenda_pdf_url?: string | null
           category: string
           committee_id?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
           council_year: number
           created_at?: string
           document_url?: string | null
           end_date?: string | null
+          fetched_at?: string | null
           gallery?: string | null
           id?: string
           is_published?: boolean
           meeting_date: string
           minutes_url?: string | null
           name: string
+          operator_edited_at?: string | null
+          pending_update?: Json | null
           place?: string | null
           result_pdf_url?: string | null
           session_label?: string | null
+          site_label?: string | null
+          site_snapshot?: Json | null
+          source?: string
           source_url: string
           start_time?: string | null
           stream_url?: string | null
@@ -561,19 +577,27 @@ export type Database = {
           agenda_pdf_url?: string | null
           category?: string
           committee_id?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
           council_year?: number
           created_at?: string
           document_url?: string | null
           end_date?: string | null
+          fetched_at?: string | null
           gallery?: string | null
           id?: string
           is_published?: boolean
           meeting_date?: string
           minutes_url?: string | null
           name?: string
+          operator_edited_at?: string | null
+          pending_update?: Json | null
           place?: string | null
           result_pdf_url?: string | null
           session_label?: string | null
+          site_label?: string | null
+          site_snapshot?: Json | null
+          source?: string
           source_url?: string
           start_time?: string | null
           stream_url?: string | null

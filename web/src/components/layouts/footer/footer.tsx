@@ -56,7 +56,7 @@ function FooterPrimaryLinks() {
       <ul
         className="
       flex flex-col items-center gap-3 text-[14px] font-semibold text-slate-800
-      md:flex-row md:justify-center md:gap-5
+      md:flex-row md:flex-wrap md:justify-center md:gap-x-5 md:gap-y-2
       "
       >
         {primaryLinks.map((link) => (
@@ -65,7 +65,7 @@ function FooterPrimaryLinks() {
               href={link.href as Route}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noreferrer" : undefined}
-              className="transition-colors hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+              className="whitespace-nowrap transition-colors hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
             >
               {link.label}
             </Link>

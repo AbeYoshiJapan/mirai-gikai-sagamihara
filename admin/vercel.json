@@ -1,10 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": {
-    "deploymentEnabled": {
-      "main": false,
-      "develop": false
+  "crons": [
+    {
+      "path": "/api/cron/council-calendar",
+      "schedule": "0 21 * * *"
     }
-  },
-  "ignoreCommand": "node ../scripts/vercel-ignore-build.mjs"
+  ]
 }

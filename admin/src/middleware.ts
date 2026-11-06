@@ -11,6 +11,10 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/api/mcp" || pathname.startsWith("/api/mcp/")) {
     return NextResponse.next();
   }
+  // Vercel Cron（会議予定の自動取得）は CRON_SECRET で独自に確かめる
+  if (pathname.startsWith("/api/cron/")) {
+    return NextResponse.next();
+  }
 
   const { supabaseResponse, user } = await updateSession(request);
 

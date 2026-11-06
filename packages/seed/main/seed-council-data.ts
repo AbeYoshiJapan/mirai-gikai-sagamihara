@@ -140,6 +140,8 @@ export async function seedCouncilData(
         committee_id: m.category === "standing"
           ? (committeeIdByName.get(m.name) ?? null)
           : null,
+        // 公開中の会議予定は確認済みであること（DB の CHECK 制約）
+        confirmed_at: m.is_published ? new Date().toISOString() : null,
       }))
     );
   if (meetingsError) {

@@ -14,6 +14,7 @@ const navigationLinks: {
 }[] = [
   { href: routes.bills(), label: "議案管理" },
   { href: routes.dietSessions(), label: "会期管理" },
+  { href: routes.councilMeetings(), label: "会議予定" },
   { href: routes.committees(), label: "委員会" },
   { href: routes.importPage(), label: "取込" },
   { href: routes.tags(), label: "タグ管理" },

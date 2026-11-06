@@ -216,13 +216,23 @@ export const importSectionSchema = z.object({
   min_rows_ratio: z.number().min(0).max(1),
   /** kaigiroku.net のテナント名 */
   minutes_tenant: shortText(40),
+  /**
+   * 議会サイトのカレンダー（月のページ）の URL。{yyyy} {mm} を差し込む。
+   * 空なら links.council_site の「top/{yyyy}/{mm}/」（相模原市議会の形）を使う
+   */
+  calendar_month_url: shortText(300),
+  /** 会議予定を毎日自動で取得して仮登録する（管理画面で確認して公開） */
+  calendar_auto_fetch: z.boolean(),
 });
 
 export const featuresSectionSchema = z.object({
   ai_chat: z.boolean(),
   ai_interview: z.boolean(),
   topic_analysis: z.boolean(),
+  /** ふりがなの切り替えスイッチを出し、ふりがなを付けられるようにする */
   furigana: z.boolean(),
+  /** まだ切り替えていない人にも、最初からふりがなを表示する */
+  furigana_default_on: z.boolean(),
   operator_stance: z.boolean(),
   faction_votes: z.boolean(),
   member_votes: z.boolean(),

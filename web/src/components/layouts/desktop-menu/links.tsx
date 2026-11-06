@@ -16,15 +16,24 @@ type FooterLinkItem = {
  */
 export function DesktopMenuLinks() {
   const { links: siteLinks, operator, features } = useSiteSettings();
-  const links: FooterLinkItem[] = [
+  const links: FooterLinkItem[] = [];
+  if (features.schedule) {
+    links.push({
+      label: "会議の予定（カレンダー）",
+      href: routes.schedule(),
+      external: false,
+    });
+  }
+  links.push(
+    { label: "掲載方針", href: routes.editorialPolicy(), external: false },
     { label: "利用規約", href: routes.terms(), external: false },
     { label: "プライバシーポリシー", href: routes.privacy(), external: false },
     {
       label: "議会に正式に届けるには",
       href: routes.petitionGuide(),
       external: false,
-    },
-  ];
+    }
+  );
   if (features.question_form) {
     links.push({
       label: "質問と回答",

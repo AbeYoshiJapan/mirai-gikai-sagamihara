@@ -31,6 +31,8 @@ export type CouncilMeeting = {
   result_pdf_url?: string | null;
   /** 会議期間の表示名（例: 9月定例会議） */
   session_label?: string | null;
+  /** 議会サイトのカレンダーの表記（略称。例: 議運）。カレンダーのマスに出す */
+  site_label?: string | null;
 };
 
 /** 議会期間（6月議会など）。本会議の初日から最終日まで。 */

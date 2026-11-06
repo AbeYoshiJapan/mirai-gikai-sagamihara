@@ -23,6 +23,24 @@ describe("footer.config", () => {
     expect(link?.external).toBeUndefined();
   });
 
+  it("会議日程の機能が有効なときだけ、会議の予定（カレンダー）へのリンクを出す", () => {
+    const enabled = {
+      ...base,
+      features: { ...base.features, schedule: true },
+    };
+    expect(buildPrimaryLinks(enabled).map((link) => link.href)).toContain(
+      routes.schedule()
+    );
+
+    const disabled = {
+      ...base,
+      features: { ...base.features, schedule: false },
+    };
+    expect(buildPrimaryLinks(disabled).map((link) => link.href)).not.toContain(
+      routes.schedule()
+    );
+  });
+
   it("policyLinks の先頭に掲載方針、続いて規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
     const hrefs = buildPolicyLinks(base).map((link) => link.href);
 
@@ -79,6 +97,7 @@ describe("footer.config", () => {
   it("内部リンクには external フラグが付かない", () => {
     const internalHrefs = new Set<string>([
       routes.home(),
+      routes.schedule(),
       routes.editorialPolicy(),
       routes.terms(),
       routes.privacy(),

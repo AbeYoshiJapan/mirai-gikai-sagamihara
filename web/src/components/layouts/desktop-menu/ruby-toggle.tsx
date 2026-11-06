@@ -7,7 +7,9 @@ import { useRubyToggle } from "@/lib/rubyful/use-ruby-toggle";
  * デスクトップメニュー: ルビ切り替え (画面右上、難易度切り替えの下)
  */
 export function DesktopMenuRubyToggle() {
-  const { rubyEnabled, handleRubyToggle } = useRubyToggle();
+  const { available, rubyEnabled, handleRubyToggle } = useRubyToggle();
+  // 管理画面でふりがなを使わない設定のときは出さない
+  if (!available) return null;
 
   return (
     <div className="fixed top-[108px] right-6 z-50">

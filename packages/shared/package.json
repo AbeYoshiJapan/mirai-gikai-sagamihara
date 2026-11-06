@@ -195,6 +195,26 @@
     "./site-settings/presets": {
       "types": "./src/site-settings/presets/sagamihara.ts",
       "default": "./src/site-settings/presets/sagamihara.ts"
+    },
+    "./council-meetings/site-calendar": {
+      "types": "./src/council-meetings/site-calendar.ts",
+      "default": "./src/council-meetings/site-calendar.ts"
+    },
+    "./council-meetings/site-meeting-detail": {
+      "types": "./src/council-meetings/site-meeting-detail.ts",
+      "default": "./src/council-meetings/site-meeting-detail.ts"
+    },
+    "./council-meetings/resolve-meeting-label": {
+      "types": "./src/council-meetings/resolve-meeting-label.ts",
+      "default": "./src/council-meetings/resolve-meeting-label.ts"
+    },
+    "./council-meetings/plan-site-import": {
+      "types": "./src/council-meetings/plan-site-import.ts",
+      "default": "./src/council-meetings/plan-site-import.ts"
+    },
+    "./council-meetings/council-year": {
+      "types": "./src/council-meetings/council-year.ts",
+      "default": "./src/council-meetings/council-year.ts"
     }
   },
   "dependencies": {

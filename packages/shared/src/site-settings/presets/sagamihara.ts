@@ -103,6 +103,7 @@ export const SAGAMIHARA_PRESET: SiteSettings = {
   import: {
     ...DEFAULT_SITE_SETTINGS.import,
     minutes_tenant: "sagamihara",
+    calendar_month_url: "https://www.sagamihara-shigikai.jp/top/{yyyy}/{mm}/",
     sources: [
       {
         id: "agenda",

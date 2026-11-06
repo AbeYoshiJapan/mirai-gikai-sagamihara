@@ -4,6 +4,7 @@ import Script from "next/script";
 import { sendFuriganaStateEvent } from "@/lib/analytics/preference-state-events";
 import { useOnPageView } from "@/lib/analytics/use-on-page-view";
 import { rubyfulClient } from "./index";
+import { useFuriganaSettings } from "./use-furigana-settings";
 import "./styles.css";
 
 declare global {
@@ -20,13 +21,20 @@ declare global {
 }
 
 export function RubyfulInitializer() {
+  const { available, defaultOn } = useFuriganaSettings();
   // レイアウトに常時マウントされるこのコンポーネントで、
   // 現在のふりがな表示設定をページ表示のたびにGAへ送る
   // (RubyToggleはPopoverContent内にありポップオーバーを
   //  開くまでマウントされないため、送信元には適さない)
   useOnPageView(() => {
-    sendFuriganaStateEvent(rubyfulClient.getIsEnabledFromStorage());
+    if (!available) return;
+    sendFuriganaStateEvent(
+      rubyfulClient.getIsEnabledFromStorage({ available, defaultOn })
+    );
   });
+
+  // 管理画面でふりがなを使わない設定にしたら、外部スクリプトも読み込まない
+  if (!available) return null;
 
   return (
     <Script
@@ -34,7 +42,10 @@ export function RubyfulInitializer() {
       strategy="afterInteractive"
       onLoad={() => {
         if (typeof window !== "undefined" && window.RubyfulV2) {
-          const isEnabled = rubyfulClient.getIsEnabledFromStorage();
+          const isEnabled = rubyfulClient.getIsEnabledFromStorage({
+            available,
+            defaultOn,
+          });
           if (!isEnabled) return;
           // Rubyful V2を初期化
           //

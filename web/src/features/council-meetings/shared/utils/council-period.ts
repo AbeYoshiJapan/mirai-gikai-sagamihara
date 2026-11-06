@@ -57,11 +57,7 @@ export function toDateKey(date: Date): string {
 }
 
 /** 議会年度の開始年。開始月はサイト設定（council.year_start_month）。既定は 5 月始まり。 */
-export function councilYearOf(date: Date, startMonth = 5): number {
-  return date.getMonth() + 1 >= startMonth
-    ? date.getFullYear()
-    : date.getFullYear() - 1;
-}
+export { councilYearOf } from "@mirai-gikai/shared/council-meetings/council-year";
 
 /** 例：2026 → 令和8年度 */
 export function formatCouncilYear(year: number): string {

@@ -15,6 +15,8 @@ export const routes = {
   tags: () => "/tags" as const,
   dietSessions: () => "/diet-sessions" as const,
   committees: () => "/committees" as const,
+  councilMeetings: () => "/council-meetings" as const,
+  councilMeetingNew: () => "/council-meetings/new" as const,
   experts: () => "/experts" as const,
   interviews: () => "/interviews" as const,
   interviewOpinionBackfill: () => "/interview-opinion-backfill" as const,
@@ -24,6 +26,10 @@ export const routes = {
   readerQuestions: () => "/reader-questions" as const,
   settings: () => "/settings" as const,
   setup: () => "/setup" as const,
+
+  // ── 会議予定 ──────────────────────────────────────
+  councilMeetingEdit: (meetingId: string) =>
+    `/council-meetings/${meetingId}/edit` as const,
 
   // ── 議案配下 ──────────────────────────────────────
   billEdit: (billId: string) => `/bills/${billId}/edit` as const,

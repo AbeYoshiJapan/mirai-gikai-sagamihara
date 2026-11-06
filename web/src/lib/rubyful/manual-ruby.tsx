@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { rubyfulClient } from "./index";
+import { useFuriganaSettings } from "./use-furigana-settings";
 
 interface RubyProps {
   children: ReactNode;
@@ -10,11 +11,14 @@ interface RubyProps {
 }
 
 export function ManualRuby({ children, ruby }: RubyProps) {
+  const { available, defaultOn } = useFuriganaSettings();
   const [isRubyEnabled, setIsRubyEnabled] = useState(false);
 
   useEffect(() => {
-    setIsRubyEnabled(rubyfulClient.getIsEnabledFromStorage());
-  }, []);
+    setIsRubyEnabled(
+      rubyfulClient.getIsEnabledFromStorage({ available, defaultOn })
+    );
+  }, [available, defaultOn]);
 
   return (
     // biome-ignore lint/a11y/useValidAriaRole: rubyfulの仕様に乗っ取る
