@@ -5,6 +5,7 @@ import {
   buildCalendarMonthUrl,
   calendarMonthsFrom,
   calendarRangeOf,
+  describeCalendarHtml,
   groupCalendarEntries,
   parseSiteCalendarHtml,
 } from "./site-calendar";
@@ -121,5 +122,21 @@ describe("月のページの URL と範囲", () => {
       from: "2026-11-01",
       to: "2027-01-31",
     });
+  });
+});
+
+describe("describeCalendarHtml", () => {
+  it("読めなかったページの手がかり（タイトル・表の数・会議へのリンクの数）を返す", () => {
+    expect(
+      describeCalendarHtml(
+        "<html><title> 相模原市議会 </title><table></table><p>x</p></html>"
+      )
+    ).toBe("タイトル「相模原市議会」・表 1 個・会議へのリンク 0 件・59 文字");
+  });
+
+  it("実際のカレンダーでは会議へのリンクを数える", () => {
+    expect(describeCalendarHtml(TOP_2026_11)).toMatch(
+      /表 \d+ 個・会議へのリンク [1-9]\d* 件/
+    );
   });
 });

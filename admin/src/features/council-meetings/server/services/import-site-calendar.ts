@@ -9,6 +9,7 @@ import {
   buildCalendarMonthUrl,
   calendarMonthsFrom,
   calendarRangeOf,
+  describeCalendarHtml,
   groupCalendarEntries,
   parseSiteCalendarHtml,
   type SiteCalendarEntry,
@@ -35,11 +36,10 @@ import {
   toJson,
   updateMeeting,
 } from "../repositories/council-meeting-repository";
+import { fetchSitePage } from "../utils/fetch-site-text";
 
 export type FetchText = (url: string) => Promise<string>;
 
-const USER_AGENT =
-  "mirai-gikai-sagamihara-calendar/0.1 (+https://github.com/AbeYoshiJapan/mirai-gikai-sagamihara; 会議予定の確認用)";
 /** 議会サイトに負担をかけないよう、1 件ずつ間を空ける */
 const PAGE_INTERVAL_MS = 1000;
 const DETAIL_INTERVAL_MS = 400;
@@ -47,18 +47,7 @@ const DETAIL_INTERVAL_MS = 400;
 const MAX_DETAIL_PAGES = 80;
 
 async function defaultFetchText(url: string): Promise<string> {
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": USER_AGENT,
-      Accept: "text/html,application/xhtml+xml",
-    },
-    signal: AbortSignal.timeout(15_000),
-    cache: "no-store",
-  });
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`);
-  }
-  return await response.text();
+  return (await fetchSitePage(url)).text;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -127,6 +116,12 @@ export async function importSiteCalendar(params: {
           baseUrl: url,
         });
         log.push(`${url}: ${found.length} 件`);
+        if (found.length === 0) {
+          // 原因を調べられるよう、ページの様子を残す
+          warnings.push(
+            `${url} から会議を読めませんでした（${describeCalendarHtml(html)}）`
+          );
+        }
         entries.push(...found);
       } catch (error) {
         warnings.push(`${url} を読めませんでした（${String(error)}）`);

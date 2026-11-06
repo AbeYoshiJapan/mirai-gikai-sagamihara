@@ -200,6 +200,10 @@
       "types": "./src/council-meetings/site-calendar.ts",
       "default": "./src/council-meetings/site-calendar.ts"
     },
+    "./council-meetings/decode-html": {
+      "types": "./src/council-meetings/decode-html.ts",
+      "default": "./src/council-meetings/decode-html.ts"
+    },
     "./council-meetings/site-meeting-detail": {
       "types": "./src/council-meetings/site-meeting-detail.ts",
       "default": "./src/council-meetings/site-meeting-detail.ts"

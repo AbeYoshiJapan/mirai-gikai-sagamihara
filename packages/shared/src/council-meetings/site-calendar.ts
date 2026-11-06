@@ -134,6 +134,23 @@ export function parseSiteCalendarHtml(
 }
 
 /** 月のページの URL を作る。`{yyyy}` `{mm}` `{m}` を差し込む */
+/**
+ * 会議を 1 件も読めなかったページの様子（原因を調べる手がかり）。
+ * 例：「タイトル「…」・表 3 個・会議へのリンク 0 件」
+ */
+export function describeCalendarHtml(html: string): string {
+  const title = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1];
+  const tables = html.match(/<table\b/gi)?.length ?? 0;
+  const links = html.match(/doc-calendar/gi)?.length ?? 0;
+  const parts = [
+    title ? `タイトル「${title.replace(/\s+/g, " ").trim().slice(0, 40)}」` : "タイトルなし",
+    `表 ${tables} 個`,
+    `会議へのリンク ${links} 件`,
+    `${html.length} 文字`,
+  ];
+  return parts.join("・");
+}
+
 export function buildCalendarMonthUrl(
   template: string,
   year: number,

@@ -1,4 +1,6 @@
 import { readFileSync } from "node:fs";
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { importSiteCalendar } from "../../admin/src/features/council-meetings/server/services/import-site-calendar";
@@ -178,5 +180,65 @@ describe("importSiteCalendar（会議予定の自動取得 → 仮登録）", ()
     });
     expect(result.ok).toBe(false);
     expect(await siteMeetings()).toEqual(before);
+  });
+
+  it("差し替えなしの本物の HTTP でも読める（User-Agent・文字コードの扱いを含めて）", async () => {
+    const server = createServer((req, res) => {
+      if (req.url === "/top/2026/11/") {
+        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+        res.end(TOP_2026_11);
+        return;
+      }
+      if (req.url?.startsWith("/top/")) {
+        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+        res.end("<table><tr><td>1</td></tr></table>");
+        return;
+      }
+      const id = req.url?.match(/doc-calendar\/(\d+)\//)?.[1] ?? "";
+      if (DETAILS[id]) {
+        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+        res.end(DETAILS[id]);
+        return;
+      }
+      res.writeHead(404);
+      res.end();
+    });
+    await new Promise<void>((resolve) =>
+      server.listen(0, "127.0.0.1", resolve)
+    );
+    const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+    try {
+      await adminClient.from("site_settings").upsert(
+        {
+          key: "import",
+          value: {
+            ...((previousImport as object | null) ?? {}),
+            calendar_month_url: `${origin}/top/{yyyy}/{mm}/`,
+          },
+        },
+        { onConflict: "key" }
+      );
+      const result = await importSiteCalendar({
+        triggeredBy: null,
+        today: "2026-11-06",
+        wait: noWait,
+      });
+      expect(result.error).toBeUndefined();
+      expect(result.ok).toBe(true);
+      expect(result.added).toBe(8);
+      const { data } = await adminClient
+        .from("council_meetings")
+        .select("meeting_date, name, start_time")
+        .like("source_url", `${origin}/%`)
+        .eq("meeting_date", "2026-11-17")
+        .single();
+      expect(data).toMatchObject({ name: "本会議", start_time: "午前9時30分" });
+    } finally {
+      await adminClient
+        .from("council_meetings")
+        .delete()
+        .like("source_url", `${origin}/%`);
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
   });
 });
