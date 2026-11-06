@@ -51,7 +51,6 @@ export function BillCreateForm({
       shugiin_url: null,
       slug: null,
       is_featured: false,
-      is_review_completed: false,
       article_kind: "standard",
       diet_session_id: defaultDietSessionId,
       knowledge_source: "",

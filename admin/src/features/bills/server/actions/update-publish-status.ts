@@ -28,7 +28,7 @@ const PUBLISH_STATUSES: BillPublishStatus[] = [
 
 /**
  * 議案の公開ステータスを変える唯一の経路。
- * published にするときは公開ゲート（レビュー完了）を確認し、確認者・公開者を記録する。
+ * published にするときは公開ゲート（記事の確認済み）を確かめ、確認者・公開者を記録する。
  * DB のトリガー enforce_publish_gate でも同じ条件を守っている。
  */
 export async function updatePublishStatusAction(
@@ -66,7 +66,7 @@ export async function updatePublishStatusAction(
         };
       }
       await updateBillPublishStatus(billId, "published", {
-        // 公開操作は管理者による確認でもある。レビュー完了時の記録が無ければここで残す
+        // 公開操作は管理者による確認でもある。確認済みにしたときの記録が無ければここで残す
         reviewed_by: bill.reviewed_by ?? admin.id,
         reviewed_at: bill.reviewed_at ?? now,
         published_by: admin.id,

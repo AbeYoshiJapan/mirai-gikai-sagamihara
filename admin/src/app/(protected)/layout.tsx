@@ -1,4 +1,5 @@
 import { Home, User } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogoutButton } from "@/features/auth/client/components/logout-button";
@@ -6,6 +7,14 @@ import { getCurrentAdmin } from "@/features/auth/server/lib/auth-server";
 import { loadSiteSettings } from "@/features/site-settings/server/loaders/load-site-settings";
 import { routes } from "@/lib/routes";
 import { NavigationLinks } from "./layout/navigation-links";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await loadSiteSettings();
+  return {
+    title: `管理画面 | ${settings.site.name}`,
+    description: `${settings.site.name}の管理者向け画面`,
+  };
+}
 
 export default async function MainLayout({
   children,

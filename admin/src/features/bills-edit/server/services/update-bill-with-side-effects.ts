@@ -19,7 +19,7 @@ import {
 } from "../repositories/bill-edit-repository";
 
 export type UpdateBillOptions = {
-  /** 記事レビュー完了にした管理者。MCP など管理者以外の経路では渡さない */
+  /** 記事を確認済みにした管理者。MCP など管理者以外の経路では渡さない */
   reviewerId?: string;
 };
 
@@ -39,7 +39,7 @@ export async function updateBillWithSideEffects(
     Object.entries(rest).filter(([, value]) => value !== undefined)
   );
 
-  // レビュー完了にした瞬間を確認記録として残す（公開ゲートの条件）。
+  // 確認済みにした瞬間を確認記録として残す（公開ゲートの条件）。
   // 完了を外したときは DB トリガーが reviewed_by / reviewed_at を消す。
   let reviewRecord: { reviewed_by: string | null; reviewed_at: string } | null =
     null;
@@ -47,7 +47,7 @@ export async function updateBillWithSideEffects(
     const unresolved = await countUnresolvedReviewPointsForBill(id);
     if (unresolved > 0) {
       throw new Error(
-        `AI 生成の「要確認」が ${unresolved} 件残っています。生成画面で確認してからレビュー完了にしてください`
+        `AI 生成の「要確認」が ${unresolved} 件残っています。生成画面で確かめてから「記事を確認しました」を押してください`
       );
     }
     const current = await findBillById(id);

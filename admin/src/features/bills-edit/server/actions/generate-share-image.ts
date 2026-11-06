@@ -9,10 +9,9 @@ import {
   listMissingShareImageAssets,
   parseShareImageInput,
 } from "../../shared/utils/share-image";
-import {
-  findBillIdById,
-  uploadBillThumbnailFile,
-} from "../repositories/bill-edit-repository";
+import { buildShareImageSpec } from "../../shared/utils/share-image-refresh";
+import { findBillIdById } from "../repositories/bill-edit-repository";
+import { saveGeneratedShareImage } from "../services/share-image-refresh";
 import {
   loadShareImageAssets,
   renderShareImage,
@@ -58,16 +57,19 @@ export async function generateShareImage(
       };
     }
 
+    // 右上のタブはサイト設定のサイト名。名前が変わったら自動で作り直す（share-image-refresh）
     const { settings } = await loadSiteSettings();
-    const image = await renderShareImage({
-      ...input,
-      assets,
-      siteName: settings.site.name,
-    });
-    const url = await uploadBillThumbnailFile({
-      fileName: `share_${billId}_${Date.now()}.png`,
-      body: await image.arrayBuffer(),
-      contentType: "image/png",
+    const siteName = settings.site.name;
+    const image = await renderShareImage({ ...input, assets, siteName });
+    const url = await saveGeneratedShareImage({
+      billId,
+      png: await image.arrayBuffer(),
+      spec: buildShareImageSpec({
+        title,
+        photoUrl,
+        siteName,
+        now: new Date(),
+      }),
     });
     return { url };
   } catch (error) {

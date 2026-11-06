@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BillSourcesForm } from "@/features/bill-sources/client/components/bill-sources-form";
 import { getBillSources } from "@/features/bill-sources/server/loaders/get-bill-sources";
+import { ArticleConfirmationPanel } from "@/features/bills-edit/client/components/article-confirmation-panel";
 import { BillEditForm } from "@/features/bills-edit/client/components/bill-edit-form";
 import { BillTagsForm } from "@/features/bills-edit/client/components/bill-tags-form";
 import { getBillById } from "@/features/bills-edit/server/loaders/get-bill-by-id";
 import { getBillContents } from "@/features/bills-edit/server/loaders/get-bill-contents";
 import { getBillTagIds } from "@/features/bills-edit/server/loaders/get-bill-tag-ids";
+import { loadArticleConfirmation } from "@/features/bills-edit/server/loaders/load-article-confirmation";
 import { loadCommittees } from "@/features/committees/server/loaders/load-committees";
 import { loadDietSessions } from "@/features/diet-sessions/server/loaders/load-diet-sessions";
 import { StanceForm } from "@/features/mirai-stance/client/components/stance-form";
@@ -47,6 +49,7 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
     notFound();
   }
 
+  const confirmation = await loadArticleConfirmation(bill);
   const normalTitle = contents.find(
     (content) => content.difficulty_level === "normal"
   )?.title;
@@ -69,6 +72,13 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
       </div>
 
       <div className="space-y-6">
+        <ArticleConfirmationPanel
+          billId={bill.id}
+          state={confirmation}
+          isPublished={bill.publish_status === "published"}
+          articleKind={bill.article_kind}
+          showContentsLink
+        />
         <BillEditForm
           bill={bill}
           dietSessions={dietSessions}

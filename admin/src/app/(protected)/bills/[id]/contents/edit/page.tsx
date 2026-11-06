@@ -2,9 +2,11 @@ import { Sparkles } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ArticleConfirmationPanel } from "@/features/bills-edit/client/components/article-confirmation-panel";
 import { BillContentsEditForm } from "@/features/bills-edit/client/components/bill-contents-edit-form";
 import { getBillById } from "@/features/bills-edit/server/loaders/get-bill-by-id";
 import { getBillContents } from "@/features/bills-edit/server/loaders/get-bill-contents";
+import { loadArticleConfirmation } from "@/features/bills-edit/server/loaders/load-article-confirmation";
 import { routes } from "@/lib/routes";
 
 interface BillContentsEditPageProps {
@@ -27,6 +29,7 @@ export default async function BillContentsEditPage({
   }
 
   const bill = billResult;
+  const confirmation = await loadArticleConfirmation(bill);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -38,6 +41,14 @@ export default async function BillContentsEditPage({
             AI で解説を生成
           </Link>
         </Button>
+      </div>
+      <div className="mb-6">
+        <ArticleConfirmationPanel
+          billId={bill.id}
+          state={confirmation}
+          isPublished={bill.publish_status === "published"}
+          articleKind={bill.article_kind}
+        />
       </div>
       <BillContentsEditForm bill={bill} billContents={billContents} />
     </div>

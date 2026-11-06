@@ -68,7 +68,7 @@
 | `OPEN_DATA_RATE_LIMIT_PER_IP` / `OPEN_DATA_RATE_LIMIT_GLOBAL` | ○ | − | オープンデータ API の上限（既定値のままでよい） |
 | `ADMIN_MCP_TOKEN` | − | ○ | Claude Code などから `/api/mcp` を使うときだけ。未設定なら MCP は全部拒否されます（通常は入れません。入れても MCP からは公開できず、書き込んだ議案は確認前の下書きに戻ります） |
 | `ADMIN_GOOGLE_LOGIN` | − | ○ | Supabase に Google プロバイダを設定し、ログイン画面に「Google でログイン」を出すときだけ `true` |
-| `CRON_SECRET` | − | ○ | 会議予定の毎日の自動取得（Vercel Cron）を動かす合言葉。32 文字以上のランダム文字列。未設定なら自動取得は止まり、管理画面の「公式サイトから取得」ボタンだけ使えます |
+| `CRON_SECRET` | − | ○ | 毎日の自動処理（Vercel Cron：会議予定の自動取得と、シェア画像の見直し）を動かす合言葉。32 文字以上のランダム文字列。未設定なら自動処理は止まり、管理画面の「公式サイトから取得」ボタンだけ使えます |
 | `CHAT_*`・`LANGFUSE_*`・`GCP_*`・`SUPABASE_AUTH_EXTERNAL_GOOGLE_*`・`ADMIN_AUTH_CALLBACK_URL` | − | − | 本家由来。チャット・Langfuse・Cloud Run・Google ログインは使いません（`ADMIN_AUTH_CALLBACK_URL` はローカルの config.toml 用） |
 
 ## 3. 管理画面で初期設定 → 取込 → 公開
@@ -97,6 +97,7 @@
   それより前の push では admin が自動デプロイされていないことがあるので、admin の Deployments で最新のコミットが Ready になっているか確かめ、
   なっていなければ最新のデプロイを Redeploy します。
 - 会議予定の自動取得は `admin/vercel.json` の `crons`（毎日 21:00 UTC＝日本時間 6:00）です。Hobby プランの Cron は 1 日 1 回で、指定した時刻から 1 時間以内のどこかで動きます。
+- シェア画像の見直しも `crons`（毎日 21:30 UTC＝日本時間 6:30）です。サイト名を変えると保存した直後にもシェア画像を作り直しますが、そのとき時間切れや失敗で残ったものをここで作り直します（テンプレートから作った画像だけ。手でアップロードした画像には触れません）。
   結果は管理画面の「会議予定」の「最後の取得」に出ます。止めたいときは「サイト設定」→「取込」→「毎日自動で取得して仮登録する」をオフにします。
 - 掲載方針（公開するのは運営者が確認したものだけ）の仕組みは README の「掲載方針」にまとめています。公開サイトでは `/editorial-policy` に示しています。
 - 本家由来の `deploy.yml`・`deploy_worker.yml`・`supabase_preview.yml` は手動実行だけにしてあり、Cloud Run の worker（トピック分析）は使いません。

@@ -163,7 +163,8 @@ export function ShareImageGenerator({
         <p className="text-sm text-muted-foreground">
           議案名を、画像に収まる位置で自動で改行して入れています。改行の位置や言い回しは自由に直せます（入れた改行はそのまま使い、長すぎる行は自動で折り返します）。
           {SHARE_IMAGE_TITLE_MAX_LINES}行・改行を除いて
-          {SHARE_IMAGE_TITLE_MAX_LENGTH}文字まで。
+          {SHARE_IMAGE_TITLE_MAX_LENGTH}
+          文字まで。右上のタブにはサイト設定のサイト名が入り、サイト名を変えるとこの画像も自動で作り直します。
         </p>
         <Button
           type="button"

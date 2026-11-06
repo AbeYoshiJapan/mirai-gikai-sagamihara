@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mapBillDbError } from "./map-bill-db-error";
 
 describe("mapBillDbError", () => {
-  it("AI自動生成版とレビュー完了の制約違反は日本語の説明を返す", () => {
+  it("AI自動生成版と確認済みの制約違反は日本語の説明を返す", () => {
     const error = {
       code: "23514",
       message:
@@ -10,7 +10,7 @@ describe("mapBillDbError", () => {
     };
 
     expect(mapBillDbError(error, "update")).toBe(
-      "AI自動生成版の記事はレビュー完了にできません。レビュー完了にする場合は、記事の種別を通常版に変更してください"
+      "AI自動生成版の記事は確認済みにできません。記事の種別を通常版に変えて保存してから、「記事を確認しました」を押してください"
     );
   });
 

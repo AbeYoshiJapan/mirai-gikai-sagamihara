@@ -26,11 +26,11 @@ import { jsonResult } from "../utils/json-result";
 
 /**
  * MCP からの書き込みは、運営者がまだ確認していない変更として扱う。
- * 書き込む「前」に議案をレビュー未完了に戻し、公開中なら下書きに戻す
+ * 書き込む「前」に議案を未確認に戻し、公開中なら下書きに戻す
  * （公開中のものは、すべて運営者が管理画面で確認したものに限る）。
  */
 const UNREVIEWED_NOTE =
-  "書き込んだ議案はレビュー未完了に戻り、公開中なら下書きに戻る（運営者が管理画面で確認し直してから公開する）。";
+  "書き込んだ議案は未確認（記事の確認が外れた状態）に戻り、公開中なら下書きに戻る（運営者が管理画面で確認し直してから公開する）。";
 
 export function registerBillsTools(server: McpServer): void {
   server.registerTool(
@@ -126,7 +126,7 @@ export function registerBillsTools(server: McpServer): void {
     "update_bill",
     {
       title: "議案を更新",
-      description: `指定IDの議案のメタ情報（name, bill_kind, stage 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。公開ステータスと記事レビュー完了は管理画面からだけ変えられる。${UNREVIEWED_NOTE}`,
+      description: `指定IDの議案のメタ情報（name, bill_kind, stage 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。公開ステータスと記事の確認（確認済み）は管理画面からだけ変えられる。${UNREVIEWED_NOTE}`,
       inputSchema: {
         billId: z.string().uuid(),
         ...billUpdateSchema.omit({ is_review_completed: true }).partial().shape,

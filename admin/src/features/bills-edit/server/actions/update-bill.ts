@@ -8,7 +8,9 @@ import { updateBillWithSideEffects } from "../services/update-bill-with-side-eff
 export async function updateBill(id: string, input: BillUpdateInput) {
   try {
     const admin = await requireAdmin();
-    const validatedData = billUpdateSchema.parse(input);
+    // 記事の確認はボタン（article-confirmation）だけで変える。フォームの保存では触らない
+    const { is_review_completed: _ignored, ...validatedData } =
+      billUpdateSchema.parse(input);
     await updateBillWithSideEffects(id, validatedData, {
       reviewerId: admin.id,
     });

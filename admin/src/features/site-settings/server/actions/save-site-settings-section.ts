@@ -12,6 +12,7 @@ import {
 } from "@mirai-gikai/shared/site-settings/schema";
 import { ZodError } from "zod";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
+import { scheduleShareImageRefresh } from "@/features/bills-edit/server/services/share-image-refresh";
 import {
   countCommittees,
   insertCommitteeRecords,
@@ -72,6 +73,8 @@ export async function saveSiteSettingsSection<S extends SiteSettingsSection>(
     });
 
     await invalidateWebCache([WEB_CACHE_TAGS.SITE_SETTINGS]);
+    // サイト名が変わったら、シェア画像も新しい名前で作り直す（応答の後に行う）
+    if (section === "site") scheduleShareImageRefresh();
     return { data: parsed };
   } catch (error) {
     console.error("Save site settings error:", error);
@@ -140,6 +143,7 @@ export async function saveSiteSettingsSections(
       WEB_CACHE_TAGS.SITE_SETTINGS,
       WEB_CACHE_TAGS.BILLS,
     ]);
+    if ("site" in parsedSections) scheduleShareImageRefresh();
     return {};
   } catch (error) {
     console.error("Save site settings error:", error);

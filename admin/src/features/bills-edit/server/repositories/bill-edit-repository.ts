@@ -232,3 +232,47 @@ export function getBillThumbnailPublicUrl(fileName: string): string {
   return supabase.storage.from(BILL_THUMBNAILS_BUCKET).getPublicUrl(fileName)
     .data.publicUrl;
 }
+
+/** 議案の画像フォルダにあるテキストファイル（シェア画像の作り方など）。無ければ null */
+export async function downloadBillThumbnailText(
+  fileName: string
+): Promise<string | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.storage
+    .from(BILL_THUMBNAILS_BUCKET)
+    .download(fileName);
+  if (error || !data) return null;
+  return data.text();
+}
+
+/** シェア画像を設定している議案 */
+export async function findBillsWithShareThumbnail(): Promise<
+  { id: string; share_thumbnail_url: string | null }[]
+> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("bills")
+    .select("id, share_thumbnail_url")
+    .not("share_thumbnail_url", "is", null);
+  if (error) {
+    throw new Error(
+      `Failed to fetch bills with share images: ${error.message}`
+    );
+  }
+  return data ?? [];
+}
+
+/** シェア画像だけを差し替える（作り直したとき） */
+export async function updateBillShareThumbnailUrl(
+  billId: string,
+  url: string
+): Promise<void> {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bills")
+    .update({ share_thumbnail_url: url })
+    .eq("id", billId);
+  if (error) {
+    throw new Error(`Failed to update share image: ${error.message}`);
+  }
+}

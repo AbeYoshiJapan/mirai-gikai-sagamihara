@@ -8,15 +8,13 @@ import {
  * 結論が出ていない議案が、いまどの状態にあるか。
  *
  * - in_session：定例会議の期間中で、審議が進んでいる（審議中）
- * - carried_over：定例会議と定例会議の間で、前の定例会議から結論が持ち越されている（継続中）
- * - upcoming：次の定例会議に向けて出された議案で、まだ開会前（審議予定）
+ * - carried_over：定例会議と定例会議の間で、前の定例会議までに出された議案の結論が持ち越されている（継続中）
+ * - upcoming：前の定例会議が終わった後に出され、次の定例会議を待っている（審議予定）
  *
- * 期間は会期管理の「定例会議などの期間」から読む。期間がどこにも入っていなければ、会期で判断する。
+ * 境目は、会期管理の「定例会議などの期間」の終了日。日数の決め打ちはしない。
+ * 期間がどこにも入っていなければ、会期で判断する。
  */
 export type DeliberationTiming = "in_session" | "carried_over" | "upcoming";
-
-/** 開会のこの日数前より後に出された議案は、次の定例会議の議案（審議予定）とみなす */
-export const UPCOMING_LEAD_DAYS = 14;
 
 export type TimelineSessionInput = {
   id: string;
@@ -80,11 +78,39 @@ export function toJstDateKeyOf(value: string | null | undefined): string | null 
   return new Date(time + JST_OFFSET_MS).toISOString().slice(0, 10);
 }
 
-/** `YYYY-MM-DD` を日数だけずらす */
-function shiftDays(dateKey: string, days: number): string {
-  const date = new Date(`${dateKey}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
+/** 今日より前に終わった定例会議などの期間のうち、いちばん最近のもの */
+function findLastEndedPeriod(
+  periods: MeetingPeriod[],
+  today: string
+): MeetingPeriod | null {
+  let last: MeetingPeriod | null = null;
+  for (const p of periods) {
+    if (p.end_date < today && (!last || p.end_date > last.end_date)) last = p;
+  }
+  return last;
+}
+
+type TimelineSession = DeliberationTimeline["sessions"][number];
+
+function findBillSession(
+  bill: { diet_session_id?: string | null },
+  timeline: DeliberationTimeline
+): TimelineSession | null {
+  return timeline.sessions.find((s) => s.id === bill.diet_session_id) ?? null;
+}
+
+/** アクティブな会期より前の会期の議案か（定例会議ごとに会期を作っている場合の持ち越し） */
+function isFromEarlierSession(
+  session: TimelineSession | null,
+  timeline: DeliberationTimeline
+): boolean {
+  const active = timeline.activeSession;
+  return (
+    session !== null &&
+    active !== null &&
+    session.id !== active.id &&
+    session.start_date < active.start_date
+  );
 }
 
 export function getDeliberationTiming(
@@ -96,6 +122,7 @@ export function getDeliberationTiming(
 ): DeliberationTiming | null {
   const { today, periods } = timeline;
   const submitted = toJstDateKeyOf(bill.submitted_date);
+  const session = findBillSession(bill, timeline);
 
   if (periods.length > 0) {
     if (periods.some((p) => p.start_date <= today && today <= p.end_date)) {
@@ -103,29 +130,19 @@ export function getDeliberationTiming(
     }
     if (!submitted) return null;
     if (submitted > today) return "upcoming";
-    const next = periods.find((p) => p.start_date > today);
-    if (
-      next &&
-      submitted >= shiftDays(next.start_date, -UPCOMING_LEAD_DAYS)
-    ) {
-      return "upcoming";
+    // 前の定例会議が終わった後に出たものは次を待つ（審議予定）。
+    // 前の定例会議の最終日までに出ていて結論がないものは持ち越し（継続中）
+    const lastEnded = findLastEndedPeriod(periods, today);
+    if (lastEnded) {
+      return submitted > lastEnded.end_date ? "upcoming" : "carried_over";
     }
-    return "carried_over";
+    // 終わった定例会議の期間がまだ入っていない：前の会期の議案は持ち越し、ほかは次を待つ
+    return isFromEarlierSession(session, timeline) ? "carried_over" : "upcoming";
   }
 
   // 期間が入っていないとき：会期で判断する
-  const session = timeline.sessions.find(
-    (s) => s.id === bill.diet_session_id
-  );
   if (!session) return null;
-  const active = timeline.activeSession;
-  if (
-    active &&
-    session.id !== active.id &&
-    session.start_date < active.start_date
-  ) {
-    return "carried_over";
-  }
+  if (isFromEarlierSession(session, timeline)) return "carried_over";
   if (today < session.start_date) return "upcoming";
   if (session.end_date < today) return "carried_over";
   return "in_session";

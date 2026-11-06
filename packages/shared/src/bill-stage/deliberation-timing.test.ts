@@ -40,16 +40,58 @@ describe("getDeliberationTiming（期間を入れている場合）", () => {
     expect(timing("2026-09-10", "2026-08-27")).toBe("in_session");
   });
 
-  it("次の定例会議に向けて出された議案（開会2週間前以降・提出日が先）は「審議予定」", () => {
-    // 議運で配られた日（11/10）や、本会議に上程される日（11/17）
+  it("前の定例会議が終わった後に出た議案は、いつ出たかに関係なく「審議予定」", () => {
+    // 9月定例会議（10/2 まで）の翌日以降に出たもの
+    expect(timing("2026-11-12", "2026-10-03")).toBe("upcoming");
+    expect(timing("2026-11-12", "2026-10-20")).toBe("upcoming");
     expect(timing("2026-11-12", "2026-11-10")).toBe("upcoming");
+    // 提出日が先（本会議に上程される日）
     expect(timing("2026-11-07", "2026-11-17")).toBe("upcoming");
-    // 開会の2週間前より前に出たものは持ち越し
-    expect(timing("2026-11-12", "2026-10-20")).toBe("carried_over");
+  });
+
+  it("前の定例会議の最終日までに出ていた議案は「継続中」", () => {
+    expect(timing("2026-11-12", "2026-10-02")).toBe("carried_over");
   });
 
   it("提出日が分からなければ決めない", () => {
     expect(timing("2026-11-07", null)).toBeNull();
+  });
+
+  it("終わった定例会議の期間が入っていなければ、次の定例会議を待つ議案として「審議予定」", () => {
+    const onlyDecember: TimelineSessionInput = {
+      ...YEAR,
+      meeting_periods: [
+        { name: "12月定例会議", start_date: "2026-11-17", end_date: "2026-12-18" },
+      ],
+    };
+    expect(timing("2026-11-07", "2026-09-30", [onlyDecember])).toBe(
+      "upcoming"
+    );
+  });
+
+  it("終わった定例会議の期間が入っていなくても、前の会期の議案は「継続中」", () => {
+    const sept: TimelineSessionInput = {
+      id: "sept",
+      start_date: "2026-08-27",
+      end_date: "2026-10-02",
+      is_active: false,
+      meeting_periods: [],
+    };
+    const dec: TimelineSessionInput = {
+      id: "dec",
+      start_date: "2026-11-17",
+      end_date: "2026-12-18",
+      is_active: true,
+      meeting_periods: [
+        { name: "12月定例会議", start_date: "2026-11-17", end_date: "2026-12-18" },
+      ],
+    };
+    expect(timing("2026-11-07", "2026-09-30", [sept, dec], "sept")).toBe(
+      "carried_over"
+    );
+    expect(timing("2026-11-07", "2026-11-04", [sept, dec], "dec")).toBe(
+      "upcoming"
+    );
   });
 
   it("期間は会期をまたいで合わせて使う（定例会議ごとに会期を作った場合も）", () => {

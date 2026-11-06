@@ -21,6 +21,8 @@ export async function createBill(input: BillCreateInput) {
 
     const insertData = {
       ...validatedData,
+      // 新しい議案は未確認から始める（確認は編集画面の「記事を確認しました」ボタンで行う）
+      is_review_completed: false,
       submitted_date: validatedData.submitted_date
         ? `${validatedData.submitted_date}T00:00:00+09:00`
         : null,

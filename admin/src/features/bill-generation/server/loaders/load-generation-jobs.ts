@@ -53,7 +53,7 @@ export async function loadMonthlyGenerationCost(): Promise<number> {
 
 /**
  * 下書きに反映済みの生成のうち、未解決の「要確認」の数。
- * 0 でなければ記事レビュー完了にも公開にもできない。
+ * 0 でなければ記事を確認済みにも公開にもできない。
  */
 export async function countUnresolvedReviewPointsForBill(
   billId: string

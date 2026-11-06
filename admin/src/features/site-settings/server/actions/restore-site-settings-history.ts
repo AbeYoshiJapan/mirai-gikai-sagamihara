@@ -6,6 +6,7 @@ import {
   type SiteSettingsSection,
 } from "@mirai-gikai/shared/site-settings/schema";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
+import { scheduleShareImageRefresh } from "@/features/bills-edit/server/services/share-image-refresh";
 import {
   invalidateWebCache,
   WEB_CACHE_TAGS,
@@ -43,6 +44,8 @@ export async function restoreSiteSettingsHistory(
     });
 
     await invalidateWebCache([WEB_CACHE_TAGS.SITE_SETTINGS]);
+    // サイト名が戻ったら、シェア画像もその名前で作り直す（応答の後に行う）
+    if (section === "site") scheduleShareImageRefresh();
     return {};
   } catch (error) {
     console.error("Restore site settings error:", error);

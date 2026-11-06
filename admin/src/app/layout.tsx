@@ -12,9 +12,9 @@ const isDev = process.env.NODE_ENV === "development";
 const isStaging = process.env.VERCEL_TARGET_ENV === "staging";
 
 export const metadata: Metadata = {
-  // サイト名はログイン後のヘッダーで DB の設定から表示する（ここは認証前にも出るので固定）
-  title: "管理画面 | みらい議会",
-  description: "みらい議会（フォーク版）の管理者向け画面",
+  // サイト名はサイト設定から出す（ログイン画面と (protected) のレイアウトで上書きする）
+  title: "管理画面",
+  description: "管理者向け画面",
   icons: {
     icon: isDev
       ? "/icons/pwa/icon_dev_192_v3.png"

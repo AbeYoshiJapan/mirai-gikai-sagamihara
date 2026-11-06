@@ -95,7 +95,8 @@ const billBaseSchema = z.object({
     })
     .optional(),
   is_featured: z.boolean(),
-  is_review_completed: z.boolean(),
+  /** 記事の確認。管理画面では「記事の確認」欄のボタンだけで変える（フォームは送らない） */
+  is_review_completed: z.boolean().optional(),
   article_kind: z.enum(["standard", "ai_generated"]).optional(),
   diet_session_id: z.string().uuid().nullable().optional(),
   slug: z
