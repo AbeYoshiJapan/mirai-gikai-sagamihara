@@ -15,7 +15,11 @@ import {
 import {
   buildShareImageFileName,
   computeShareImageStamp,
+  decideMorningShareImageRefresh,
+  isShareImageRefreshComplete,
+  parseShareImageRefreshMarker,
   parseShareImageSpec,
+  type ShareImageRefreshResult,
   type ShareImageRefreshTarget,
   type ShareImageSpec,
   selectShareImagesToRefresh,
@@ -27,6 +31,11 @@ import {
   updateBillShareThumbnailUrl,
   uploadBillThumbnailFile,
 } from "../repositories/bill-edit-repository";
+import {
+  deleteShareImageRefreshMarker,
+  findShareImageRefreshMarkerValue,
+  saveShareImageRefreshMarker,
+} from "../repositories/share-image-refresh-marker-repository";
 import {
   loadShareImageAssets,
   renderShareImage,
@@ -60,15 +69,6 @@ export async function saveGeneratedShareImage(params: {
     contentType: "image/png",
   });
 }
-
-export type ShareImageRefreshResult = {
-  /** いまのサイト名になっていなかった画像の数 */
-  outdated: number;
-  updated: number;
-  failed: number;
-  /** 時間切れで次に回した数 */
-  remaining: number;
-};
 
 async function regenerateShareImage(
   target: ShareImageRefreshTarget,
@@ -107,11 +107,12 @@ async function regenerateShareImage(
 
 /**
  * サイト設定のサイト名と違う名前で作ったシェア画像を、いまの名前で作り直す。
- * 手でアップロードした画像には触れない。時間（budgetMs）を超えた分は次の機会
- * （次の設定保存か、毎朝の自動処理）に回す。前の画像は消さない（すでにシェアされた投稿が参照しているため）。
+ * 手でアップロードした画像には触れない。時間（budgetMs）を超えた分は次の機会に回す。
+ * 前の画像は消さない（すでにシェアされた投稿が参照しているため）。
+ * onPending は、作り直すものがあるときだけ、作り始める前に呼ぶ。
  */
 export async function refreshShareImagesForSiteName(
-  options: { budgetMs?: number } = {}
+  options: { budgetMs?: number; onPending?: () => Promise<void> } = {}
 ): Promise<ShareImageRefreshResult> {
   const budgetMs = options.budgetMs ?? 40_000;
   const startedAt = Date.now();
@@ -131,6 +132,7 @@ export async function refreshShareImagesForSiteName(
     remaining: 0,
   };
   if (targets.length === 0) return result;
+  await options.onPending?.();
 
   const assets = await loadShareImageAssets();
   if (listMissingShareImageAssets(assets).length > 0) {
@@ -163,12 +165,23 @@ export async function refreshShareImagesForSiteName(
 
 /**
  * 応答を返した後に、シェア画像をいまのサイト名で作り直す（サイト設定を保存したとき用）。
- * 作り直すものが無ければすぐ終わる。
+ * サイト名が変わっていなければ、作り直すものが無いのですぐ終わる。
+ * 作り直すものがあるときは、始める前に朝の見直しの印を付け、残らず終わったら消す
+ * （途中で止まったり失敗したりした分だけ、朝の見直しで作り直す）。
  */
 export function scheduleShareImageRefresh(): void {
   after(async () => {
     try {
-      const result = await refreshShareImagesForSiteName();
+      const result = await refreshShareImagesForSiteName({
+        onPending: () =>
+          saveShareImageRefreshMarker({
+            since: new Date().toISOString(),
+            attempts: 0,
+          }),
+      });
+      if (isShareImageRefreshComplete(result)) {
+        await deleteShareImageRefreshMarker();
+      }
       if (result.outdated > 0) {
         console.info("[ShareImageRefresh]", result);
       }
@@ -176,4 +189,42 @@ export function scheduleShareImageRefresh(): void {
       console.error("[ShareImageRefresh] Failed:", error);
     }
   });
+}
+
+export type MorningShareImageRefreshResult =
+  | { status: "skipped" }
+  | { status: "gave_up"; attempts: number }
+  | ({ status: "ran" } & ShareImageRefreshResult);
+
+/**
+ * 朝の見直し（Vercel Cron）。サイト名を変えたときに作り直しきれなかった分があるときだけ動く。
+ * 印が無ければ、議案も画像も読まずにすぐ終わる。
+ */
+export async function runMorningShareImageRefresh(): Promise<MorningShareImageRefreshResult> {
+  const marker = parseShareImageRefreshMarker(
+    await findShareImageRefreshMarkerValue()
+  );
+  const decision = decideMorningShareImageRefresh(marker);
+  if (!marker || decision === "skip") return { status: "skipped" };
+  if (decision === "give_up") {
+    await deleteShareImageRefreshMarker();
+    console.error(
+      `[ShareImageRefresh] 作り直しが ${marker.attempts} 回続けて進まなかったため、朝の見直しをやめます`
+    );
+    return { status: "gave_up", attempts: marker.attempts };
+  }
+
+  // 途中で止まっても回数が数えられるよう、始める前に 1 回分を足しておく
+  await saveShareImageRefreshMarker({
+    ...marker,
+    attempts: marker.attempts + 1,
+  });
+  const result = await refreshShareImagesForSiteName({ budgetMs: 50_000 });
+  if (isShareImageRefreshComplete(result)) {
+    await deleteShareImageRefreshMarker();
+  } else if (result.updated > 0) {
+    // 進んだ朝は数えない（画像が多くて何朝かかかる場合に、途中であきらめないため）
+    await saveShareImageRefreshMarker({ ...marker, attempts: 0 });
+  }
+  return { status: "ran", ...result };
 }

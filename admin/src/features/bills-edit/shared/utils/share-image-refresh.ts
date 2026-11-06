@@ -3,7 +3,8 @@ import { BILL_THUMBNAILS_BUCKET } from "../constants";
 
 /**
  * シェア画像のテンプレート（枠・タブ・ロゴの見た目）の版。
- * 見た目を変えたら上げる。上げると、作成済みのシェア画像は自動で作り直される。
+ * 見た目を変えたら上げる。上げた後にサイト設定の「サイト」を一度保存すると、
+ * 作成済みのシェア画像が新しい見た目で作り直される。
  */
 export const SHARE_IMAGE_TEMPLATE_VERSION = 1;
 
@@ -134,4 +135,57 @@ export function parseShareImageSpec(text: string): ShareImageSpec | null {
   } catch {
     return null;
   }
+}
+
+export type ShareImageRefreshResult = {
+  /** いまのサイト名になっていなかった画像の数 */
+  outdated: number;
+  updated: number;
+  failed: number;
+  /** 時間切れで次に回した数 */
+  remaining: number;
+};
+
+/** 作り直しが残らず終わったか（作り直すものが無かった場合も含む） */
+export function isShareImageRefreshComplete(
+  result: ShareImageRefreshResult
+): boolean {
+  return (
+    result.outdated === 0 || (result.remaining === 0 && result.failed === 0)
+  );
+}
+
+/**
+ * 朝の見直しの印。サイト名を変えたときに作り直しが要り、まだ終わっていないことを表す。
+ * attempts は、作り直しが進まなかった朝の回数。
+ */
+const shareImageRefreshMarkerSchema = z.object({
+  since: z.string(),
+  attempts: z.number().int().min(0),
+});
+
+export type ShareImageRefreshMarker = z.infer<
+  typeof shareImageRefreshMarkerSchema
+>;
+
+export function parseShareImageRefreshMarker(
+  value: unknown
+): ShareImageRefreshMarker | null {
+  const result = shareImageRefreshMarkerSchema.safeParse(value);
+  return result.success ? result.data : null;
+}
+
+/** 作り直しが進まない朝がこの回数続いたら、朝の見直しをやめる */
+export const SHARE_IMAGE_REFRESH_MAX_ATTEMPTS = 3;
+
+/**
+ * 朝の見直しをするか。印が無い（サイト名が変わっていない、または作り直しが終わっている）
+ * なら何もしない。
+ */
+export function decideMorningShareImageRefresh(
+  marker: ShareImageRefreshMarker | null
+): "skip" | "give_up" | "run" {
+  if (!marker) return "skip";
+  if (marker.attempts >= SHARE_IMAGE_REFRESH_MAX_ATTEMPTS) return "give_up";
+  return "run";
 }

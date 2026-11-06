@@ -3,8 +3,12 @@ import {
   buildShareImageFileName,
   buildShareImageSpec,
   computeShareImageStamp,
+  decideMorningShareImageRefresh,
+  isShareImageRefreshComplete,
   parseGeneratedShareImageUrl,
+  parseShareImageRefreshMarker,
   parseShareImageSpec,
+  SHARE_IMAGE_REFRESH_MAX_ATTEMPTS,
   selectShareImagesToRefresh,
   shareImageSpecFileName,
 } from "./share-image-refresh";
@@ -119,5 +123,73 @@ describe("シェア画像の作り方（.json）", () => {
     expect(parseShareImageSpec(JSON.stringify(spec))).toEqual(spec);
     expect(parseShareImageSpec("{")).toBeNull();
     expect(parseShareImageSpec(JSON.stringify({ title: "x" }))).toBeNull();
+  });
+});
+
+describe("朝の見直し", () => {
+  const since = "2026-11-07T00:00:00.000Z";
+
+  it("印が無ければ何もしない（サイト名を変えていない・作り直しが終わっている）", () => {
+    expect(decideMorningShareImageRefresh(null)).toBe("skip");
+  });
+
+  it("印があれば作り直し、進まない朝が続いたらやめる", () => {
+    expect(decideMorningShareImageRefresh({ since, attempts: 0 })).toBe("run");
+    expect(
+      decideMorningShareImageRefresh({
+        since,
+        attempts: SHARE_IMAGE_REFRESH_MAX_ATTEMPTS - 1,
+      })
+    ).toBe("run");
+    expect(
+      decideMorningShareImageRefresh({
+        since,
+        attempts: SHARE_IMAGE_REFRESH_MAX_ATTEMPTS,
+      })
+    ).toBe("give_up");
+  });
+
+  it("印の中身が壊れていれば印は無いものとして扱う", () => {
+    expect(parseShareImageRefreshMarker({ since, attempts: 1 })).toEqual({
+      since,
+      attempts: 1,
+    });
+    expect(parseShareImageRefreshMarker({ since })).toBeNull();
+    expect(parseShareImageRefreshMarker(null)).toBeNull();
+  });
+
+  it("残りも失敗も無ければ終わり（作り直すものが無かったときも終わり）", () => {
+    expect(
+      isShareImageRefreshComplete({
+        outdated: 0,
+        updated: 0,
+        failed: 0,
+        remaining: 0,
+      })
+    ).toBe(true);
+    expect(
+      isShareImageRefreshComplete({
+        outdated: 2,
+        updated: 2,
+        failed: 0,
+        remaining: 0,
+      })
+    ).toBe(true);
+    expect(
+      isShareImageRefreshComplete({
+        outdated: 3,
+        updated: 1,
+        failed: 0,
+        remaining: 2,
+      })
+    ).toBe(false);
+    expect(
+      isShareImageRefreshComplete({
+        outdated: 2,
+        updated: 1,
+        failed: 1,
+        remaining: 0,
+      })
+    ).toBe(false);
   });
 });
