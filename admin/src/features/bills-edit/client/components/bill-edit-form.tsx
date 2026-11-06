@@ -71,6 +71,17 @@ export function BillEditForm({
   });
 
   const onSubmit = (data: BillUpdateInput) => {
+    // 公開中の議案で確認を外すと、公開を取り下げて下書きに戻る（DB でも同じ）
+    if (
+      bill.publish_status === "published" &&
+      bill.is_review_completed &&
+      !data.is_review_completed &&
+      !window.confirm(
+        "「記事レビュー完了」を外すと、この議案の公開を取り下げて下書きに戻します。確認し直してから、もう一度公開してください。保存しますか？"
+      )
+    ) {
+      return;
+    }
     handleSubmit(
       () => updateBill(bill.id, data),
       "更新中にエラーが発生しました"

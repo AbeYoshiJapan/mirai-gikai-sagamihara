@@ -168,6 +168,10 @@
       "types": "./src/site-settings/resolve.ts",
       "default": "./src/site-settings/resolve.ts"
     },
+    "./site-settings/locked-features": {
+      "types": "./src/site-settings/locked-features.ts",
+      "default": "./src/site-settings/locked-features.ts"
+    },
     "./site-settings/public": {
       "types": "./src/site-settings/public.ts",
       "default": "./src/site-settings/public.ts"

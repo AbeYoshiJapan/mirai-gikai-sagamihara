@@ -475,6 +475,84 @@ describe("MCP bills tools", () => {
     });
   });
 
+  describe("MCP から書き込むと、公開中の議案は確認前の下書きに戻る", () => {
+    async function fetchState(billId: string) {
+      const { data } = await adminClient
+        .from("bills")
+        .select("publish_status, is_review_completed, reviewed_at")
+        .eq("id", billId)
+        .single();
+      return data;
+    }
+
+    it("update_bill", async () => {
+      const bill = await createTestBill({ publish_status: "published" });
+      billIds.push(bill.id);
+
+      const result = await registry.callTool<{
+        ok: boolean;
+        unpublished: boolean;
+      }>("update_bill", { billId: bill.id, name: "MCP から改名" });
+
+      expect(result).toEqual({ ok: true, unpublished: true });
+      expect(await fetchState(bill.id)).toEqual({
+        publish_status: "draft",
+        is_review_completed: false,
+        reviewed_at: null,
+      });
+    });
+
+    it("update_bill_contents", async () => {
+      const bill = await createTestBill({ publish_status: "published" });
+      billIds.push(bill.id);
+
+      const result = await registry.callTool<{
+        ok: boolean;
+        unpublished: boolean;
+      }>("update_bill_contents", {
+        billId: bill.id,
+        normal: { title: "AI の見出し", summary: "要約", content: "本文" },
+        hard: { title: "", summary: "", content: "" },
+      });
+
+      expect(result).toEqual({ ok: true, unpublished: true });
+      expect((await fetchState(bill.id))?.publish_status).toBe("draft");
+    });
+
+    it("update_bill_tags（差分があるときだけ）", async () => {
+      const bill = await createTestBill({ publish_status: "published" });
+      billIds.push(bill.id);
+      const tag = await createTestTag();
+      tagIds.push(tag.id);
+
+      const same = await registry.callTool<{ unpublished: boolean }>(
+        "update_bill_tags",
+        { billId: bill.id, tagIds: [] }
+      );
+      expect(same.unpublished).toBe(false);
+      expect((await fetchState(bill.id))?.publish_status).toBe("published");
+
+      const changed = await registry.callTool<{ unpublished: boolean }>(
+        "update_bill_tags",
+        { billId: bill.id, tagIds: [tag.id] }
+      );
+      expect(changed.unpublished).toBe(true);
+      expect((await fetchState(bill.id))?.publish_status).toBe("draft");
+    });
+
+    it("下書きの議案は下書きのまま（unpublished: false）", async () => {
+      const bill = await createTestBill({ publish_status: "draft" });
+      billIds.push(bill.id);
+
+      const result = await registry.callTool<{ unpublished: boolean }>(
+        "update_bill",
+        { billId: bill.id, name: "下書きのまま" }
+      );
+      expect(result.unpublished).toBe(false);
+      expect((await fetchState(bill.id))?.publish_status).toBe("draft");
+    });
+  });
+
   describe("update_bill_contents", () => {
     it("normal / hard 両方を upsert する", async () => {
       const bill = await createTestBill();

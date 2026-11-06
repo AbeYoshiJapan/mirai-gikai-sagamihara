@@ -3,6 +3,7 @@ import "server-only";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { StanceInput } from "../../shared/types";
 import { toStanceColumns } from "../../shared/utils/to-stance-columns";
+import { toUnpublishedStanceColumns } from "../../shared/utils/to-unpublished-stance-columns";
 
 export async function findStanceByBillId(billId: string) {
   const supabase = createAdminClient();
@@ -50,16 +51,21 @@ export async function updateMiraiStance(stanceId: string, input: StanceInput) {
 }
 
 /**
- * bill_id をキーにスタンスを atomic に upsert する。
+ * bill_id をキーにスタンスを atomic に upsert する（MCP 用）。必ず非公開で保存する。
  * mirai_stances.bill_id は UNIQUE 制約があるため、onConflict で
  * 「あれば更新／なければ作成」を単一クエリで行い、check-then-act の競合を避ける。
+ *
+ * AI エージェントが書いた賛否を、運営者の確認なしに公開しないため。公開は管理画面で行う。
  */
-export async function upsertMiraiStance(billId: string, input: StanceInput) {
+export async function upsertUnpublishedMiraiStance(
+  billId: string,
+  input: StanceInput
+) {
   const supabase = createAdminClient();
   const { error } = await supabase.from("mirai_stances").upsert(
     {
       bill_id: billId,
-      ...toStanceColumns(input),
+      ...toUnpublishedStanceColumns(input),
       updated_at: new Date().toISOString(),
     },
     { onConflict: "bill_id" }
@@ -102,36 +108,6 @@ export async function findStancesPendingReview(onOrBefore: string) {
   }
 
   return data;
-}
-
-/**
- * 非公開の賛否を公開する。公開確認後に内容が編集されていた場合に
- * 承認されていない内容を公開しないよう、updated_at が一致する場合のみ更新する。
- * 更新できた場合は true を返す。
- */
-export async function publishStanceIfUnchanged(
-  billId: string,
-  expectedUpdatedAt: string
-) {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("mirai_stances")
-    .update({
-      is_published: true,
-      publish_at: null,
-      publish_review_date: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("bill_id", billId)
-    .eq("is_published", false)
-    .eq("updated_at", expectedUpdatedAt)
-    .select("bill_id");
-
-  if (error) {
-    throw new Error(`Failed to publish stance: ${error.message}`);
-  }
-
-  return data.length > 0;
 }
 
 /**

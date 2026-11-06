@@ -160,12 +160,31 @@ export const CATEGORY_LABELS: Record<CouncilMeeting["category"], string> = {
 /** 議会期間に入らない議案・報告（閉会中の委員会など）の見出し。 */
 export const OUTSIDE_PERIOD_LABEL = "議会期間の外（委員会など）";
 
-/** `YYYY-MM-DD` が入る議会期間の名前。どの期間にも入らなければ OUTSIDE_PERIOD_LABEL。 */
+/**
+ * 議案は開会の前（議会運営委員会など）に配られ、その日付で登録されることがある。
+ * 開会日の何日前までなら、その議会期間の議案として扱うか。
+ */
+export const PERIOD_LEAD_DAYS = 14;
+
+/**
+ * `YYYY-MM-DD` が入る議会期間の名前。どの期間にも入らなければ OUTSIDE_PERIOD_LABEL。
+ * どの期間にも入らない日付でも、次の議会期間の開会日の PERIOD_LEAD_DAYS 日前以内なら、
+ * その期間に入れる（開会前に配られた議案を、その定例会議の議案として並べるため）。
+ */
 export function periodLabelFor(date: string, periods: CouncilPeriod[]): string {
-  return (
-    periods.find((p) => p.start_date <= date && date <= p.end_date)?.name ??
-    OUTSIDE_PERIOD_LABEL
+  const containing = periods.find(
+    (p) => p.start_date <= date && date <= p.end_date
   );
+  if (containing) return containing.name;
+  if (!date) return OUTSIDE_PERIOD_LABEL;
+
+  const upcoming = periods
+    .filter((p) => p.start_date > date)
+    .sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
+  if (upcoming && daysBetween(date, upcoming.start_date) <= PERIOD_LEAD_DAYS) {
+    return upcoming.name;
+  }
+  return OUTSIDE_PERIOD_LABEL;
 }
 
 /** ISO の日時を日本時間の `YYYY-MM-DD` にする。 */

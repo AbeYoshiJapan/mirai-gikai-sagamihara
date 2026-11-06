@@ -128,7 +128,7 @@ export default async function Home() {
               <InterviewOpenBillSection bills={interviewOpenBills} />
             )}
 
-            {/* これからの会議（議会サイトの会議日程から取り込み） */}
+            {/* これからの会議（議会の公表日程をもとに、運営者が確認して登録したもの） */}
             {features.schedule && (
               <UpcomingMeetingsSection
                 meetings={takeFirstDays(

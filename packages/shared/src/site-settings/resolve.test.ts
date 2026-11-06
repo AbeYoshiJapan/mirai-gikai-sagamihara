@@ -53,6 +53,14 @@ describe("resolveSiteSettings", () => {
     expect(DEFAULT_SITE_SETTINGS.brand.colors.primary).not.toBe("#2a5ea8");
   });
 
+  it("保存値で AI チャット・AI インタビューが true でも、読み込むと false になる", () => {
+    const { settings } = resolveSiteSettings([
+      { key: "features", value: { ai_chat: true, ai_interview: true } },
+    ]);
+    expect(settings.features.ai_chat).toBe(false);
+    expect(settings.features.ai_interview).toBe(false);
+  });
+
   it("利用者向け AI 機能は既定でオフ", () => {
     expect(DEFAULT_SITE_SETTINGS.features.ai_chat).toBe(false);
     expect(DEFAULT_SITE_SETTINGS.features.ai_interview).toBe(false);
@@ -62,9 +70,18 @@ describe("resolveSiteSettings", () => {
 
 describe("parseSection", () => {
   it("部分入力を既定値で補って返す", () => {
-    const parsed = parseSection("features", { ai_chat: true });
-    expect(parsed.ai_chat).toBe(true);
+    const parsed = parseSection("features", { topic_analysis: true });
+    expect(parsed.topic_analysis).toBe(true);
     expect(parsed.schedule).toBe(DEFAULT_SITE_SETTINGS.features.schedule);
+  });
+
+  it("AI チャット・AI インタビューは、true が送られても false で保存する（掲載方針）", () => {
+    const parsed = parseSection("features", {
+      ai_chat: true,
+      ai_interview: true,
+    });
+    expect(parsed.ai_chat).toBe(false);
+    expect(parsed.ai_interview).toBe(false);
   });
 
   it("不正な URL は拒否する", () => {

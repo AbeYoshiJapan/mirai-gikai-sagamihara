@@ -107,6 +107,41 @@ describe("enforce_publish_gate", () => {
     expect(data?.publish_status).toBe("published");
   });
 
+  it("公開中の議案のレビュー完了を外すと、公開を取り下げて下書きに戻る", async () => {
+    // AI 生成の反映や MCP からの書き込みで本文が未確認に戻ったときの動き
+    const bill = await createTestBill({ publish_status: "published" });
+    billIds.push(bill.id);
+
+    const { data, error } = await adminClient
+      .from("bills")
+      .update({ is_review_completed: false })
+      .eq("id", bill.id)
+      .select()
+      .single();
+
+    expect(error).toBeNull();
+    expect(data?.publish_status).toBe("draft");
+    expect(data?.reviewed_at).toBeNull();
+    // 初めて公開した日時は記録として残す
+    expect(data?.first_published_at).not.toBeNull();
+  });
+
+  it("公開中のまま未確認にはできない（公開状態と確認を同時に指定しても下書きになる）", async () => {
+    const bill = await createTestBill({ publish_status: "published" });
+    billIds.push(bill.id);
+
+    const { data, error } = await adminClient
+      .from("bills")
+      .update({ publish_status: "published", is_review_completed: false })
+      .eq("id", bill.id)
+      .select()
+      .single();
+
+    expect(error).toBeNull();
+    expect(data?.publish_status).toBe("draft");
+    expect(data?.is_review_completed).toBe(false);
+  });
+
   it("下書きに戻してから再公開するには、再び確認が必要", async () => {
     const bill = await createTestBill({ publish_status: "published" });
     billIds.push(bill.id);

@@ -8,6 +8,10 @@ import {
   type WebCacheTag,
 } from "@/lib/utils/cache-invalidation";
 import type { BillUpdateInput } from "../../shared/types";
+import {
+  buildUnreviewUpdate,
+  type UnreviewUpdate,
+} from "../../shared/utils/build-unreview-update";
 import { shouldAutoCloseInterviewOnBillStage } from "../../shared/utils/should-auto-close-interview";
 import {
   findBillById,
@@ -20,7 +24,8 @@ export type UpdateBillOptions = {
 };
 
 /**
- * 議案の更新と、それに伴う副作用（確認記録・インタビュー自動クローズ・キャッシュ無効化）を一括で実行する。
+ * 議案の更新と、それに伴う副作用（確認記録・確認を外したときの公開取り下げ・
+ * インタビュー自動クローズ・キャッシュ無効化）を一括で実行する。
  * admin の server action と MCP の update_bill ツールから共通で呼び出す。
  * 部分更新に対応するため input は Partial で受ける（undefined フィールドは更新対象外）。
  */
@@ -54,8 +59,17 @@ export async function updateBillWithSideEffects(
     }
   }
 
+  // 確認を外したときは、公開中なら公開を取り下げて下書きに戻す（公開中のものは
+  // すべて運営者が確認したものに限る）。DB のトリガーも同じことをするが、ここでも明示する。
+  let unreviewUpdate: UnreviewUpdate | null = null;
+  if (input.is_review_completed === false) {
+    const current = await findBillById(id);
+    unreviewUpdate = buildUnreviewUpdate(current.publish_status);
+  }
+
   await updateBillRecord(id, {
     ...definedFields,
+    ...unreviewUpdate,
     ...(submitted_date !== undefined && {
       submitted_date: submitted_date
         ? `${submitted_date}T00:00:00+09:00`

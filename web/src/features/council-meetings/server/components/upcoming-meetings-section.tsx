@@ -21,7 +21,8 @@ export async function UpcomingMeetingsSection({
           これからの会議
         </h2>
         <p className="text-xs text-mirai-text-secondary">
-          本会議と委員会の予定です。{council.name}のページから取り込んでいます
+          本会議と委員会の予定です。{council.name}
+          が公表している日程をもとに、運営者が確認して載せています
         </p>
       </div>
       <MeetingList meetings={meetings} />

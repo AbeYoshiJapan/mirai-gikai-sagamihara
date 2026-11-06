@@ -13,6 +13,10 @@ import type {
 // ============================================================
 // Bills
 // ============================================================
+//
+// 利用者に見せる議案は「公開中（published）かつ運営者の確認済み（is_review_completed）」
+// に限る。DB 側でも公開中なら確認済みであることを保証している（enforce_publish_gate）が、
+// 読み出す側でも重ねて絞り、確認前の AI 下書きが表に出る経路を作らない。
 
 /**
  * 公開済み議案を難易度コンテンツ付きで取得
@@ -42,6 +46,7 @@ export async function findPublishedBillsWithContents(
     `
     )
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     .order("submitted_date", { ascending: false, nullsFirst: false });
 
@@ -73,6 +78,7 @@ export async function findPublishedBillsForSuggest(
     `
     )
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     // 提出日は null と同日の重複があるので、id を第2キーにして順序を固定する。
     // 候補は上位数件で打ち切るため、並びが揺れると出る候補そのものが変わる。
@@ -108,6 +114,7 @@ export async function findPublishedBillById(id: string) {
     .select("*")
     .eq("id", id)
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .single();
 
   if (error) {
@@ -343,6 +350,7 @@ export async function findPublishedBillsByDietSession(
     )
     .eq("diet_session_id", dietSessionId)
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     .order("status_order", { ascending: true })
     .order("submitted_date", { ascending: false, nullsFirst: false });
@@ -382,6 +390,7 @@ export async function findPreviousSessionBills(
     )
     .eq("diet_session_id", dietSessionId)
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     .order("status_order", { ascending: true })
     .order("submitted_date", { ascending: false, nullsFirst: false })
@@ -411,6 +420,7 @@ export async function countPublishedBillsByDietSession(
     })
     .eq("diet_session_id", dietSessionId)
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel);
 
   // 0件で返すとキャッシュに載って固定されるため、呼び出し側（キャッシュの外）で扱う
@@ -493,6 +503,7 @@ export async function findPublishedBillsByTag(
     )
     .eq("tag_id", tagId)
     .eq("bills.publish_status", "published")
+    .eq("bills.is_review_completed", true)
     .eq("bills.bill_contents.difficulty_level", difficultyLevel);
 
   if (dietSessionId) {
@@ -541,6 +552,9 @@ export async function findFeaturedBillsWithContents(
     `
     )
     .eq("is_featured", true)
+    // 「注目」の印は下書きの議案にも付けられる。公開中で確認済みのものだけに絞る
+    .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     .order("submitted_date", { ascending: false, nullsFirst: false });
 
@@ -604,6 +618,7 @@ export async function findBillsWithPublicInterview(
     `
     )
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .eq("bill_contents.difficulty_level", difficultyLevel)
     .eq("interview_configs.status", "public")
     .order("submitted_date", { ascending: false, nullsFirst: false });
@@ -645,6 +660,7 @@ export async function findComingSoonBills(dietSessionId: string | null) {
       name,
       originating_house,
       shugiin_url,
+      is_review_completed,
       bill_contents (
         title,
         difficulty_level

@@ -2,6 +2,7 @@ import type { SiteSettings } from "./schema";
 import {
   DEFAULT_DATA_TERMS_MD,
   DEFAULT_DISCLAIMER_SHORT,
+  DEFAULT_EDITORIAL_POLICY_MD,
   DEFAULT_INTERVIEW_CONSENT_MD,
   DEFAULT_OPERATOR_DISCLAIMER_MD,
   DEFAULT_PETITION_GUIDE_MD,
@@ -152,6 +153,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     interview_consent_md: DEFAULT_INTERVIEW_CONSENT_MD,
     data_terms_md: DEFAULT_DATA_TERMS_MD,
     petition_guide_md: DEFAULT_PETITION_GUIDE_MD,
+    editorial_policy_md: DEFAULT_EDITORIAL_POLICY_MD,
     modified_on: "",
   },
   seo: {

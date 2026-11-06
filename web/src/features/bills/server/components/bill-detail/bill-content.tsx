@@ -3,16 +3,20 @@ import type { BillWithContent } from "../../../shared/types";
 
 interface BillContentProps {
   bill: BillWithContent;
+  /** サイト設定の features.ai_chat。false なら「AI に質問」の案内を出さない */
+  chatEnabled: boolean;
 }
 
-export async function BillContent({ bill }: BillContentProps) {
+export async function BillContent({ bill, chatEnabled }: BillContentProps) {
   const markdownContent = bill.bill_content?.content;
 
   if (!markdownContent) {
     return null;
   }
 
-  const content = await parseMarkdown(markdownContent);
+  const content = await parseMarkdown(markdownContent, {
+    tips: { askAi: chatEnabled, difficulty: true },
+  });
 
   return (
     <div

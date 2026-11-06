@@ -58,15 +58,18 @@ export function FieldRenderer({
           >
             <div className="space-y-0.5">
               <FormLabel>{def.label}</FormLabel>
-              {def.description && (
-                <FormDescription>{def.description}</FormDescription>
+              {(def.locked ?? def.description) && (
+                <FormDescription>
+                  {def.locked ?? def.description}
+                </FormDescription>
               )}
             </div>
             <FormControl>
               <Switch
-                checked={Boolean(field.value)}
+                // 変えられない項目は常にオフで表示する（保存時もオフに戻る）
+                checked={def.locked ? false : Boolean(field.value)}
                 onCheckedChange={field.onChange}
-                disabled={disabled}
+                disabled={disabled || Boolean(def.locked)}
               />
             </FormControl>
           </FormItem>

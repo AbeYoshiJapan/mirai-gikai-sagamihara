@@ -1,4 +1,5 @@
 import { DEFAULT_SITE_SETTINGS } from "./defaults";
+import { enforceLockedFeatures } from "./locked-features";
 import {
   SECTION_SCHEMAS,
   SITE_SETTINGS_SECTIONS,
@@ -59,6 +60,9 @@ export function resolveSiteSettings(
     }
   }
 
+  // この版で使わない機能は、保存値に関係なく無効にする（掲載方針）
+  settings.features = enforceLockedFeatures(settings.features);
+
   return { settings, invalidSections, storedSections };
 }
 
@@ -73,5 +77,12 @@ export function parseSection<S extends SiteSettingsSection>(
   const merged = isPlainObject(input)
     ? { ...DEFAULT_SITE_SETTINGS[section], ...input }
     : input;
-  return SECTION_SCHEMAS[section].parse(merged) as SiteSettings[S];
+  const parsed = SECTION_SCHEMAS[section].parse(merged) as SiteSettings[S];
+  if (section === "features") {
+    // 常に無効にする機能は、true が送られてきても false で保存する
+    return enforceLockedFeatures(
+      parsed as SiteSettings["features"]
+    ) as SiteSettings[S];
+  }
+  return parsed;
 }

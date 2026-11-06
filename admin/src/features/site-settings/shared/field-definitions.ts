@@ -1,9 +1,11 @@
+import { LOCKED_OFF_FEATURES } from "@mirai-gikai/shared/site-settings/locked-features";
 import {
   SAGAMIHARA_NAME_NOTE_MD,
   SAGAMIHARA_PRESET,
   SAGAMIHARA_SESSION_SYSTEM_MD,
 } from "@mirai-gikai/shared/site-settings/presets";
 import type { SiteSettingsSection } from "@mirai-gikai/shared/site-settings/schema";
+import { DEFAULT_EDITORIAL_POLICY_MD } from "@mirai-gikai/shared/site-settings/templates";
 import type { SiteAssetKind } from "./constants";
 
 /**
@@ -44,6 +46,8 @@ export type FieldDefinition = {
   templated?: boolean;
   /** 「ひな形を入れる」ボタンで入れられる文面（textarea / markdown 用） */
   samples?: { label: string; value: string }[];
+  /** この版では変えられない項目。理由を説明として出し、入力を無効にする */
+  locked?: string;
 };
 
 /** 配列を表で編集する専用エディタ */
@@ -606,29 +610,35 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
       "公開サイトに出す機能。オフにした機能のページと API は 404 になります。",
     groups: [
       {
-        title: "AI を使う機能（既定はオフ）",
+        title: "AI を使う機能",
         description:
-          "利用者が AI と直接やり取りする機能。有効にする場合は利用規約と費用上限を確認してください。",
+          "利用者が AI と直接やり取りする機能は、この版では使えません。AI の出力が運営者の確認を経ずに利用者へ表示されるためです（掲載方針）。",
         fields: [
           {
             name: "ai_chat",
             label: "AI チャット（議案について質問）",
             kind: "boolean",
+            locked: LOCKED_OFF_FEATURES.ai_chat,
           },
           {
             name: "ai_interview",
             label: "AI インタビュー（意見の聞き取り）",
             kind: "boolean",
+            locked: LOCKED_OFF_FEATURES.ai_interview,
           },
           {
             name: "topic_analysis",
             label: "トピック分析（インタビュー結果の集計）",
             kind: "boolean",
+            description:
+              "運営者が公開した分析だけを表示します。AI インタビューが使えないため、この版では対象がありません",
           },
           {
             name: "article_reports",
-            label: "インタビューレポート（公開済み意見の表示）",
+            label: "記事の誤り報告（AI 自動生成版の記事向け）",
             kind: "boolean",
+            description:
+              "この版では AI 自動生成版の記事を公開しないため、受付欄は表示されません",
           },
         ],
       },
@@ -718,6 +728,19 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             rows: 16,
             fullWidth: true,
             templated: true,
+          },
+          {
+            name: "editorial_policy_md",
+            label: "「掲載方針」ページ",
+            kind: "markdown",
+            rows: 16,
+            fullWidth: true,
+            templated: true,
+            description:
+              "運営者が確認したものだけを載せること、自動で集めた情報は仮の取得であること、AI の使い方を利用する方に示すページ（フッター・トップ・議案ページからリンク）。空にすると既定の文を出します",
+            samples: [
+              { label: "既定の文", value: DEFAULT_EDITORIAL_POLICY_MD },
+            ],
           },
           {
             name: "petition_guide_md",

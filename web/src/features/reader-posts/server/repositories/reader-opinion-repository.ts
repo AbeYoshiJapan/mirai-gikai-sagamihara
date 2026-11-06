@@ -16,6 +16,7 @@ export async function findPublishedBillForReaderPost(billId: string) {
     .select("id, name")
     .eq("id", billId)
     .eq("publish_status", "published")
+    .eq("is_review_completed", true)
     .maybeSingle();
 
   if (error) {

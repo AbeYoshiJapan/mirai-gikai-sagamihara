@@ -48,6 +48,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     });
   }
+  // 掲載方針（運営者が確認したものだけを載せる・AI と自動収集の扱い）
+  staticUrls.push({
+    url: `${baseUrl}${routes.editorialPolicy()}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  });
   // 会期の制度（通年議会など）の説明ページ。制度名が空なら無い
   if (hasSessionSystemPage(settings.council)) {
     staticUrls.push({

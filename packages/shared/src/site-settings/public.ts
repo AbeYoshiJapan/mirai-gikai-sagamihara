@@ -7,7 +7,7 @@ import {
 } from "./brand-presets";
 import type { SiteSettings } from "./schema";
 
-import { renderTemplate } from "./templates";
+import { DEFAULT_EDITORIAL_POLICY_MD, renderTemplate } from "./templates";
 
 export type { BrandAssetKey } from "./brand-presets";
 
@@ -120,6 +120,17 @@ export function renderLegalText(
   key: keyof SiteSettings["legal"]
 ): string {
   return renderTemplate(s.legal[key], templateValues(s));
+}
+
+/**
+ * 「掲載方針」ページの本文（テンプレート展開済み）。
+ * AI・自動収集の扱いを示す大事な文面なので、設定が空でも既定文を出す。
+ */
+export function renderEditorialPolicy(s: SiteSettings): string {
+  const text = s.legal.editorial_policy_md.trim()
+    ? s.legal.editorial_policy_md
+    : DEFAULT_EDITORIAL_POLICY_MD;
+  return renderTemplate(text, templateValues(s));
 }
 
 /**

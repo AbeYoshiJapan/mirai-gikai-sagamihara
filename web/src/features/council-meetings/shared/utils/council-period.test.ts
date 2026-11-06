@@ -7,6 +7,9 @@ import {
   formatMeetingDateRange,
   getCouncilStatus,
   isUpcoming,
+  OUTSIDE_PERIOD_LABEL,
+  PERIOD_LEAD_DAYS,
+  periodLabelFor,
   resolveCouncilPeriods,
   takeFirstDays,
 } from "./council-period";
@@ -123,5 +126,33 @@ describe("takeFirstDays", () => {
     expect(formatMeetingDateRange("2026-10-28", "2026-10-30")).toBe(
       "10月28日（水）〜30日（金）"
     );
+  });
+});
+
+describe("periodLabelFor", () => {
+  const periods = [
+    { name: "9月定例会議", start_date: "2026-08-28", end_date: "2026-10-09" },
+    { name: "12月定例会議", start_date: "2026-11-17", end_date: "2026-12-18" },
+  ];
+
+  it("期間の中の日付は、その期間に入れる", () => {
+    expect(periodLabelFor("2026-11-17", periods)).toBe("12月定例会議");
+    expect(periodLabelFor("2026-12-18", periods)).toBe("12月定例会議");
+  });
+
+  it("開会前（議会運営委員会など）の日付は、次の期間に入れる", () => {
+    // 議運で議案が配られる日
+    expect(periodLabelFor("2026-11-10", periods)).toBe("12月定例会議");
+    expect(periodLabelFor("2026-11-03", periods)).toBe("12月定例会議");
+  });
+
+  it(`開会の ${PERIOD_LEAD_DAYS} 日より前なら、期間の外にする`, () => {
+    expect(periodLabelFor("2026-11-02", periods)).toBe(OUTSIDE_PERIOD_LABEL);
+    expect(periodLabelFor("2026-10-20", periods)).toBe(OUTSIDE_PERIOD_LABEL);
+  });
+
+  it("日付がない・次の期間がないときは期間の外", () => {
+    expect(periodLabelFor("", periods)).toBe(OUTSIDE_PERIOD_LABEL);
+    expect(periodLabelFor("2027-01-10", periods)).toBe(OUTSIDE_PERIOD_LABEL);
   });
 });

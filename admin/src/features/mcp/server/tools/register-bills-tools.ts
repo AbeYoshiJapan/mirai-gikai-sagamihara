@@ -13,6 +13,7 @@ import {
   findBillsTagsByBillId,
   upsertBillContent,
 } from "@/features/bills-edit/server/repositories/bill-edit-repository";
+import { markBillUnreviewed } from "@/features/bills-edit/server/services/mark-bill-unreviewed";
 import { updateBillWithSideEffects } from "@/features/bills-edit/server/services/update-bill-with-side-effects";
 import {
   billCreateSchema,
@@ -22,6 +23,14 @@ import { billContentsUpdateSchema } from "@/features/bills-edit/shared/types/bil
 import { calculateSetDiff } from "@/lib/utils/calculate-set-diff";
 import { invalidateBillsCache } from "../utils/invalidate-bills-cache";
 import { jsonResult } from "../utils/json-result";
+
+/**
+ * MCP からの書き込みは、運営者がまだ確認していない変更として扱う。
+ * 書き込む「前」に議案をレビュー未完了に戻し、公開中なら下書きに戻す
+ * （公開中のものは、すべて運営者が管理画面で確認したものに限る）。
+ */
+const UNREVIEWED_NOTE =
+  "書き込んだ議案はレビュー未完了に戻り、公開中なら下書きに戻る（運営者が管理画面で確認し直してから公開する）。";
 
 export function registerBillsTools(server: McpServer): void {
   server.registerTool(
@@ -117,16 +126,16 @@ export function registerBillsTools(server: McpServer): void {
     "update_bill",
     {
       title: "議案を更新",
-      description:
-        "指定IDの議案のメタ情報（name, bill_kind, stage 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。公開ステータスと記事レビュー完了は管理画面からだけ変えられる。",
+      description: `指定IDの議案のメタ情報（name, bill_kind, stage 等）を部分更新する。指定したフィールドのみが更新され、省略したフィールドは変更されない。公開ステータスと記事レビュー完了は管理画面からだけ変えられる。${UNREVIEWED_NOTE}`,
       inputSchema: {
         billId: z.string().uuid(),
         ...billUpdateSchema.omit({ is_review_completed: true }).partial().shape,
       },
     },
     async ({ billId, ...rest }) => {
+      const { unpublished } = await markBillUnreviewed(billId);
       await updateBillWithSideEffects(billId, rest);
-      return jsonResult({ ok: true });
+      return jsonResult({ ok: true, unpublished });
     }
   );
 
@@ -134,14 +143,14 @@ export function registerBillsTools(server: McpServer): void {
     "update_bill_contents",
     {
       title: "議案のコンテンツを更新",
-      description:
-        "議案のコンテンツ（title/summary/content）を difficulty=normal / hard ごとにupsertする。空文字のみの難易度はスキップ。",
+      description: `議案のコンテンツ（title/summary/content）を difficulty=normal / hard ごとにupsertする。空文字のみの難易度はスキップ。${UNREVIEWED_NOTE}`,
       inputSchema: {
         billId: z.string().uuid(),
         ...billContentsUpdateSchema.shape,
       },
     },
     async ({ billId, normal, hard }) => {
+      const { unpublished } = await markBillUnreviewed(billId);
       const byDifficulty = { normal, hard } as const;
       await Promise.all(
         (["normal", "hard"] as const).map(async (difficulty) => {
@@ -157,7 +166,7 @@ export function registerBillsTools(server: McpServer): void {
         })
       );
       await invalidateBillsCache();
-      return jsonResult({ ok: true });
+      return jsonResult({ ok: true, unpublished });
     }
   );
 
@@ -165,8 +174,7 @@ export function registerBillsTools(server: McpServer): void {
     "update_bill_tags",
     {
       title: "議案のタグを更新",
-      description:
-        "議案に紐づくタグIDの集合を指定の集合に差し替える（差分のみinsert/delete）。",
+      description: `議案に紐づくタグIDの集合を指定の集合に差し替える（差分のみinsert/delete）。差分がある場合、${UNREVIEWED_NOTE}`,
       inputSchema: {
         billId: z.string().uuid(),
         tagIds: z.array(z.string().uuid()),
@@ -175,6 +183,10 @@ export function registerBillsTools(server: McpServer): void {
     async ({ billId, tagIds }) => {
       const existingTagIds = await findBillsTagsByBillId(billId);
       const { toAdd, toDelete } = calculateSetDiff(existingTagIds, tagIds);
+      const changed = toAdd.length > 0 || toDelete.length > 0;
+      const { unpublished } = changed
+        ? await markBillUnreviewed(billId)
+        : { unpublished: false };
       if (toDelete.length > 0) {
         await deleteBillsTags(billId, toDelete);
       }
@@ -182,7 +194,12 @@ export function registerBillsTools(server: McpServer): void {
         await createBillsTags(billId, toAdd);
       }
       await invalidateBillsCache();
-      return jsonResult({ ok: true, added: toAdd, removed: toDelete });
+      return jsonResult({
+        ok: true,
+        added: toAdd,
+        removed: toDelete,
+        unpublished,
+      });
     }
   );
 }

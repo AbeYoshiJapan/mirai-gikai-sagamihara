@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Container } from "@/components/layouts/container";
 import { Progress } from "@/components/ui/progress";
+import { routes } from "@/lib/routes";
 import { useSiteSettings } from "@/lib/site-settings/provider";
 import { formatDateWithDots } from "@/lib/utils/date";
 import type { DietSession } from "../../shared/types";
@@ -67,7 +69,14 @@ export function CurrentDietSession({
         )}
       </div>
       <p className="pt-2 text-right text-xs font-bold tracking-wide text-mirai-text-secondary">
-        powered by {operator.name} &amp; AI
+        {operator.name}が確認した情報だけを載せています（
+        <Link
+          href={routes.editorialPolicy()}
+          className="underline underline-offset-2 hover:opacity-80"
+        >
+          掲載方針
+        </Link>
+        ）
       </p>
     </Container>
   );

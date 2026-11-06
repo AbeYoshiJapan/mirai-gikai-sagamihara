@@ -105,7 +105,7 @@ export async function BillDetailLayout({
             )}
           </div>
 
-          <BillContent bill={bill} />
+          <BillContent bill={bill} chatEnabled={features.ai_chat} />
         </Container>
       </BillDetailClient>
 

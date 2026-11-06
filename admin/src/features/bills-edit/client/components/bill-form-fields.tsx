@@ -249,7 +249,7 @@ export function BillFormFields({
             <div className="space-y-1 leading-none">
               <FormLabel>注目の議案</FormLabel>
               <FormDescription>
-                トップページなどで優先的に表示されます
+                公開中の議案のうち、トップページなどで優先的に表示されます（下書きの議案には付けても表示されません）
               </FormDescription>
             </div>
           </FormItem>
@@ -270,7 +270,7 @@ export function BillFormFields({
             <div className="space-y-1 leading-none">
               <FormLabel>記事レビュー完了</FormLabel>
               <FormDescription>
-                未完了の場合、記事にレビュー中バナーが表示されます
+                運営者が本文・要確認を確かめたら付けます。完了していない議案は公開できません。公開中の議案で外すと、公開を取り下げて下書きに戻ります
               </FormDescription>
             </div>
           </FormItem>
@@ -298,7 +298,8 @@ export function BillFormFields({
               </SelectContent>
             </Select>
             <FormDescription>
-              AI自動生成版は、人のレビューを経ていない記事として表示されます。レビュー後に通常版へ戻す場合は「記事レビュー完了」もオンにしてください
+              AI自動生成版は、人の確認を経ていない記事の印です。この版では AI
+              自動生成版のまま公開することはできません。確認したら通常版に戻し、「記事レビュー完了」をオンにしてください
             </FormDescription>
             <FormMessage />
           </FormItem>

@@ -32,7 +32,13 @@ import {
 } from "../../shared/types";
 
 interface GenerationPanelProps {
-  bill: { id: string; name: string; knowledge_source: string | null };
+  bill: {
+    id: string;
+    name: string;
+    knowledge_source: string | null;
+    /** 公開中なら、反映すると公開を取り下げることを先に確かめる */
+    isPublished: boolean;
+  };
   sources: BillSource[];
   jobs: GenerationJobView[];
   model: string;
@@ -271,9 +277,11 @@ function ReviewPointList({
 
 function ExplanationView({
   job,
+  isBillPublished,
   onChanged,
 }: {
   job: GenerationJobView;
+  isBillPublished: boolean;
   onChanged: () => void;
 }) {
   const router = useRouter();
@@ -296,6 +304,14 @@ function ExplanationView({
   }
 
   const handleApply = async () => {
+    if (
+      isBillPublished &&
+      !window.confirm(
+        "この議案は公開中です。反映すると公開を取り下げて下書きに戻します（確認していない本文を公開しないため）。内容を確認してレビュー完了にし、もう一度公開するまで公開サイトには出ません。反映しますか？"
+      )
+    ) {
+      return;
+    }
     setIsApplying(true);
     try {
       const result = await applyGenerationJobAction(job.id);
@@ -304,7 +320,9 @@ function ExplanationView({
         return;
       }
       toast.success(
-        "下書きに反映しました。コンテンツ編集で整え、要確認を解消してからレビュー完了にしてください"
+        result.unpublished
+          ? "下書きに反映し、公開を取り下げました。本文を確認してレビュー完了にしてから、もう一度公開してください"
+          : "下書きに反映しました。コンテンツ編集で整え、要確認を解消してからレビュー完了にしてください"
       );
       router.refresh();
       onChanged();
@@ -495,7 +513,11 @@ export function GenerationPanel({
                 ))}
               </ul>
               {selectedJob && (
-                <ExplanationView job={selectedJob} onChanged={refresh} />
+                <ExplanationView
+                  job={selectedJob}
+                  isBillPublished={bill.isPublished}
+                  onChanged={refresh}
+                />
               )}
             </>
           )}

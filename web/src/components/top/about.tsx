@@ -1,6 +1,8 @@
 import { renderSiteNameNote } from "@mirai-gikai/shared/site-settings/public";
 import Image from "next/image";
+import Link from "next/link";
 import { parseMarkdown } from "@/lib/markdown";
+import { routes } from "@/lib/routes";
 import { getSiteSettings } from "@/lib/site-settings/loader";
 
 export async function About() {
@@ -40,7 +42,15 @@ export async function About() {
               {site.name}は、{council.name}
               で今どんな議案が審議されているかを、わかりやすく伝えるサイトです。
               {council.primary_source_label}
-              など公開されている一次資料をもとに整理し、運営者が内容を確認してから掲載しています。
+              など公開されている一次資料をもとに整理し、運営者が内容を確認してから掲載しています。AI
+              の下書きや自動で集めた情報を、運営者の確認なしに載せることはありません（
+              <Link
+                href={routes.editorialPolicy()}
+                className="font-bold text-primary underline underline-offset-2"
+              >
+                掲載方針
+              </Link>
+              ）。
               <br />
               なお、本サービスは{operator.title}の{operator.name}
               が、チームみらいの「みらい議会」を元に作成したものです。チームみらいが運営しているものではありません。

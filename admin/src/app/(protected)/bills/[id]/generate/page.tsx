@@ -53,6 +53,7 @@ export default async function BillGeneratePage({ params }: GeneratePageProps) {
           id: bill.id,
           name: bill.name,
           knowledge_source: bill.knowledge_source,
+          isPublished: bill.publish_status === "published",
         }}
         sources={sources}
         jobs={jobs}

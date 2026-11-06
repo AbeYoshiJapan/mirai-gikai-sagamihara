@@ -9,6 +9,7 @@ import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { LongPressSection } from "@/features/bills/client/components/bill-detail/long-press-section";
 import { DifficultyInfoCard } from "@/features/bills/server/components/bill-detail/difficulty-info-card";
+import { buildTipInjections, type MarkdownTips } from "./build-tip-injections";
 import { rehypeEmbedYouTube } from "./rehype-embed-youtube";
 import { rehypeExternalLinks } from "./rehype-external-links";
 import { rehypeInjectElement } from "./rehype-inject-element";
@@ -32,10 +33,13 @@ const sanitizeSchema = {
 /**
  * MarkdownテキストをReact Elementに変換
  * @param markdown - Markdown形式のテキスト
- * @param options - オプション（currentLevel等）
+ * @param options.tips - 議案の解説本文に差し込む案内カード。文書ページでは指定しない
  * @returns React Element（部分水和対応）
  */
-export async function parseMarkdown(markdown: string): Promise<ReactElement> {
+export async function parseMarkdown(
+  markdown: string,
+  options: { tips?: MarkdownTips } = {}
+): Promise<ReactElement> {
   // Markdown → mdast（remarkBreaksでソフト改行をbreak nodeに変換）
   const remarkProcessor = unified().use(remarkParse).use(remarkBreaks);
   const parsed = remarkProcessor.parse(markdown);
@@ -46,16 +50,7 @@ export async function parseMarkdown(markdown: string): Promise<ReactElement> {
     .use(remarkRehype)
     .use(rehypeWrapSections)
     .use(rehypeInjectElement, {
-      injections: [
-        {
-          targetH2Index: 3,
-          tagName: "LongPressSection",
-        },
-        {
-          targetH2Index: -1,
-          tagName: "DifficultyInfoCard",
-        },
-      ],
+      injections: buildTipInjections(options.tips),
     })
     .use(rehypeSanitize, sanitizeSchema)
     .use(rehypeExternalLinks)

@@ -247,6 +247,8 @@ export const legalSectionSchema = z.object({
   data_terms_md: z.string().max(40000),
   /** 「議会に正式に届けるには」ページの本文 */
   petition_guide_md: z.string().max(20000),
+  /** 「掲載方針」ページの本文（AI・自動収集の扱い）。空なら既定文を出す */
+  editorial_policy_md: z.string().max(20000),
   /** 本家からの改変日（AGPL 第5条(a)）。YYYY-MM-DD */
   modified_on: z
     .string()

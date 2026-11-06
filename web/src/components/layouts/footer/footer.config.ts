@@ -52,6 +52,8 @@ export function buildPolicyLinks(
   settings: PublicSiteSettings
 ): FooterPolicyLink[] {
   const links: FooterPolicyLink[] = [
+    // 運営者が確認したものだけを載せる、という約束。常に出す
+    { label: "掲載方針", href: routes.editorialPolicy() },
     { label: "利用規約", href: routes.terms() },
     { label: "プライバシーポリシー", href: routes.privacy() },
     { label: "議会に正式に届けるには", href: routes.petitionGuide() },

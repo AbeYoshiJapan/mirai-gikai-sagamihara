@@ -39,7 +39,7 @@ function groupByMonth(meetings: CouncilMeeting[]) {
 
 export default async function SchedulePage() {
   await requireFeature("schedule");
-  const { council } = await getSiteSettings();
+  const { council, links } = await getSiteSettings();
   const { status, periods, today, meetings, upcoming } =
     await loadCouncilSchedule(getJapanTime());
   const wording = councilWording(council);
@@ -103,8 +103,23 @@ export default async function SchedulePage() {
           ))}
         </div>
       ) : (
-        <p className="rounded-2xl bg-white px-5 py-10 text-center text-sm text-mirai-text-secondary">
-          現在、予定されている会議はありません
+        <p className="rounded-2xl bg-white px-5 py-10 text-center text-sm leading-6 text-mirai-text-secondary">
+          会議ごとの予定は、運営者が確認したものを順次載せます。
+          <br />
+          最新の日程は{council.name}の公式サイトでご確認ください。
+          {links.schedule_page && (
+            <>
+              <br />
+              <a
+                href={links.schedule_page}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-primary underline underline-offset-2"
+              >
+                {council.name}の会議日程（公式サイト）
+              </a>
+            </>
+          )}
         </p>
       )}
 

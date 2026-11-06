@@ -4,6 +4,7 @@ import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/type
 import { getActiveDietSession } from "@/features/diet-sessions/server/loaders/get-active-diet-session";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { ComingSoonBill } from "../../shared/types";
+import { pickComingSoonTitle } from "../../shared/utils/pick-coming-soon-title";
 import { findComingSoonBills } from "../repositories/bill-repository";
 
 /**
@@ -30,25 +31,16 @@ const _getCachedComingSoonBills = unstable_cache(
       return [];
     }
 
-    // bill_contentsからtitleを抽出（ユーザーの難易度設定を使用）
+    // 解説の見出しは、運営者が確認を済ませた議案だけに使う（確認前は正式名称のみ）
     return data.map((bill) => {
-      const contents = bill.bill_contents as Array<{
-        title: string;
-        difficulty_level: string;
-      }> | null;
-
-      // ユーザーが選択した難易度のコンテンツを優先
-      const preferredContent = contents?.find(
-        (c) => c.difficulty_level === difficultyLevel
-      );
-      // フォールバック: normalを優先、それもなければ任意のコンテンツ
-      const fallbackContent =
-        contents?.find((c) => c.difficulty_level === "normal") || contents?.[0];
-
       return {
         id: bill.id,
         name: bill.name,
-        title: preferredContent?.title || fallbackContent?.title || null,
+        title: pickComingSoonTitle(
+          bill.bill_contents,
+          difficultyLevel,
+          bill.is_review_completed
+        ),
         originating_house: bill.originating_house,
         shugiin_url: bill.shugiin_url,
       };

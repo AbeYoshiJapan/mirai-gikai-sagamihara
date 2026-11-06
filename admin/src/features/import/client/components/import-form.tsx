@@ -218,7 +218,7 @@ export function ImportForm({ sessions }: { sessions: SessionOption[] }) {
     if (!bundleJson || !sessionId || selected.size === 0) return;
     if (
       !window.confirm(
-        `${selected.size} 件を適用します。追加される議案は下書きのままで、公開はされません。よろしいですか？`
+        `${selected.size} 件を適用します。新しく追加される議案は下書きのままで、公開はされません。公開中の議案への更新（議案番号・審議の段階・結果など、一覧で確認した項目）は、適用するとすぐ公開サイトに反映されます。内容を確認しましたか？`
       )
     ) {
       return;

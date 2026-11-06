@@ -188,49 +188,42 @@ describe("MCP mirai-stance tools", () => {
       );
     });
 
-    it("isPublished: false で非公開にして公開日時をリセットし、省略時は保持する", async () => {
+    it("MCP から書き込んだ賛否は、公開の指定があっても非公開で保存する", async () => {
       const bill = await createTestBill();
       billIds.push(bill.id);
 
       await registry.callTool("upsert_mirai_stance", {
         billId: bill.id,
         type: "for",
-        publishAt: "2026-10-01T12:00:00+09:00",
-      });
-      await registry.callTool("upsert_mirai_stance", {
-        billId: bill.id,
-        type: "for",
-        isPublished: false,
-      });
-      const { data: hidden } = await adminClient
-        .from("mirai_stances")
-        .select("is_published, publish_at")
-        .eq("bill_id", bill.id)
-        .single();
-      expect(hidden).toEqual({ is_published: false, publish_at: null });
-
-      await registry.callTool("upsert_mirai_stance", {
-        billId: bill.id,
-        type: "against",
-      });
-      const { data: kept } = await adminClient
-        .from("mirai_stances")
-        .select("is_published")
-        .eq("bill_id", bill.id)
-        .single();
-      expect(kept?.is_published).toBe(false);
-
-      await registry.callTool("upsert_mirai_stance", {
-        billId: bill.id,
-        type: "against",
+        // inputSchema に無いので捨てられる（公開は管理画面だけ）
         isPublished: true,
       });
-      const { data: shown } = await adminClient
+      const { data } = await adminClient
         .from("mirai_stances")
         .select("is_published")
         .eq("bill_id", bill.id)
         .single();
-      expect(shown?.is_published).toBe(true);
+      expect(data?.is_published).toBe(false);
+    });
+
+    it("公開中の賛否を MCP から書き換えると、非公開に戻る（確認前の内容を出さない）", async () => {
+      const bill = await createTestBill();
+      billIds.push(bill.id);
+      // 運営者が管理画面で公開した賛否
+      await adminClient
+        .from("mirai_stances")
+        .insert({ bill_id: bill.id, type: "for", is_published: true });
+
+      await registry.callTool("upsert_mirai_stance", {
+        billId: bill.id,
+        type: "against",
+      });
+      const { data } = await adminClient
+        .from("mirai_stances")
+        .select("type, is_published")
+        .eq("bill_id", bill.id)
+        .single();
+      expect(data).toEqual({ type: "against", is_published: false });
     });
   });
 
@@ -266,7 +259,7 @@ describe("MCP mirai-stance tools", () => {
         reasonPoints: [],
         supplements: [],
         publishAt: null,
-        isPublished: true,
+        isPublished: false,
         publishReviewDate: null,
         updatedAt: expect.any(String),
       });
@@ -367,50 +360,8 @@ describe("MCP mirai-stance tools", () => {
       });
     });
 
-    it("publish_mirai_stance は updatedAt が一致すれば公開し、公開確認日をリセットする", async () => {
-      const { bill, stance } = await createPendingStance("2026-10-20");
-
-      const result = await registry.callTool<{ ok: boolean }>(
-        "publish_mirai_stance",
-        { billId: bill.id, expectedUpdatedAt: stance.updatedAt }
-      );
-      expect(result).toEqual({ ok: true, billId: bill.id });
-      expect(await fetchRow(bill.id)).toMatchObject({
-        is_published: true,
-        publish_at: null,
-        publish_review_date: null,
-      });
-
-      const again = await registry.callTool<{ ok: boolean; reason: string }>(
-        "publish_mirai_stance",
-        { billId: bill.id, expectedUpdatedAt: stance.updatedAt }
-      );
-      expect(again).toEqual({ ok: false, reason: "already_published" });
-    });
-
-    it("publish_mirai_stance は確認後に内容が編集されていれば公開しない（stale）", async () => {
-      const { bill, stance } = await createPendingStance("2026-10-20");
-      await registry.callTool("upsert_mirai_stance", {
-        billId: bill.id,
-        type: "against",
-      });
-
-      const result = await registry.callTool<{ ok: boolean; reason: string }>(
-        "publish_mirai_stance",
-        { billId: bill.id, expectedUpdatedAt: stance.updatedAt }
-      );
-      expect(result).toEqual({ ok: false, reason: "stale" });
-      expect((await fetchRow(bill.id))?.is_published).toBe(false);
-    });
-
-    it("publish_mirai_stance は賛否未設定なら not_found", async () => {
-      const bill = await createTestBill();
-      billIds.push(bill.id);
-      const result = await registry.callTool<{ ok: boolean; reason: string }>(
-        "publish_mirai_stance",
-        { billId: bill.id, expectedUpdatedAt: "2026-10-01T00:00:00+00:00" }
-      );
-      expect(result).toEqual({ ok: false, reason: "not_found" });
+    it("publish_mirai_stance ツールは無い（公開は運営者が管理画面で行う）", () => {
+      expect(registry.hasTool("publish_mirai_stance")).toBe(false);
     });
 
     it("update_mirai_stance_review_date は公開確認日だけを更新し updatedAt は変えない", async () => {
@@ -430,22 +381,16 @@ describe("MCP mirai-stance tools", () => {
       expect(new Date(row?.updated_at ?? "").getTime()).toBe(
         new Date(stance.updatedAt).getTime()
       );
-
-      // 日付変更後も確認時点の updatedAt で公開できる
-      const published = await registry.callTool<{ ok: boolean }>(
-        "publish_mirai_stance",
-        { billId: bill.id, expectedUpdatedAt: stance.updatedAt }
-      );
-      expect(published.ok).toBe(true);
+      expect(row?.is_published).toBe(false);
     });
 
     it("update_mirai_stance_review_date は公開済みなら already_published、未設定なら not_found", async () => {
       const published = await createTestBill();
       billIds.push(published.id);
-      await registry.callTool("upsert_mirai_stance", {
-        billId: published.id,
-        type: "for",
-      });
+      // 運営者が管理画面で公開した賛否（MCP からは公開できない）
+      await adminClient
+        .from("mirai_stances")
+        .insert({ bill_id: published.id, type: "for", is_published: true });
       const missing = await createTestBill();
       billIds.push(missing.id);
 
@@ -468,7 +413,6 @@ describe("MCP mirai-stance tools", () => {
     expect(registry.toolNames().sort()).toEqual([
       "get_mirai_stance",
       "list_mirai_stances_pending_review",
-      "publish_mirai_stance",
       "update_mirai_stance_review_date",
       "upsert_mirai_stance",
     ]);

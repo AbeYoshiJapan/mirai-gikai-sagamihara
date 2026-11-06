@@ -15,6 +15,8 @@ export const routes = {
   developersOpenDataApi: () => "/developers/open-data-api" as const,
   interviewDataTerms: () => "/developers/interview-data-terms" as const,
   petitionGuide: () => "/petition-guide" as const,
+  /** 掲載方針（運営者が確認したものだけを載せる・AI と自動収集の扱い） */
+  editorialPolicy: () => "/editorial-policy" as const,
   questions: () => "/questions" as const,
 
   // ── 会議予定 ──────────────────────────────────────

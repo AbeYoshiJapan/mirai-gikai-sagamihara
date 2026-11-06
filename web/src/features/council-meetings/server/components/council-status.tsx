@@ -134,7 +134,14 @@ export async function CouncilStatus({
           )}
         </span>
         <p className="text-xs font-bold tracking-wide text-mirai-text-secondary">
-          powered by {operator.name} &amp; AI
+          {operator.name}が確認した情報だけを載せています（
+          <Link
+            href={routes.editorialPolicy()}
+            className="underline underline-offset-2 hover:opacity-80"
+          >
+            掲載方針
+          </Link>
+          ）
         </p>
       </div>
     </Container>

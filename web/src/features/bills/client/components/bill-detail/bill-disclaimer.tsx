@@ -1,6 +1,8 @@
 "use client";
 
 import { FORK_NOTICE } from "@mirai-gikai/shared/site-settings/schema";
+import Link from "next/link";
+import { routes } from "@/lib/routes";
 import { useSiteSettings } from "@/lib/site-settings/provider";
 
 export function BillDisclaimer() {
@@ -13,7 +15,14 @@ export function BillDisclaimer() {
         <p className="text-xs leading-relaxed text-mirai-text-note">
           掲載されている議案情報は、{council.primary_source_label}
           など公開されている一次資料を基に、{operator.name}
-          がAIを活用して下書きを作り、内容を確認したうえで整理したものです。
+          がAIを活用して下書きを作り、内容を確認したうえで整理したものです。運営者が確認していない内容は載せていません（
+          <Link
+            href={routes.editorialPolicy()}
+            className="underline underline-offset-2 hover:opacity-80"
+          >
+            掲載方針
+          </Link>
+          ）。
           {FORK_NOTICE}。
         </p>
         <p className="text-xs leading-relaxed text-mirai-text-note">

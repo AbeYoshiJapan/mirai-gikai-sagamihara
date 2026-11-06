@@ -66,7 +66,7 @@
 | `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD` | ○ | − | 公開前に web 全体を Basic 認証で隠したいときだけ。公開時に消します |
 | `NEXT_PUBLIC_GA_TRACKING_ID` | ○ | − | Google Analytics を使うなら |
 | `OPEN_DATA_RATE_LIMIT_PER_IP` / `OPEN_DATA_RATE_LIMIT_GLOBAL` | ○ | − | オープンデータ API の上限（既定値のままでよい） |
-| `ADMIN_MCP_TOKEN` | − | ○ | Claude Code などから `/api/mcp` を使うときだけ。未設定なら MCP は全部拒否されます |
+| `ADMIN_MCP_TOKEN` | − | ○ | Claude Code などから `/api/mcp` を使うときだけ。未設定なら MCP は全部拒否されます（通常は入れません。入れても MCP からは公開できず、書き込んだ議案は確認前の下書きに戻ります） |
 | `ADMIN_GOOGLE_LOGIN` | − | ○ | Supabase に Google プロバイダを設定し、ログイン画面に「Google でログイン」を出すときだけ `true` |
 | `CHAT_*`・`LANGFUSE_*`・`GCP_*`・`SUPABASE_AUTH_EXTERNAL_GOOGLE_*`・`ADMIN_AUTH_CALLBACK_URL` | − | − | 本家由来。チャット・Langfuse・Cloud Run・Google ログインは使いません（`ADMIN_AUTH_CALLBACK_URL` はローカルの config.toml 用） |
 
@@ -78,14 +78,17 @@
 2. 「会期管理」で令和 8 年（2026 年度）の会期（4月1日〜翌年3月31日）を作り、有効にします。会期の「定例会議などの期間」に 6月・9月・12月・3月の定例会議の開始日と終了日を入れると、トップに「次の定例会議　開会まで○日」が出ます。
    制度名や「通年議会とは」ページの本文は「サイト設定」→「議会」→「会期の制度」で確認できます（本文は「相模原市議会のひな形」ボタンで入れられます）。
 3. 「取込」で `tools/import` が作った取込 JSON（例：`2026-09-agenda.json`）を選び、差分プレビューを確認して適用します。続けて審議結果（`2026-09-results.json`）。
-   議案は下書きで入ります。
-4. 「サイト設定」の公開前プレビューのリンクから web を開き、トップ・議案一覧・議案詳細・「議会に正式に届けるには」を確認します。
-5. 公開前チェックリスト（`FORK_GUIDELINES.md` と計画書）を埋め、「サイト設定」→「サイト」→「公開中」をオン。`BASIC_AUTH_*` を入れていたら消して Redeploy します。
-6. Search Console にプロパティを登録し、`https://<web ドメイン>/sitemap.xml` を送信します。
+   議案は下書きで入ります（自動で集めた情報は、この確認を経るまで公開サイトに出ません）。
+4. 議案ごとに「AI で解説を生成」→ 生成結果の「要確認」を一次資料で確かめて解消 →「下書きに反映」→ コンテンツ編集で整える →
+   基本情報で「記事レビュー完了」→ 議案一覧で「公開」。公開できるのはレビュー完了の議案だけです。
+5. 「サイト設定」の公開前プレビューのリンクから web を開き、トップ・議案一覧・議案詳細・「掲載方針」・「議会に正式に届けるには」を確認します。
+6. 公開前チェックリスト（`FORK_GUIDELINES.md` と計画書）を埋め、「サイト設定」→「サイト」→「公開中」をオン。`BASIC_AUTH_*` を入れていたら消して Redeploy します。
+7. Search Console にプロパティを登録し、`https://<web ドメイン>/sitemap.xml` を送信します。
 
 ## 補足
 
 - 以後のデプロイは Vercel の GitHub 連携に任せます（`main` への push で web・admin が自動でビルドされます）。
   マイグレーションを足したときだけ `npx supabase db push --remote` を手で実行します。順序は **DB が先、コードが後** です。
+- 掲載方針（公開するのは運営者が確認したものだけ）の仕組みは README の「掲載方針」にまとめています。公開サイトでは `/editorial-policy` に示しています。
 - 本家由来の `deploy.yml`・`deploy_worker.yml`・`supabase_preview.yml` は手動実行だけにしてあり、Cloud Run の worker（トピック分析）は使いません。
 - バックアップ：無料プランには自動バックアップが無いので、`npx supabase db dump --data-only -f backup.sql` を週 1 で取るか、Pro にして日次バックアップを使います。

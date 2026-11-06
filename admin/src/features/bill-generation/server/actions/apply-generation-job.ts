@@ -2,10 +2,8 @@
 
 import { parseStoredExplanation } from "@mirai-gikai/shared/bill-explanation/schema";
 import { requireAdmin } from "@/features/auth/server/lib/auth-server";
-import {
-  updateBillRecord,
-  upsertBillContent,
-} from "@/features/bills-edit/server/repositories/bill-edit-repository";
+import { upsertBillContent } from "@/features/bills-edit/server/repositories/bill-edit-repository";
+import { markBillUnreviewed } from "@/features/bills-edit/server/services/mark-bill-unreviewed";
 import {
   invalidateWebCache,
   WEB_CACHE_TAGS,
@@ -14,13 +12,23 @@ import { getErrorMessage } from "@/lib/utils/get-error-message";
 import { findGenerationJobById } from "../repositories/generation-job-repository";
 import { buildDraftContent } from "../services/generate-bill-explanation";
 
+export type ApplyGenerationJobResult = {
+  error?: string;
+  /** 公開中だった議案を、確認し直すために下書きへ戻したか */
+  unpublished?: boolean;
+};
+
 /**
  * 生成結果を下書き（bill_contents の normal / hard）に反映する。
- * 反映した議案はレビュー未完了に戻る（公開には管理者の確認が要る）。
+ *
+ * 反映した本文は運営者の確認前なので、議案はレビュー未完了に戻る。公開中だった
+ * 議案は公開を取り下げて下書きに戻り、確認・公開をやり直すまで公開サイトに出ない。
+ * 本文を書き換える「前」に確認を外す（順序が逆だと、確認前の本文が一瞬でも
+ * 公開ページに出うる）。
  */
 export async function applyGenerationJobAction(
   jobId: string
-): Promise<{ error?: string }> {
+): Promise<ApplyGenerationJobResult> {
   try {
     await requireAdmin();
 
@@ -34,6 +42,8 @@ export async function applyGenerationJobAction(
       return { error: "生成結果の形式が不正です" };
     }
 
+    const { unpublished } = await markBillUnreviewed(job.bill_id);
+
     for (const difficulty of ["normal", "hard"] as const) {
       const draft = buildDraftContent(explanation, difficulty);
       await upsertBillContent({
@@ -45,14 +55,8 @@ export async function applyGenerationJobAction(
       });
     }
 
-    // 新しい本文は未確認。レビュー完了を外す（トリガーが確認記録も消す）
-    await updateBillRecord(job.bill_id, {
-      is_review_completed: false,
-      updated_at: new Date().toISOString(),
-    });
-
     await invalidateWebCache([WEB_CACHE_TAGS.BILLS]);
-    return {};
+    return { unpublished };
   } catch (error) {
     console.error("Apply generation job error:", error);
     return { error: getErrorMessage(error, "下書きへの反映に失敗しました") };

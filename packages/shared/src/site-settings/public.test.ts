@@ -6,6 +6,7 @@ import {
   brandColorsToCss,
   councilWording,
   hasSessionSystemPage,
+  renderEditorialPolicy,
   renderLegalText,
   renderOperatorDisclaimer,
   renderSessionSystemText,
@@ -36,6 +37,35 @@ describe("renderLegalText / renderOperatorDisclaimer", () => {
     expect(terms).not.toContain("{{");
     const disclaimer = renderOperatorDisclaimer(s);
     expect(disclaimer).toContain("相模原市議会・相模原市の公式サイトではありません");
+  });
+});
+
+describe("renderEditorialPolicy", () => {
+  function sagamihara() {
+    const s = structuredClone(SAGAMIHARA_PRESET);
+    s.operator.name = "運営 太郎";
+    return s;
+  }
+
+  it("運営者の確認・自動収集は仮取得・AI の扱いを、サイトの名前を入れて示す", () => {
+    const text = renderEditorialPolicy(sagamihara());
+    expect(text).toContain(`「${SAGAMIHARA_PRESET.site.name}」に載せているものは`);
+    expect(text).toContain("運営者（運営 太郎）が確認したもの");
+    expect(text).toContain("仮の取得");
+    expect(text).toContain("要確認");
+    expect(text).not.toContain("{{");
+  });
+
+  it("設定が空でも既定の文を出す（方針を消したままにしない）", () => {
+    const s = sagamihara();
+    s.legal.editorial_policy_md = "  \n";
+    expect(renderEditorialPolicy(s)).toContain("運営者（運営 太郎）が確認したもの");
+  });
+
+  it("設定した文があればそれを使う", () => {
+    const s = sagamihara();
+    s.legal.editorial_policy_md = "{{operator_name}}の方針";
+    expect(renderEditorialPolicy(s)).toBe("運営 太郎の方針");
   });
 });
 

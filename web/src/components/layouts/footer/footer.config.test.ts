@@ -23,9 +23,10 @@ describe("footer.config", () => {
     expect(link?.external).toBeUndefined();
   });
 
-  it("policyLinks に規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
+  it("policyLinks の先頭に掲載方針、続いて規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
     const hrefs = buildPolicyLinks(base).map((link) => link.href);
 
+    expect(hrefs[0]).toBe(routes.editorialPolicy());
     expect(hrefs).toContain(routes.terms());
     expect(hrefs).toContain(routes.privacy());
     expect(hrefs).toContain(routes.petitionGuide());
@@ -78,6 +79,7 @@ describe("footer.config", () => {
   it("内部リンクには external フラグが付かない", () => {
     const internalHrefs = new Set<string>([
       routes.home(),
+      routes.editorialPolicy(),
       routes.terms(),
       routes.privacy(),
       routes.petitionGuide(),
