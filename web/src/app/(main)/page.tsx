@@ -24,6 +24,7 @@ import { CouncilStatus } from "@/features/council-meetings/server/components/cou
 import { UpcomingMeetingsSection } from "@/features/council-meetings/server/components/upcoming-meetings-section";
 import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/load-council-schedule";
 import { takeFirstDays } from "@/features/council-meetings/shared/utils/council-period";
+import { CouncilQuestionsHomeSection } from "@/features/council-questions/server/components/council-questions-home-section";
 import { getCurrentDietSession } from "@/features/diet-sessions/server/loaders/get-current-diet-session";
 import { getSiteSettings } from "@/lib/site-settings/loader";
 import { getJapanTime } from "@/lib/utils/date";
@@ -137,6 +138,9 @@ export default async function Home() {
                 )}
               />
             )}
+
+            {/* 議会での質問（通告一覧をもとに、運営者が確認して載せたもの） */}
+            {features.council_questions && <CouncilQuestionsHomeSection />}
 
             {/*
               注目の法案は会期中だけ出す。閉会中に「注目」を掲げても、審議が

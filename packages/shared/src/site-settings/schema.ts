@@ -61,6 +61,11 @@ export const operatorSectionSchema = z.object({
   photo_url: optionalUrl,
   bio_md: z.string().max(4000),
   faction: shortText(60),
+  /**
+   * 議会での氏名（通告一覧の表記。例: 阿部善博）。「議会での質問」で運営者本人の質問に
+   * 「運営者」と表示するのに使う（同じ形式で載せ、目立たせない）。空なら表示しない
+   */
+  name_in_council: shortText(60),
   /** 所属委員会など、箇条書きで出す項目 */
   affiliations: z.array(shortText(80)).max(10),
   sns: z.array(snsLinkSchema).max(10),
@@ -244,6 +249,8 @@ export const featuresSectionSchema = z.object({
   open_data_api: z.boolean(),
   past_sessions: z.boolean(),
   schedule: z.boolean(),
+  /** 「議会での質問」（通告一覧から載せる代表質問・一般質問など）と「テーマ」のページ */
+  council_questions: z.boolean(),
   operator_section: z.boolean(),
   pwa: z.boolean(),
   article_reports: z.boolean(),

@@ -48,6 +48,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     });
   }
+  // 議会での質問とテーマ（運営者が確認して公開したものだけのページ）
+  if (settings.features.council_questions) {
+    staticUrls.push(
+      {
+        url: `${baseUrl}${routes.councilQuestions()}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      },
+      {
+        url: `${baseUrl}${routes.themes()}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }
+    );
+  }
   // 掲載方針（運営者が確認したものだけを載せる・AI と自動収集の扱い）
   staticUrls.push({
     url: `${baseUrl}${routes.editorialPolicy()}`,

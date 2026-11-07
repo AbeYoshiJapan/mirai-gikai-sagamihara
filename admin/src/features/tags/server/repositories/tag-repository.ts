@@ -15,6 +15,8 @@ export async function findAllTagsWithBillCount() {
       label,
       description,
       featured_priority,
+      is_theme,
+      theme_order,
       created_at,
       updated_at,
       bills_tags(count)
@@ -65,6 +67,8 @@ export async function updateTagRecord(
     label?: string;
     description?: string | null;
     featured_priority?: number | null;
+    is_theme?: boolean;
+    theme_order?: number;
   }
 ) {
   const supabase = createAdminClient();
@@ -76,6 +80,9 @@ export async function updateTagRecord(
     updateData.description = input.description;
   if (input.featured_priority !== undefined)
     updateData.featured_priority = input.featured_priority;
+  if (input.is_theme !== undefined) updateData.is_theme = input.is_theme;
+  if (input.theme_order !== undefined)
+    updateData.theme_order = input.theme_order;
 
   if (Object.keys(updateData).length === 0) {
     return {

@@ -26,6 +26,12 @@ export function HamburgerMenu() {
   if (features.schedule) {
     links.push({ label: "会議の予定（カレンダー）", href: routes.schedule() });
   }
+  if (features.council_questions) {
+    links.push(
+      { label: "議会での質問", href: routes.councilQuestions() },
+      { label: "テーマ", href: routes.themes() }
+    );
+  }
   links.push(
     { label: "このサイトについて", href: `${routes.home()}#about` },
     { label: "掲載方針", href: routes.editorialPolicy() }

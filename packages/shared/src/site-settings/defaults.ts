@@ -35,6 +35,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     photo_url: "",
     bio_md: "",
     faction: "",
+    name_in_council: "",
     affiliations: [],
     sns: [],
     contact_label: "お問い合わせ",
@@ -144,6 +145,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     open_data_api: true,
     past_sessions: true,
     schedule: true,
+    // 最初の質問を確認して公開してから、運営者がオンにする
+    council_questions: false,
     operator_section: true,
     pwa: true,
     article_reports: true,

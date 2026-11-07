@@ -42,6 +42,18 @@ describe("HamburgerMenu", () => {
     ).toBeTruthy();
   });
 
+  it("議会での質問の機能が有効なときだけ、議会での質問とテーマへのリンクを出す", () => {
+    renderMenu({ council_questions: true });
+    expect(screen.getByRole("link", { name: "議会での質問" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "テーマ" })).toBeTruthy();
+  });
+
+  it("議会での質問の機能が無効なら、議会での質問とテーマへのリンクを出さない", () => {
+    renderMenu({ council_questions: false });
+    expect(screen.queryByRole("link", { name: "議会での質問" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "テーマ" })).toBeNull();
+  });
+
   it("会議日程の機能が無効なら、カレンダーへのリンクを出さない", () => {
     renderMenu({ schedule: false });
     expect(

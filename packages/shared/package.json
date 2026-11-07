@@ -204,6 +204,14 @@
       "types": "./src/council-meetings/site-calendar.ts",
       "default": "./src/council-meetings/site-calendar.ts"
     },
+    "./council-questions/types": {
+      "types": "./src/council-questions/types.ts",
+      "default": "./src/council-questions/types.ts"
+    },
+    "./council-meetings/html-text": {
+      "types": "./src/council-meetings/html-text.ts",
+      "default": "./src/council-meetings/html-text.ts"
+    },
     "./council-meetings/decode-html": {
       "types": "./src/council-meetings/decode-html.ts",
       "default": "./src/council-meetings/decode-html.ts"

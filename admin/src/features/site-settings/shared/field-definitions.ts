@@ -406,6 +406,14 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
           },
           { name: "faction", label: "会派", kind: "text" },
           {
+            name: "name_in_council",
+            label: "議会での氏名（通告一覧の表記）",
+            kind: "text",
+            placeholder: "阿部善博",
+            description:
+              "「議会での質問」で、ご本人の質問に「運営者」と表示するのに使います（ほかの議員と同じ形式で載せ、目立たせません）。空なら表示しません",
+          },
+          {
             name: "catchphrase",
             label: "一言プロフィール",
             kind: "text",
@@ -680,6 +688,13 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             name: "schedule",
             label: "会議の予定（カレンダー）",
             kind: "boolean",
+          },
+          {
+            name: "council_questions",
+            label: "議会での質問・テーマ",
+            kind: "boolean",
+            description:
+              "代表質問・個人質疑・一般質問（通告一覧から載せ、確認して公開したもの）と、テーマのページを公開サイトに出します。最初の質問を公開してからオンにしてください",
           },
           { name: "glossary", label: "用語解説", kind: "boolean" },
           { name: "pwa", label: "ホーム画面への追加（PWA）", kind: "boolean" },

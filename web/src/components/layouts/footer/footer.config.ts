@@ -21,6 +21,12 @@ export function buildPrimaryLinks(settings: PublicSiteSettings): FooterLink[] {
   if (settings.features.schedule) {
     links.push({ label: "会議の予定", href: routes.schedule() });
   }
+  if (settings.features.council_questions) {
+    links.push(
+      { label: "議会での質問", href: routes.councilQuestions() },
+      { label: "テーマ", href: routes.themes() }
+    );
+  }
   if (hasSessionSystemPage(settings.council)) {
     links.push({
       label: `${settings.council.session_system_label}とは`,

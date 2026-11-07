@@ -1,6 +1,7 @@
 import { brandAsset } from "@mirai-gikai/shared/site-settings/public";
 import { Container } from "@/components/layouts/container";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import { BillCouncilQuestionsSection } from "@/features/council-questions/server/components/bill-council-questions-section";
 import { InterviewLandingSection } from "@/features/interview-config/client/components/interview-landing-section";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getPublicReportsByBillId } from "@/features/interview-report/server/loaders/get-public-reports-by-bill-id";
@@ -129,6 +130,13 @@ export async function BillDetailLayout({
               showFactions={features.faction_votes}
               showMembers={features.member_votes}
             />
+          </div>
+        )}
+
+        {/* 議会での質問：通告一覧にこの議案の番号が出てくる、公開中の質問（機能フラグ） */}
+        {features.council_questions && bill.bill_number && (
+          <div className="my-8 empty:hidden">
+            <BillCouncilQuestionsSection billNumber={bill.bill_number} />
           </div>
         )}
 

@@ -27,6 +27,8 @@ const tables = [
   "interview_report",
   "reader_opinions",
   "reader_questions",
+  "council_questions",
+  "council_question_themes",
 ] as const;
 
 describe("RLS default deny（全テーブル共通）", () => {

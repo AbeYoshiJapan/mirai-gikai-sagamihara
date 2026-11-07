@@ -1,7 +1,11 @@
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { fetchSitePage, SITE_FETCH_USER_AGENT } from "./fetch-site-text";
+import {
+  fetchSiteBytes,
+  fetchSitePage,
+  SITE_FETCH_USER_AGENT,
+} from "./fetch-site-text";
 
 // 「本会議」の Shift_JIS
 const HONKAIGI_SJIS = Buffer.from([150, 123, 137, 239, 139, 99]);
@@ -22,6 +26,11 @@ beforeAll(async () => {
           Buffer.from("</td>"),
         ])
       );
+      return;
+    }
+    if (req.url === "/file.pdf") {
+      res.writeHead(200, { "Content-Type": "application/pdf" });
+      res.end(Buffer.from([0x25, 0x50, 0x44, 0x46, 0x2d]));
       return;
     }
     if (req.url === "/utf8") {
@@ -62,5 +71,16 @@ describe("fetchSitePage", () => {
 
   it("404 などはエラーにする", async () => {
     await expect(fetchSitePage(`${baseUrl}/missing`)).rejects.toThrow("404");
+  });
+});
+
+describe("fetchSiteBytes", () => {
+  it("ファイルをそのまま読み、大きすぎるものは断る", async () => {
+    const bytes = await fetchSiteBytes(`${baseUrl}/file.pdf`);
+    expect(Buffer.from(bytes).toString("latin1")).toBe("%PDF-");
+    await expect(
+      fetchSiteBytes(`${baseUrl}/file.pdf`, { maxBytes: 3 })
+    ).rejects.toThrow("大きすぎます");
+    await expect(fetchSiteBytes(`${baseUrl}/missing`)).rejects.toThrow("404");
   });
 });

@@ -24,6 +24,17 @@ export const routes = {
   /** 会期の制度（通年議会など）の説明。制度名が空なら 404 */
   councilSystem: () => "/council-system" as const,
 
+  // ── 議会での質問・テーマ ──────────────────────────
+  councilQuestions: () => "/council-questions" as const,
+  councilQuestionMeeting: (meetingKey: string) =>
+    `/council-questions/${meetingKey}` as const,
+  councilQuestionDetail: (meetingKey: string, questionId: string) =>
+    `/council-questions/${meetingKey}/${questionId}` as const,
+  councilQuestionMember: (memberName: string) =>
+    `/council-questions/members/${encodeURIComponent(memberName)}` as const,
+  themes: () => "/themes" as const,
+  themeDetail: (themeId: string) => `/themes/${themeId}` as const,
+
   // ── 議案 ──────────────────────────────────────────
   billsList: () => "/bills" as const,
   billDetail: (billId: string) => `/bills/${billId}` as const,

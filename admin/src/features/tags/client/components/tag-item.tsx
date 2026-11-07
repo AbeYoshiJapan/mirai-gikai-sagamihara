@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +32,10 @@ export function TagItem({ tag }: TagItemProps) {
   const [editDescription, setEditDescription] = useState(tag.description ?? "");
   const [editFeaturedPriority, setEditFeaturedPriority] = useState(
     tag.featured_priority?.toString() ?? ""
+  );
+  const [editIsTheme, setEditIsTheme] = useState(tag.is_theme);
+  const [editThemeOrder, setEditThemeOrder] = useState(
+    tag.theme_order.toString()
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -61,6 +66,8 @@ export function TagItem({ tag }: TagItemProps) {
         label: editLabel,
         description: editDescription.trim() || null,
         featured_priority: priority,
+        is_theme: editIsTheme,
+        theme_order: Number.parseInt(editThemeOrder, 10) || 0,
       });
 
       if (result.error) {
@@ -100,6 +107,8 @@ export function TagItem({ tag }: TagItemProps) {
     setEditLabel(tag.label);
     setEditDescription(tag.description ?? "");
     setEditFeaturedPriority(tag.featured_priority?.toString() ?? "");
+    setEditIsTheme(tag.is_theme);
+    setEditThemeOrder(tag.theme_order.toString());
     setIsEditing(false);
   };
 
@@ -144,6 +153,35 @@ export function TagItem({ tag }: TagItemProps) {
             </p>
           </div>
 
+          <div className="space-y-2 rounded-md border bg-gray-50 p-3">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`theme-${tag.id}`}
+                checked={editIsTheme}
+                onCheckedChange={(checked) => setEditIsTheme(checked === true)}
+                disabled={isSubmitting}
+              />
+              <Label htmlFor={`theme-${tag.id}`}>
+                テーマのページを公開する
+              </Label>
+            </div>
+            <p className="text-sm text-gray-500">
+              オンにすると、公開サイトの「テーマ」に出て、このタグの議案と、ひも付けた議会での質問をまとめて見られます。説明文はテーマのページの冒頭に出ます。
+            </p>
+            <div className="flex items-center gap-2">
+              <Label htmlFor={`theme-order-${tag.id}`}>並び順</Label>
+              <Input
+                id={`theme-order-${tag.id}`}
+                type="number"
+                className="w-24"
+                value={editThemeOrder}
+                onChange={(e) => setEditThemeOrder(e.target.value)}
+                disabled={isSubmitting}
+              />
+              <span className="text-sm text-gray-500">小さいほど先</span>
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <Button onClick={handleUpdate} disabled={isSubmitting}>
               {isSubmitting ? "保存中..." : "保存"}
@@ -170,6 +208,11 @@ export function TagItem({ tag }: TagItemProps) {
                 {tag.featured_priority && (
                   <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
                     Featured優先度: {tag.featured_priority}
+                  </span>
+                )}
+                {tag.is_theme && (
+                  <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                    テーマ公開中（並び順 {tag.theme_order}）
                   </span>
                 )}
               </div>

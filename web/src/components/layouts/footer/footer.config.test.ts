@@ -41,6 +41,24 @@ describe("footer.config", () => {
     );
   });
 
+  it("議会での質問の機能が有効なときだけ、議会での質問とテーマへのリンクを出す", () => {
+    const enabled = {
+      ...base,
+      features: { ...base.features, council_questions: true },
+    };
+    expect(buildPrimaryLinks(enabled).map((link) => link.href)).toEqual(
+      expect.arrayContaining([routes.councilQuestions(), routes.themes()])
+    );
+
+    const disabled = {
+      ...base,
+      features: { ...base.features, council_questions: false },
+    };
+    const hrefs = buildPrimaryLinks(disabled).map((link) => link.href);
+    expect(hrefs).not.toContain(routes.councilQuestions());
+    expect(hrefs).not.toContain(routes.themes());
+  });
+
   it("policyLinks の先頭に掲載方針、続いて規約ページ・正式ルート案内・開発者向けページへの内部リンクが含まれる", () => {
     const hrefs = buildPolicyLinks(base).map((link) => link.href);
 

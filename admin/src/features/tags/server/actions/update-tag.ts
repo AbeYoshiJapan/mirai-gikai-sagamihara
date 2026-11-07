@@ -23,6 +23,8 @@ export async function updateTag(input: UpdateTagInput) {
       label: input.label.trim(),
       description: input.description,
       featured_priority: input.featured_priority,
+      is_theme: input.is_theme,
+      theme_order: input.theme_order,
     });
 
     if (result.error) {
@@ -30,7 +32,10 @@ export async function updateTag(input: UpdateTagInput) {
     }
 
     // web側のキャッシュを無効化
-    await invalidateWebCache([WEB_CACHE_TAGS.BILLS]);
+    await invalidateWebCache([
+      WEB_CACHE_TAGS.BILLS,
+      WEB_CACHE_TAGS.COUNCIL_QUESTIONS,
+    ]);
 
     return { data: result.data };
   } catch (error) {

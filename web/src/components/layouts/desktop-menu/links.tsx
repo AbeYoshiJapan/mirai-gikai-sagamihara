@@ -24,6 +24,16 @@ export function DesktopMenuLinks() {
       external: false,
     });
   }
+  if (features.council_questions) {
+    links.push(
+      {
+        label: "議会での質問",
+        href: routes.councilQuestions(),
+        external: false,
+      },
+      { label: "テーマ", href: routes.themes(), external: false }
+    );
+  }
   links.push(
     { label: "掲載方針", href: routes.editorialPolicy(), external: false },
     { label: "利用規約", href: routes.terms(), external: false },

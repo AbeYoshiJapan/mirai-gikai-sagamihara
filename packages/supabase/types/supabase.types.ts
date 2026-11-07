@@ -614,6 +614,132 @@ export type Database = {
           },
         ]
       }
+      council_question_themes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          item_number: number
+          question_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          item_number: number
+          question_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          item_number?: number
+          question_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "council_question_themes_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "council_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "council_question_themes_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      council_questions: {
+        Row: {
+          bill_refs: string[]
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          faction_label: string
+          fetched_at: string | null
+          id: string
+          is_published: boolean
+          items: Json
+          kind: string
+          list_kind: string
+          meeting_key: string
+          meeting_name: string
+          member_name: string
+          method: string | null
+          minutes_url: string | null
+          notice_date: string | null
+          operator_edited_at: string | null
+          order_no: number
+          pending_update: Json | null
+          question_date: string | null
+          seat_number: number | null
+          site_snapshot: Json | null
+          source_url: string | null
+          stream_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          bill_refs?: string[]
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          faction_label?: string
+          fetched_at?: string | null
+          id?: string
+          is_published?: boolean
+          items?: Json
+          kind: string
+          list_kind: string
+          meeting_key: string
+          meeting_name: string
+          member_name: string
+          method?: string | null
+          minutes_url?: string | null
+          notice_date?: string | null
+          operator_edited_at?: string | null
+          order_no: number
+          pending_update?: Json | null
+          question_date?: string | null
+          seat_number?: number | null
+          site_snapshot?: Json | null
+          source_url?: string | null
+          stream_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bill_refs?: string[]
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          faction_label?: string
+          fetched_at?: string | null
+          id?: string
+          is_published?: boolean
+          items?: Json
+          kind?: string
+          list_kind?: string
+          meeting_key?: string
+          meeting_name?: string
+          member_name?: string
+          method?: string | null
+          minutes_url?: string | null
+          notice_date?: string | null
+          operator_edited_at?: string | null
+          order_no?: number
+          pending_update?: Json | null
+          question_date?: string | null
+          seat_number?: number | null
+          site_snapshot?: Json | null
+          source_url?: string | null
+          stream_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       diet_sessions: {
         Row: {
           created_at: string
@@ -1543,7 +1669,9 @@ export type Database = {
           description: string | null
           featured_priority: number | null
           id: string
+          is_theme: boolean
           label: string
+          theme_order: number
           updated_at: string
         }
         Insert: {
@@ -1551,7 +1679,9 @@ export type Database = {
           description?: string | null
           featured_priority?: number | null
           id?: string
+          is_theme?: boolean
           label: string
+          theme_order?: number
           updated_at?: string
         }
         Update: {
@@ -1559,7 +1689,9 @@ export type Database = {
           description?: string | null
           featured_priority?: number | null
           id?: string
+          is_theme?: boolean
           label?: string
+          theme_order?: number
           updated_at?: string
         }
         Relationships: []

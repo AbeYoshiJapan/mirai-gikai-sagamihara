@@ -11,6 +11,8 @@ export async function loadTags(): Promise<TagWithBillCount[]> {
       label: tag.label,
       description: tag.description,
       featured_priority: tag.featured_priority,
+      is_theme: tag.is_theme,
+      theme_order: tag.theme_order,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
       bill_count: tag.bills_tags?.[0]?.count ?? 0,

@@ -40,6 +40,8 @@ export default defineConfig({
       // ルート node_modules には zod / MCP SDK が無いため、
       // admin の node_modules（pnpm の symlink）経由で解決する。
       zod: path.resolve(repoRoot, "admin/node_modules/zod"),
+      // 通告一覧の PDF を読むのに使う（admin にだけ入っている）
+      unpdf: path.resolve(repoRoot, "admin/node_modules/unpdf"),
       "@modelcontextprotocol/sdk": path.resolve(
         repoRoot,
         "admin/node_modules/@modelcontextprotocol/sdk"

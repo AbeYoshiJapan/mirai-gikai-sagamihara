@@ -28,6 +28,7 @@ export type PublicSiteSettings = {
     | "catchphrase"
     | "photo_url"
     | "faction"
+    | "name_in_council"
     | "affiliations"
     | "sns"
     | "contact_label"
@@ -72,6 +73,7 @@ export function toPublicSiteSettings(s: SiteSettings): PublicSiteSettings {
       catchphrase: s.operator.catchphrase,
       photo_url: s.operator.photo_url,
       faction: s.operator.faction,
+      name_in_council: s.operator.name_in_council,
       affiliations: s.operator.affiliations,
       sns: s.operator.sns,
       contact_label: s.operator.contact_label,

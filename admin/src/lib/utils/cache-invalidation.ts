@@ -13,6 +13,7 @@ export const WEB_CACHE_TAGS = {
   SITE_SETTINGS: "site-settings",
   READER_POSTS: "reader-posts",
   COUNCIL_MEETINGS: "council-meetings",
+  COUNCIL_QUESTIONS: "council-questions",
 } as const;
 
 export type WebCacheTag = (typeof WEB_CACHE_TAGS)[keyof typeof WEB_CACHE_TAGS];
