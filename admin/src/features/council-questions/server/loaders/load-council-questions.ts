@@ -24,13 +24,16 @@ export async function loadCouncilQuestionsHome(): Promise<{
   featureEnabled: boolean;
   /** 「運営者」と添える、議会での氏名（空なら添えない） */
   nameInCouncil: string;
+  /** DB の更新（db push）が済み、議会での質問の表があるか */
+  dbReady: boolean;
 }> {
   const [{ settings }, meetings] = await Promise.all([
     loadSiteSettings(),
     findQuestionMeetingSummaries(),
   ]);
   return {
-    meetings,
+    meetings: meetings ?? [],
+    dbReady: meetings !== null,
     noticePageUrl: resolveNoticePageUrl({
       billsPage: settings.links.bills_page,
       importSources: settings.import.sources,

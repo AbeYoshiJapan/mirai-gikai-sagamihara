@@ -23,6 +23,11 @@ describe("mapTagDbError", () => {
     expect(mapTagDbError(error, "更新")).toBe("更新するフィールドがありません");
   });
 
+  it("テーマの列がまだ無い DB では、DB の更新を案内する", () => {
+    const error = { code: "MISSING_THEME_COLUMNS", message: "no column" };
+    expect(mapTagDbError(error, "更新")).toContain("DB の更新が必要です");
+  });
+
   it("未知のエラーコードでは操作名付きの汎用メッセージを返す", () => {
     const error = { code: "42501", message: "permission denied" };
     expect(mapTagDbError(error, "作成")).toBe(

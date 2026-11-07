@@ -2,6 +2,7 @@ import "server-only";
 
 import type { Database } from "@mirai-gikai/supabase";
 import { createAdminClient } from "@mirai-gikai/supabase";
+import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
 
 type TagUpdate = Database["public"]["Tables"]["tags"]["Update"];
 
@@ -26,10 +27,42 @@ export async function findAllTagsWithBillCount() {
     .order("created_at", { ascending: true });
 
   if (error) {
+    // DB の更新（テーマの列の追加）より先にデプロイされても、議案の編集やタグ管理が止まらないようにする
+    if (isMissingSchemaError(error)) return findAllTagsWithoutThemeColumns();
     throw new Error(`タグの取得に失敗しました: ${error.message}`);
   }
 
   return data;
+}
+
+/** テーマの列がまだ無い DB 向け。テーマは「公開しない」として返す */
+async function findAllTagsWithoutThemeColumns() {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("tags")
+    .select(
+      `
+      id,
+      label,
+      description,
+      featured_priority,
+      created_at,
+      updated_at,
+      bills_tags(count)
+    `
+    )
+    .order("featured_priority", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(`タグの取得に失敗しました: ${error.message}`);
+  }
+
+  return (data ?? []).map((tag) => ({
+    ...tag,
+    is_theme: false,
+    theme_order: 0,
+  }));
 }
 
 export async function createTagRecord(input: {
@@ -112,6 +145,13 @@ export async function updateTagRecord(
       return {
         data: null,
         error: { code: error.code, message: error.message },
+      };
+    }
+    if (isMissingSchemaError(error)) {
+      // テーマの列は DB の更新（db push）で入る
+      return {
+        data: null,
+        error: { code: "MISSING_THEME_COLUMNS", message: error.message },
       };
     }
     throw new Error(`タグの更新に失敗しました: ${error.message}`);

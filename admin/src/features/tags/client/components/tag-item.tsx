@@ -61,13 +61,18 @@ export function TagItem({ tag }: TagItemProps) {
     setIsSubmitting(true);
 
     try {
+      const themeOrder = Number.parseInt(editThemeOrder, 10) || 0;
+      const themeChanged =
+        editIsTheme !== tag.is_theme || themeOrder !== tag.theme_order;
       const result = await updateTag({
         id: tag.id,
         label: editLabel,
         description: editDescription.trim() || null,
         featured_priority: priority,
-        is_theme: editIsTheme,
-        theme_order: Number.parseInt(editThemeOrder, 10) || 0,
+        // テーマの設定は変えたときだけ送る（DB の更新前でも、名前などの変更はできるように）
+        ...(themeChanged
+          ? { is_theme: editIsTheme, theme_order: themeOrder }
+          : {}),
       });
 
       if (result.error) {

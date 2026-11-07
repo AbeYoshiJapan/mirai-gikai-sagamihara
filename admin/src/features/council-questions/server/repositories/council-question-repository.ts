@@ -6,6 +6,7 @@ import {
   type Database,
   type Json,
 } from "@mirai-gikai/supabase";
+import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
 import type {
   AdminCouncilQuestion,
   CouncilQuestionKind,
@@ -47,14 +48,16 @@ function toAdminQuestion(row: QuestionRow): AdminCouncilQuestion {
 }
 
 /** 定例会議ごとの件数（新しい定例会議が先） */
+/** 定例会議ごとの件数。DB の更新（db push）前で表が無ければ null */
 export async function findQuestionMeetingSummaries(): Promise<
-  QuestionMeetingSummary[]
+  QuestionMeetingSummary[] | null
 > {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("council_questions")
     .select("meeting_key, meeting_name, is_published, pending_update");
   if (error) {
+    if (isMissingSchemaError(error)) return null;
     throw new Error(`議会での質問の取得に失敗しました: ${error.message}`);
   }
   const byKey = new Map<string, QuestionMeetingSummary>();

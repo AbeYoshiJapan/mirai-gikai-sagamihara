@@ -14,8 +14,23 @@ import { loadCouncilQuestionsHome } from "../loaders/load-council-questions";
 
 /** 管理画面「議会での質問」。通告一覧の取込と、定例会議ごとの一覧 */
 export async function CouncilQuestionsPage() {
-  const { meetings, noticePageUrl, featureEnabled, nameInCouncil } =
+  const { meetings, noticePageUrl, featureEnabled, nameInCouncil, dbReady } =
     await loadCouncilQuestionsHome();
+
+  if (!dbReady) {
+    return (
+      <div className="container mx-auto space-y-4 py-8">
+        <h1 className="text-2xl font-bold">議会での質問</h1>
+        <p className="rounded-lg border border-orange-300 bg-orange-50 p-4 text-sm text-orange-900">
+          DB の更新がまだです。手元のリポジトリを最新にして（git pull）、
+          <code className="mx-1 rounded bg-white px-1">
+            npx supabase db push
+          </code>
+          を実行すると使えるようになります。
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto space-y-6 py-8">
