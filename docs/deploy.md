@@ -39,6 +39,7 @@
    - 1 つ目：Project Name `mirai-gikai-sagamihara-web`、Root Directory `web`
    - 2 つ目：Project Name `mirai-gikai-sagamihara-admin`、Root Directory `admin`
    - Framework Preset は Next.js（自動検出）、Install Command は `pnpm install --frozen-lockfile`、Production Branch は `main`
+   - admin は `admin/package.json` の `engines`（Node.js 22.x）で動きます（通告一覧の PDF を読む pdf.js が Node.js 22 以上を要るため。Project Settings の Node.js Version より優先されます）
 2. 下の環境変数を Production に入れてから Deploy します（入れ忘れても Settings → Environment Variables で追加して Redeploy すれば大丈夫です）。
 3. web と admin の URL が決まったら、`NEXT_PUBLIC_WEB_URL`・`ADMIN_URL` を両プロジェクトに入れ直し、Supabase の Redirect URLs（1-5）を合わせて Redeploy します。
 4. admin は Supabase のログイン（admin ロール）で守られていますが、二重の守りとして **Settings → Deployment Protection → Vercel Authentication** を有効にしておきます

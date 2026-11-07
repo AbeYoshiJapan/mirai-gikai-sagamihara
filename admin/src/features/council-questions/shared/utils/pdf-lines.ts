@@ -255,7 +255,22 @@ export function glyphsToLines(page: number, glyphs: Glyph[]): PdfLine[] {
 }
 
 /** PDF のすべてのページから、見えている文字の行を上から順に取り出す */
+/**
+ * PDF を読む pdf.js は、Node.js 22 からある機能（Iterator など）を使う。
+ * 古い Node.js では読み込みの途中で分かりにくいエラーになるので、先に知らせる。
+ */
+function assertPdfRuntime(): void {
+  if (typeof (globalThis as { Iterator?: unknown }).Iterator === "undefined") {
+    const version =
+      typeof process !== "undefined" ? process.version : "不明な版";
+    throw new Error(
+      `PDF を読むには Node.js 22 以上が必要です（いまは ${version}）。Vercel では admin の Node.js を 22.x にしてください`
+    );
+  }
+}
+
 export async function extractPdfLines(bytes: Uint8Array): Promise<PdfLine[]> {
+  assertPdfRuntime();
   const pdfjs = await getResolvedPDFJS();
   const OPS = pdfjs.OPS as unknown as Record<string, number>;
   // pdfjs は渡したバッファを手放すことがあるので写しを渡す
