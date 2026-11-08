@@ -20,7 +20,7 @@ export function mapTagDbError(error: DbError, operation: TagOperation): string {
     return "更新するフィールドがありません";
   }
   if (error.code === "MISSING_THEME_COLUMNS") {
-    return "テーマの設定には DB の更新が必要です（npx supabase db push を実行してください）";
+    return "テーマの設定には DB の更新が必要です（npx supabase db push --remote を実行してください）";
   }
   return `タグの${operation}に失敗しました: ${error.message}`;
 }

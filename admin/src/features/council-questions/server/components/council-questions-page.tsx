@@ -24,7 +24,7 @@ export async function CouncilQuestionsPage() {
         <p className="rounded-lg border border-orange-300 bg-orange-50 p-4 text-sm text-orange-900">
           DB の更新がまだです。手元のリポジトリを最新にして（git pull）、
           <code className="mx-1 rounded bg-white px-1">
-            npx supabase db push
+            npx supabase db push --remote
           </code>
           を実行すると使えるようになります。
         </p>
