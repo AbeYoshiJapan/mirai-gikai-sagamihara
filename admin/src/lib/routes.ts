@@ -25,6 +25,8 @@ export const routes = {
   importPage: () => "/import" as const,
   readerOpinions: () => "/reader-opinions" as const,
   readerQuestions: () => "/reader-questions" as const,
+  /** PR・広報（X 投稿の下書き。投稿は運営者が自分で行う） */
+  pr: () => "/pr" as const,
   settings: () => "/settings" as const,
   setup: () => "/setup" as const,
 

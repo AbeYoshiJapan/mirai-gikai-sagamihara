@@ -6,6 +6,7 @@ import {
   brandColorsToCss,
   councilWording,
   hasSessionSystemPage,
+  renderCollaborationNote,
   renderEditorialPolicy,
   renderLegalText,
   renderOperatorDisclaimer,
@@ -37,6 +38,26 @@ describe("renderLegalText / renderOperatorDisclaimer", () => {
     expect(terms).not.toContain("{{");
     const disclaimer = renderOperatorDisclaimer(s);
     expect(disclaimer).toContain("相模原市議会・相模原市の公式サイトではありません");
+  });
+});
+
+describe("renderCollaborationNote", () => {
+  it("いまは運営者が個人で立ち上げたことと、協力のお願いを、名前と窓口を入れて示す", () => {
+    const s = structuredClone(SAGAMIHARA_PRESET);
+    s.operator.name = "運営 太郎";
+    s.operator.title = "相模原市議会議員";
+    s.operator.contact_label = "お問い合わせフォーム";
+    const text = renderCollaborationNote(s);
+    expect(text).toContain("相模原市議会議員の運営 太郎が個人で立ち上げ");
+    expect(text).toContain("ほかの議員や、議員ではない方にも協力をお願いし");
+    expect(text).toContain("運営者の窓口（お問い合わせフォーム）");
+    expect(text).not.toContain("{{");
+  });
+
+  it("空にしたら出さない", () => {
+    const s = structuredClone(SAGAMIHARA_PRESET);
+    s.site.collaboration_md = "  ";
+    expect(renderCollaborationNote(s)).toBe("");
   });
 });
 

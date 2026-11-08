@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { getSiteSettings } from "@/lib/site-settings/loader";
+import { buildPostRecipientNotice } from "../../shared/utils/post-recipient-notice";
 
 /**
  * 意見・質問フォームの下に出す注意書き。
- * このサイトへの投稿は議会への正式な意思表示ではないことを示し、請願・陳情の案内へ誘導する。
+ * 投稿の送り先と対応者（運営者）を示し、議会への正式な意思表示ではないことと、請願・陳情の案内へ誘導する。
  */
-export function ReaderPostNotice({ councilName }: { councilName: string }) {
+export async function ReaderPostNotice({
+  councilName,
+}: {
+  councilName: string;
+}) {
+  const { operator } = await getSiteSettings();
   return (
     <p className="text-xs leading-[1.7] text-mirai-text-subtle">
-      このフォームの投稿は、このサイトの運営者に届きます。{councilName}
+      {buildPostRecipientNotice(operator.name)}
+      {councilName}
       への正式な意思表示（請願・陳情）にはなりません。正式に届ける方法は
       <Link
         href={routes.petitionGuide()}

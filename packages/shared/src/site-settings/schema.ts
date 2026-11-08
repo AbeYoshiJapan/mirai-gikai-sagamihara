@@ -32,6 +32,10 @@ export const siteSectionSchema = z.object({
   tagline: shortText(120),
   /** サイト名の由来・込めた思い（Markdown、{{key}} 差し込み可）。トップの「このサイトについて」に出す。空なら出さない */
   name_note_md: z.string().max(4000),
+  /** これからの運営（協力のお願い。Markdown、{{key}} 差し込み可）。トップの「このサイトについて」に出す。空なら出さない */
+  collaboration_md: z.string().max(4000),
+  /** X（Twitter）に投稿するときのハッシュタグ（例: #相模原市議会）。管理画面の「PR・広報」の下書きに入れる */
+  x_hashtags: shortText(100),
   /** メタ説明文・OGP の説明 */
   description: shortText(300),
   /** 本番 URL（sitemap・canonical・OGP に使う）。空なら環境変数の値 */

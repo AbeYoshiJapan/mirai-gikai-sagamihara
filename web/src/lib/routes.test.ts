@@ -1,5 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  BILL_PAGE_ANCHORS,
+  publicPaths,
+} from "@mirai-gikai/shared/public-paths";
 import { describe, expect, it } from "vitest";
 import { isDevRoute } from "../middleware";
 import { routes } from "./routes";
@@ -110,5 +114,37 @@ describe("routes", () => {
         `page.tsx が存在するが routes.ts に未定義のルート:\n${missing.map((r) => `  - ${r}`).join("\n")}`
       );
     }
+  });
+});
+
+describe("管理画面が使う公開ページのパス（@mirai-gikai/shared/public-paths）", () => {
+  it("web のルート定義と同じ形になっている", () => {
+    expect(publicPaths.home()).toBe(routes.home());
+    expect(publicPaths.billDetail("b1")).toBe(routes.billDetail("b1"));
+    expect(publicPaths.schedule()).toBe(routes.schedule());
+    expect(publicPaths.questions()).toBe(routes.questions());
+    expect(publicPaths.councilQuestionMeeting("2026-12")).toBe(
+      routes.councilQuestionMeeting("2026-12")
+    );
+    expect(publicPaths.councilQuestionDetail("2026-12", "q1")).toBe(
+      routes.councilQuestionDetail("2026-12", "q1")
+    );
+  });
+
+  it("議案のページの意見・質問の見出しに、ページ内リンクの行き先がある", () => {
+    const dir = path.join(
+      __dirname,
+      "../features/reader-posts/server/components"
+    );
+    const opinions = fs.readFileSync(
+      path.join(dir, "bill-reader-opinions-section.tsx"),
+      "utf8"
+    );
+    const questions = fs.readFileSync(
+      path.join(dir, "bill-reader-questions-section.tsx"),
+      "utf8"
+    );
+    expect(opinions).toContain(`id="${BILL_PAGE_ANCHORS.readerOpinions}"`);
+    expect(questions).toContain(`id="${BILL_PAGE_ANCHORS.readerQuestions}"`);
   });
 });

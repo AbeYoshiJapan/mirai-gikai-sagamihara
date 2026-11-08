@@ -6,7 +6,7 @@ import { StanceComment, StanceReason } from "./stance-reason";
 interface MiraiStanceCardProps {
   stance: MiraiStance;
   billStatus?: BillStatusEnum;
-  /** 見出し（例: 運営者の賛否）。サイト設定の呼び方に合わせて親が渡す */
+  /** 見出し（例: 阿部善博の賛否）。賛否は議員個人の行為なので、親が議員の名前で渡す */
   title?: string;
   /** カード上部に出すロゴ（サイト設定のロゴ） */
   logoSrc?: string;

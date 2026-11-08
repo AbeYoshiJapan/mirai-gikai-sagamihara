@@ -231,6 +231,10 @@
     "./council-meetings/council-year": {
       "types": "./src/council-meetings/council-year.ts",
       "default": "./src/council-meetings/council-year.ts"
+    },
+    "./public-paths": {
+      "types": "./src/public-paths.ts",
+      "default": "./src/public-paths.ts"
     }
   },
   "dependencies": {

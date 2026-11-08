@@ -1430,6 +1430,39 @@ export type Database = {
           },
         ]
       }
+      pr_post_logs: {
+        Row: {
+          body: string
+          channel: string
+          created_at: string
+          id: string
+          posted_at: string
+          posted_by: string | null
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          body: string
+          channel?: string
+          created_at?: string
+          id?: string
+          posted_at?: string
+          posted_by?: string | null
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          body?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          posted_at?: string
+          posted_by?: string | null
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: []
+      }
       preview_tokens: {
         Row: {
           bill_id: string

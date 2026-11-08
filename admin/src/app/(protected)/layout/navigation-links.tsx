@@ -27,6 +27,7 @@ const navigationLinks: {
     label: "意見・質問",
     activePrefixes: [routes.readerOpinions(), routes.readerQuestions()],
   },
+  { href: routes.pr(), label: "PR・広報" },
   { href: routes.admins(), label: "管理者" },
   { href: routes.settings(), label: "サイト設定" },
 ];
@@ -35,8 +36,9 @@ export function NavigationLinks() {
   const pathname = usePathname();
 
   return (
-    <nav>
-      <div className="flex space-x-8">
+    <nav className="overflow-x-auto">
+      {/* 項目が増えても名前が折り返さないよう、幅が足りなければ横にスクロールする */}
+      <div className="flex gap-x-6">
         {navigationLinks.map((link) => {
           const isActive = (link.activePrefixes ?? [link.href]).some((prefix) =>
             pathname.startsWith(prefix)
@@ -47,7 +49,7 @@ export function NavigationLinks() {
               key={link.href}
               href={link.href as Route}
               className={cn(
-                "inline-flex items-center gap-2 px-1 py-4 text-sm border-b-2 transition-colors",
+                "inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-1 py-4 text-sm border-b-2 transition-colors",
                 isActive
                   ? "border-blue-600 text-blue-600 font-semibold"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium"

@@ -1,5 +1,6 @@
 import type { SiteSettings } from "./schema";
 import {
+  DEFAULT_COLLABORATION_MD,
   DEFAULT_DATA_TERMS_MD,
   DEFAULT_DISCLAIMER_SHORT,
   DEFAULT_EDITORIAL_POLICY_MD,
@@ -20,6 +21,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     name: "みらい議会＠○○",
     tagline: "○○議会の議論をわかりやすく",
     name_note_md: "",
+    collaboration_md: DEFAULT_COLLABORATION_MD,
+    x_hashtags: "",
     description:
       "○○議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。",
     canonical_url: "",

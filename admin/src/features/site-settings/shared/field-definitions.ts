@@ -5,7 +5,10 @@ import {
   SAGAMIHARA_SESSION_SYSTEM_MD,
 } from "@mirai-gikai/shared/site-settings/presets";
 import type { SiteSettingsSection } from "@mirai-gikai/shared/site-settings/schema";
-import { DEFAULT_EDITORIAL_POLICY_MD } from "@mirai-gikai/shared/site-settings/templates";
+import {
+  DEFAULT_COLLABORATION_MD,
+  DEFAULT_EDITORIAL_POLICY_MD,
+} from "@mirai-gikai/shared/site-settings/templates";
 import type { SiteAssetKind } from "./constants";
 
 /**
@@ -124,6 +127,25 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
                 value: SAGAMIHARA_NAME_NOTE_MD,
               },
             ],
+          },
+          {
+            name: "collaboration_md",
+            label: "これからの運営（協力のお願い）",
+            kind: "markdown",
+            rows: 5,
+            fullWidth: true,
+            templated: true,
+            description:
+              "トップの「このサイトについて」に出します。いまの運営の形と、協力をお願いしたいことを書きます。協力者が増えたら書き換えてください。空なら出しません",
+            samples: [{ label: "既定の文", value: DEFAULT_COLLABORATION_MD }],
+          },
+          {
+            name: "x_hashtags",
+            label: "X のハッシュタグ",
+            kind: "text",
+            placeholder: "#相模原市議会",
+            description:
+              "管理画面の「PR・広報」で作る X 投稿の下書きの最後に入れます。空ならハッシュタグを入れません",
           },
           {
             name: "description",
