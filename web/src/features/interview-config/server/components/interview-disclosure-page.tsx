@@ -15,7 +15,7 @@ interface InterviewDisclosurePageProps {
 }
 
 async function StaticDisclosureSection() {
-  const { site, operator, council } = await getSiteSettings();
+  const { site, council } = await getSiteSettings();
   return (
     <div className="flex flex-col gap-3">
       <h1 className="text-2xl font-bold text-black leading-[1.5] my-4">
@@ -64,8 +64,7 @@ async function StaticDisclosureSection() {
               </li>
               <li>
                 <span className="font-bold">活用の範囲：</span>
-                回答内容は、運営者（{operator.name}
-                ）の議会活動・政策検討、およびAIを用いた統計的分析に限定して活用いたします。
+                回答内容は、運営者の議会活動・政策検討、およびAIを用いた統計的分析に限定して活用いたします。
               </li>
               <li>
                 <span className="font-bold">分析プロセスの透明化：</span>
@@ -79,7 +78,7 @@ async function StaticDisclosureSection() {
                 <li>
                   <span className="font-bold">公開を希望しない場合：</span>
                   回答者の承諾なく、原文や個人が特定できる形で外部公開されることはありません。ただし、統計的な集計結果、または個人を特定できない範囲に匿名化した上で、
-                  {operator.name}の{council.name}
+                  運営者の{council.name}
                   での質問等において引用・活用される場合があります。
                 </li>
                 <li>

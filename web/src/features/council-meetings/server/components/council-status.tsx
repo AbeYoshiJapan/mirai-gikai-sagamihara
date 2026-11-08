@@ -44,7 +44,7 @@ export async function CouncilStatus({
   today,
 }: CouncilStatusProps) {
   const { councilYear, currentPeriod, nextPeriod } = status;
-  const { operator, council } = await getSiteSettings();
+  const { council } = await getSiteSettings();
   // 文言はサイト設定（議会タブ）から。空なら会期の方式から自動で決まる
   const wording = councilWording(council);
   const showSystem = hasSessionSystemPage(council);
@@ -134,7 +134,7 @@ export async function CouncilStatus({
           )}
         </span>
         <p className="text-xs font-bold tracking-wide text-mirai-text-secondary">
-          {operator.name}が確認した情報だけを載せています（
+          運営者が確認した情報だけを載せています（
           <Link
             href={routes.editorialPolicy()}
             className="underline underline-offset-2 hover:opacity-80"

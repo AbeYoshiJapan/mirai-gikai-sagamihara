@@ -35,7 +35,7 @@ export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
-  const { features, council, operator, brand } = await getSiteSettings();
+  const { features, council, brand } = await getSiteSettings();
   // 利用者向け AI 機能（インタビュー・トピック分析）と意見・質問は機能フラグが立っているときだけ読む
   const [
     interviewConfig,
@@ -148,7 +148,6 @@ export async function BillDetailLayout({
               opinions={readerOpinions}
               municipality={council.municipality}
               councilName={council.name}
-              operatorName={operator.name}
             />
           </div>
         )}
@@ -160,7 +159,6 @@ export async function BillDetailLayout({
               billId={bill.id}
               questions={readerQuestions}
               councilName={council.name}
-              operatorName={operator.name}
             />
           </div>
         )}
@@ -190,7 +188,7 @@ export async function BillDetailLayout({
             <MiraiStanceCard
               stance={bill.mirai_stance}
               billStatus={bill.status}
-              title={`${operator.name || "運営者"}の賛否`}
+              title="運営者の賛否"
               logoSrc={brandAsset(brand, "logo_url")}
             />
           </div>

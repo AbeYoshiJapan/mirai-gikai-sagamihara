@@ -23,7 +23,6 @@ interface BillReaderOpinionsSectionProps {
   opinions: PublicReaderOpinion[];
   municipality: string;
   councilName: string;
-  operatorName: string;
 }
 
 /**
@@ -35,7 +34,6 @@ export function BillReaderOpinionsSection({
   opinions,
   municipality,
   councilName,
-  operatorName,
 }: BillReaderOpinionsSectionProps) {
   return (
     <section aria-labelledby="reader-opinions-heading">
@@ -46,8 +44,7 @@ export function BillReaderOpinionsSection({
         ✉️ この議案への意見
       </h2>
       <p className="mb-4 text-sm leading-[1.7] text-mirai-text-note">
-        寄せられた意見のうち、公開に同意いただき、{operatorName}
-        が内容を確認したものを掲載しています。
+        寄せられた意見のうち、公開に同意いただき、運営者が内容を確認したものを掲載しています。
       </p>
 
       {opinions.length > 0 && (
@@ -85,7 +82,7 @@ export function BillReaderOpinionsSection({
                 {opinion.reply_md.trim().length > 0 && (
                   <div className="mt-3 rounded-md bg-mirai-surface px-3 py-2.5">
                     <p className="mb-1 text-xs font-bold text-mirai-text-subtle">
-                      {operatorName}からの返信
+                      運営者からの返信
                     </p>
                     <ReaderPostMarkdown markdown={opinion.reply_md} />
                   </div>

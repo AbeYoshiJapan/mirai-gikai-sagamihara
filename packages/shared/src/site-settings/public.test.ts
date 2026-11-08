@@ -50,7 +50,9 @@ describe("renderEditorialPolicy", () => {
   it("運営者の確認・自動収集は仮取得・AI の扱いを、サイトの名前を入れて示す", () => {
     const text = renderEditorialPolicy(sagamihara());
     expect(text).toContain(`「${SAGAMIHARA_PRESET.site.name}」に載せているものは`);
-    expect(text).toContain("運営者（運営 太郎）が確認したもの");
+    // 運営者の名前は添えず、役割で書く（だれが運営者かは規約・運営者情報で示す）
+    expect(text).toContain("すべて運営者が確認したもの");
+    expect(text).not.toContain("運営 太郎");
     expect(text).toContain("仮の取得");
     expect(text).toContain("要確認");
     expect(text).not.toContain("{{");
@@ -59,7 +61,7 @@ describe("renderEditorialPolicy", () => {
   it("設定が空でも既定の文を出す（方針を消したままにしない）", () => {
     const s = sagamihara();
     s.legal.editorial_policy_md = "  \n";
-    expect(renderEditorialPolicy(s)).toContain("運営者（運営 太郎）が確認したもの");
+    expect(renderEditorialPolicy(s)).toContain("すべて運営者が確認したもの");
   });
 
   it("設定した文があればそれを使う", () => {

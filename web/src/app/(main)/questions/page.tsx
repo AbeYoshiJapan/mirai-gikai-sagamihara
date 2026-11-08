@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function QuestionsPage() {
   await requireFeature("question_form");
-  const [{ council, operator }, questions] = await Promise.all([
+  const [{ council }, questions] = await Promise.all([
     getSiteSettings(),
     getAllPublishedReaderQuestions(),
   ]);
@@ -33,7 +33,7 @@ export default async function QuestionsPage() {
     <LegalPageLayout
       title="質問と回答"
       enLabel="Q&A"
-      description={`${council.name}や議案、このサイトについて寄せられた質問と、${operator.name}の回答です。`}
+      description={`${council.name}や議案、このサイトについて寄せられた質問と、運営者の回答です。`}
     >
       <section className="space-y-4">
         <LegalSectionTitle>よくある質問</LegalSectionTitle>

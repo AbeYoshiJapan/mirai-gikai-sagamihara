@@ -40,7 +40,7 @@ export function MakePrivateModal({
   onConfirm,
   isSubmitting,
 }: MakePrivateModalProps) {
-  const { site, operator, council } = useSiteSettings();
+  const { site, council } = useSiteSettings();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="py-9">
@@ -57,7 +57,7 @@ export function MakePrivateModal({
             非公開にした場合、あなたのご意見が世の中に公開されることはありません。
           </CheckListItem>
           <CheckListItem>
-            {operator.name}が{council.name}
+            運営者が{council.name}
             での質問などの参考にさせていただきます。
           </CheckListItem>
         </div>

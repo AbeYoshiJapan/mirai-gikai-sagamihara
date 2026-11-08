@@ -30,7 +30,7 @@ export function CurrentDietSession({
   now,
 }: CurrentDietSessionProps) {
   const inSession = session !== null;
-  const { operator, council } = useSiteSettings();
+  const { council } = useSiteSettings();
 
   // ヒーローを外したのでこのカードが最上部に来る。ヘッダーは fixed で
   // main-layout の上余白は md 以上にしか効かないため、モバイルでは
@@ -69,7 +69,7 @@ export function CurrentDietSession({
         )}
       </div>
       <p className="pt-2 text-right text-xs font-bold tracking-wide text-mirai-text-secondary">
-        {operator.name}が確認した情報だけを載せています（
+        運営者が確認した情報だけを載せています（
         <Link
           href={routes.editorialPolicy()}
           className="underline underline-offset-2 hover:opacity-80"

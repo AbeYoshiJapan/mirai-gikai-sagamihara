@@ -27,7 +27,7 @@ export function InterviewPublicConsentModal({
   onSubmit,
   isSubmitting,
 }: InterviewPublicConsentModalProps) {
-  const { site, operator } = useSiteSettings();
+  const { site } = useSiteSettings();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="py-9">
@@ -60,8 +60,7 @@ export function InterviewPublicConsentModal({
           </div>
 
           <p className="text-sm text-black">
-            非公開で提出した場合でも、ご意見は運営者（{operator.name}
-            ）の議会活動・政策検討に活用させていただきます。
+            非公開で提出した場合でも、ご意見は運営者の議会活動・政策検討に活用させていただきます。
           </p>
         </div>
 

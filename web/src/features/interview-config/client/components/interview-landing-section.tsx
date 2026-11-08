@@ -12,11 +12,11 @@ interface InterviewLandingSectionProps {
   billId: string;
 }
 
-function getCheckPoints(operatorName: string, councilName: string): string[] {
+function getCheckPoints(councilName: string): string[] {
   return [
     "所要時間は約5分〜",
     "AIがあなたのご意見を深掘り",
-    `${operatorName}が${councilName}での質問などに活用`,
+    `運営者が${councilName}での質問などに活用`,
   ];
 }
 
@@ -42,8 +42,8 @@ function _CheckPoint({ text }: { text: string }) {
 }
 
 function _CheckPointsList() {
-  const { operator, council } = useSiteSettings();
-  const checkPoints = getCheckPoints(operator.name, council.name);
+  const { council } = useSiteSettings();
+  const checkPoints = getCheckPoints(council.name);
   return (
     <div className="flex flex-col gap-2">
       {checkPoints.map((text) => (

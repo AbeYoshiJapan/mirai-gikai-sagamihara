@@ -143,7 +143,7 @@ function _InterviewOverviewSection({
   billName: string;
   previewToken?: string;
 }) {
-  const { operator, council } = useSiteSettings();
+  const { council } = useSiteSettings();
   const billLink = getBillDetailLink(billId, previewToken);
 
   return (
@@ -163,7 +163,7 @@ function _InterviewOverviewSection({
           について、AIがあなたの考えを深掘りするチャット型インタビューです
         </p>
         <p>
-          いただいたご意見は、{operator.name}が{council.name}
+          いただいたご意見は、運営者が{council.name}
           での質問などの参考にします。ご本人が公開を選んだ場合は、このサイト上に公開されます。
         </p>
       </div>

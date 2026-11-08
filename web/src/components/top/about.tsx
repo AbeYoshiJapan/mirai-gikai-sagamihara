@@ -7,7 +7,7 @@ import { getSiteSettings } from "@/lib/site-settings/loader";
 
 export async function About() {
   const settings = await getSiteSettings();
-  const { site, operator, council } = settings;
+  const { site, council } = settings;
   // サイト名の由来・込めた思い（サイト設定「サイト名について」。空なら出さない）
   const nameNote = renderSiteNameNote(settings);
   const nameNoteContent = nameNote ? await parseMarkdown(nameNote) : null;
@@ -52,8 +52,7 @@ export async function About() {
               </Link>
               ）。
               <br />
-              なお、本サービスは{operator.title}の{operator.name}
-              が、チームみらいの「みらい議会」を元に作成したものです。チームみらいが運営しているものではありません。
+              なお、本サービスは運営者が、チームみらいの「みらい議会」を元に作成したものです。チームみらいが運営しているものではありません。
             </p>
           </div>
 

@@ -9,7 +9,6 @@ interface BillReaderQuestionsSectionProps {
   billId: string;
   questions: PublicReaderQuestion[];
   councilName: string;
-  operatorName: string;
 }
 
 /**
@@ -20,7 +19,6 @@ export function BillReaderQuestionsSection({
   billId,
   questions,
   councilName,
-  operatorName,
 }: BillReaderQuestionsSectionProps) {
   return (
     <section aria-labelledby="reader-questions-heading">
@@ -31,8 +29,7 @@ export function BillReaderQuestionsSection({
         ❓ この議案への質問と回答
       </h2>
       <p className="mb-4 text-sm leading-[1.7] text-mirai-text-note">
-        寄せられた質問に{operatorName}
-        が回答したもののうち、公開に同意いただいたものを掲載しています。
+        寄せられた質問に運営者が回答したもののうち、公開に同意いただいたものを掲載しています。
         {questions.length === 0 && "まだ公開している質問はありません。"}
         <Link
           href={routes.questions()}

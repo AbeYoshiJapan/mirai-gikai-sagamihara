@@ -55,7 +55,7 @@ function badgeMessage(
  * パブコメ中は自治体の募集ページへのボタンを一番目立たせる。
  */
 export function PlanPhaseProgress(props: PlanPhaseProgressProps) {
-  const { council, operator } = useSiteSettings();
+  const { council } = useSiteSettings();
   const municipality = council.municipality;
   const STEPS = buildSteps(municipality);
   const { phase, publicCommentUrl } = props;
@@ -110,7 +110,7 @@ export function PlanPhaseProgress(props: PlanPhaseProgressProps) {
               <strong>
                 {municipality}の正式なパブリックコメントではありません
               </strong>
-              。{operator.name}が、{council.name}
+              。運営者が、{council.name}
               での質問などの参考にします。{municipality}
               がパブリックコメントを始めたら、このページで募集ページをご案内します。
             </p>

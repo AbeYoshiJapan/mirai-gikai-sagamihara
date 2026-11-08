@@ -28,7 +28,7 @@ interface ReportCompletePageProps {
 export async function ReportCompletePage({
   reportId,
 }: ReportCompletePageProps) {
-  const { operator, council } = await getSiteSettings();
+  const { council } = await getSiteSettings();
   // レポートIDから全ての情報を取得
   // 完了ページなので、所有者のみが閲覧できるように制限する
   const report = await getInterviewReportById(reportId, { onlyOwner: true });
@@ -81,7 +81,7 @@ export async function ReportCompletePage({
 
           {/* 活用メッセージ */}
           <p className="text-sm text-gray-800">
-            いただいた声は、{operator.name}が{council.name}
+            いただいた声は、運営者が{council.name}
             での質問などの参考にします
           </p>
         </div>

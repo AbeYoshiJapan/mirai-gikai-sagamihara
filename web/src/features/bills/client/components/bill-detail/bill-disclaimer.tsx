@@ -6,7 +6,7 @@ import { routes } from "@/lib/routes";
 import { useSiteSettings } from "@/lib/site-settings/provider";
 
 export function BillDisclaimer() {
-  const { council, operator } = useSiteSettings();
+  const { council } = useSiteSettings();
   return (
     <div className="space-y-6 pt-4 pb-10">
       {/* データの出典について */}
@@ -14,8 +14,7 @@ export function BillDisclaimer() {
         <h3 className="text-sm font-bold text-black">掲載コンテンツについて</h3>
         <p className="text-xs leading-relaxed text-mirai-text-note">
           掲載されている議案情報は、{council.primary_source_label}
-          など公開されている一次資料を基に、{operator.name}
-          がAIを活用して下書きを作り、内容を確認したうえで整理したものです。運営者が確認していない内容は載せていません（
+          など公開されている一次資料を基に、運営者がAIを活用して下書きを作り、内容を確認したうえで整理したものです。運営者が確認していない内容は載せていません（
           <Link
             href={routes.editorialPolicy()}
             className="underline underline-offset-2 hover:opacity-80"

@@ -124,7 +124,7 @@ export const DEFAULT_OPERATOR_DISCLAIMER_MD =
 
 export const DEFAULT_PETITION_GUIDE_MD = `## このサイトの意見フォームと正式な手続きの違い
 
-このサイトの意見フォーム・質問フォームに寄せられた内容は、運営者（{{operator_name}}）が議会活動の参考にするものです。{{council_name}}への正式な意思表示にはなりません。
+このサイトの意見フォーム・質問フォームに寄せられた内容は、運営者が議会活動の参考にするものです。{{council_name}}への正式な意思表示にはなりません。
 
 議会に正式に要望を届ける方法には、請願と陳情があります。制度の詳細と提出方法は {{council_name}}の案内ページでご確認ください。
 
@@ -140,7 +140,7 @@ export const DEFAULT_PETITION_GUIDE_MD = `## このサイトの意見フォー�
  */
 export const DEFAULT_EDITORIAL_POLICY_MD = `## 基本の考え方
 
-「{{site_name}}」に載せているものは、すべて運営者（{{operator_name}}）が確認したものです。AI が作った文章や、プログラムが自動で集めた情報を、運営者の確認なしに載せることはありません。
+「{{site_name}}」に載せているものは、すべて運営者が確認したものです。AI が作った文章や、プログラムが自動で集めた情報を、運営者の確認なしに載せることはありません。
 
 ## 情報の集め方
 
@@ -168,7 +168,7 @@ export const DEFAULT_EDITORIAL_POLICY_MD = `## 基本の考え方
 確認していても、誤りが残ることがあります。正確な内容は{{council_name}}の会議録・議案の原文でご確認ください。誤りに気づいた場合は、運営者の窓口（{{contact_label}}）までお知らせください。確かめたうえで直します。
 `;
 
-export const DEFAULT_INTERVIEW_CONSENT_MD =`回答は、運営者（{{operator_name}}）の議会活動・政策検討に利用します。公開に同意いただいた回答は、個人がわからない形で本サービスに掲載することがあります。`;
+export const DEFAULT_INTERVIEW_CONSENT_MD =`回答は、運営者の議会活動・政策検討に利用します。公開に同意いただいた回答は、個人がわからない形で本サービスに掲載することがあります。`;
 
 export const DEFAULT_DATA_TERMS_MD = `「{{site_name}}」が公開するデータ（議案の一覧・審議結果・会議予定など）は、{{council_name}}の公開資料をもとに運営者が整理したものです。出典を明記のうえ、自由に利用できます。正確な内容は公開元の資料でご確認ください。
 `;
