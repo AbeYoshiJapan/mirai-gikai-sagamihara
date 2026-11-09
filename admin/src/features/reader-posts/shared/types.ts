@@ -83,3 +83,8 @@ export type AnswerReaderQuestionInput = z.infer<
 >;
 
 export type ReaderPostActionResult = { success: true } | { error: string };
+
+/** 意見・質問の削除（元に戻せない） */
+export const deleteReaderPostInputSchema = z.object({
+  id: z.uuid(),
+});

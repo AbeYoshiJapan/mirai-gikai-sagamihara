@@ -17,8 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatJstDateTime } from "@/features/interview-reports/shared/utils/format-jst-date-time";
 import { routes } from "@/lib/routes";
+import { deleteReaderOpinion } from "../../server/actions/delete-reader-opinion";
 import { reviewReaderOpinion } from "../../server/actions/review-reader-opinion";
 import { REPLY_MAX_LENGTH, type ReaderOpinionItem } from "../../shared/types";
+import { DeleteReaderPostButton } from "./delete-reader-post-button";
 
 const STATUS_BADGE_CLASS: Record<ReaderOpinionStatus, string> = {
   received: "bg-amber-100 text-amber-900",
@@ -55,6 +57,18 @@ function OpinionCard({
         return;
       }
       toast.success(successMessage);
+      router.refresh();
+    });
+  };
+
+  const remove = () => {
+    startTransition(async () => {
+      const result = await deleteReaderOpinion({ id: item.id });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("削除しました");
       router.refresh();
     });
   };
@@ -166,6 +180,13 @@ function OpinionCard({
             未対応に戻す
           </Button>
         )}
+        <DeleteReaderPostButton
+          label="意見"
+          body={item.body}
+          isPublished={item.status === "published"}
+          disabled={isPending}
+          onDelete={remove}
+        />
         {item.published_at && (
           <span className="ml-auto text-xs text-gray-500">
             公開日時: {formatJstDateTime(item.published_at)}

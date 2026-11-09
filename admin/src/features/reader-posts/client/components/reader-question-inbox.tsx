@@ -18,7 +18,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatJstDateTime } from "@/features/interview-reports/shared/utils/format-jst-date-time";
 import { routes } from "@/lib/routes";
 import { answerReaderQuestion } from "../../server/actions/answer-reader-question";
+import { deleteReaderQuestion } from "../../server/actions/delete-reader-question";
 import { ANSWER_MAX_LENGTH, type ReaderQuestionItem } from "../../shared/types";
+import { DeleteReaderPostButton } from "./delete-reader-post-button";
 
 const STATUS_BADGE_CLASS: Record<ReaderQuestionStatus, string> = {
   received: "bg-amber-100 text-amber-900",
@@ -52,6 +54,18 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
         return;
       }
       toast.success(successMessage);
+      router.refresh();
+    });
+  };
+
+  const remove = () => {
+    startTransition(async () => {
+      const result = await deleteReaderQuestion({ id: item.id });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("削除しました");
       router.refresh();
     });
   };
@@ -223,6 +237,13 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             未回答に戻す
           </Button>
         )}
+        <DeleteReaderPostButton
+          label={kindLabel}
+          body={item.body}
+          isPublished={item.status === "published"}
+          disabled={isPending}
+          onDelete={remove}
+        />
         {item.published_at && (
           <span className="ml-auto text-xs text-gray-500">
             公開日時: {formatJstDateTime(item.published_at)}

@@ -6,6 +6,7 @@ import { buildPostRecipientNotice } from "../../shared/utils/post-recipient-noti
 /**
  * 意見・質問フォームの下に出す注意書き。
  * 投稿の送り先と対応者（運営者）を示し、議会への正式な意思表示ではないことと、請願・陳情の案内へ誘導する。
+ * 利用規約に反する投稿（広告・関係のない内容・個人情報を含むものなど）は削除することも示す。
  */
 export async function ReaderPostNotice({
   councilName,
@@ -27,7 +28,14 @@ export async function ReaderPostNotice({
       >
         議会に正式に届けるには
       </Link>
-      をご覧ください。個人情報は書かないでください。
+      をご覧ください。個人情報は書かないでください。広告や関係のない内容など、
+      <Link
+        href={routes.terms()}
+        className="mx-0.5 text-primary-accent underline"
+      >
+        利用規約
+      </Link>
+      に反する投稿は削除します。
     </p>
   );
 }

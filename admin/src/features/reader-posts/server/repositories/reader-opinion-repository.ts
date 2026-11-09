@@ -130,3 +130,23 @@ export async function updateReaderOpinionReview(params: {
     throw new Error(`Failed to update reader opinion: ${error.message}`);
   }
 }
+
+/**
+ * 意見を削除する（元に戻せない）。
+ * 消した意見の状態を返す（公開中だったかを見るため）。見つからなければ null。
+ */
+export async function deleteReaderOpinionById(
+  id: string
+): Promise<{ status: ReaderOpinionStatus } | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("reader_opinions")
+    .delete()
+    .eq("id", id)
+    .select("status")
+    .maybeSingle();
+  if (error) {
+    throw new Error(`Failed to delete reader opinion: ${error.message}`);
+  }
+  return data ? { status: data.status as ReaderOpinionStatus } : null;
+}

@@ -143,3 +143,23 @@ export async function updateReaderQuestionAnswer(params: {
     throw new Error(`Failed to update reader question: ${error.message}`);
   }
 }
+
+/**
+ * 質問（窓から届いた意見を含む）を削除する（元に戻せない）。
+ * 消した質問の状態を返す（公開中だったかを見るため）。見つからなければ null。
+ */
+export async function deleteReaderQuestionById(
+  id: string
+): Promise<{ status: ReaderQuestionStatus } | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("reader_questions")
+    .delete()
+    .eq("id", id)
+    .select("status")
+    .maybeSingle();
+  if (error) {
+    throw new Error(`Failed to delete reader question: ${error.message}`);
+  }
+  return data ? { status: data.status as ReaderQuestionStatus } : null;
+}
