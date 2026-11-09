@@ -9,13 +9,16 @@ import { buildPostRecipientNotice } from "../../shared/utils/post-recipient-noti
  */
 export async function ReaderPostNotice({
   councilName,
+  showRecipient = true,
 }: {
   councilName: string;
+  /** 送り先と対応者の一文を出すか（紹介文ですでに示している所では出さない） */
+  showRecipient?: boolean;
 }) {
   const { operator } = await getSiteSettings();
   return (
     <p className="text-xs leading-[1.7] text-mirai-text-subtle">
-      {buildPostRecipientNotice(operator.name)}
+      {showRecipient && buildPostRecipientNotice(operator.name)}
       {councilName}
       への正式な意思表示（請願・陳情）にはなりません。正式に届ける方法は
       <Link

@@ -29,7 +29,8 @@ export default async function ReaderQuestionsPage({
     <div className="container mx-auto py-8">
       <h1 className="mb-2 text-2xl font-bold">意見・質問</h1>
       <p className="mb-6 text-sm text-gray-500">
-        サイトの質問フォームに届いた投稿です。回答を書いて「回答済み」にし、投稿者が公開に同意している質問は「よくある質問」として公開できます。
+        質問フォームと、トップページの「質問・意見の窓」に届いた投稿です。窓から届いた意見には「意見」の印がつきます。
+        回答（返事）を書いて「回答済み」にし、投稿者が公開に同意しているものは「よくある質問」として公開できます。
         返信先が書かれている場合は、そちらへ直接お返事することもできます（返信先は公開されません）。
       </p>
 

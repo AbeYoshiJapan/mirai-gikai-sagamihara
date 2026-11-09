@@ -67,6 +67,30 @@ export function resolveSiteSettings(
 }
 
 /**
+ * 読み込み済みの設定に、あとから増えた項目の既定値を足す。
+ *
+ * 公開サイトは設定をしばらくキャッシュするため、項目を足した版を出した直後は、
+ * 前の版で作ったキャッシュ（新しい項目が無い）が返ることがある。そのまま使うと
+ * 新しい項目が undefined になって画面が壊れるので、読むたびにこれを通す。
+ * 純粋関数。保存値（あるもの）は変えない。
+ */
+export function withSettingsDefaults(
+  settings: SiteSettings,
+  defaults: SiteSettings = DEFAULT_SITE_SETTINGS
+): SiteSettings {
+  const filled = { ...defaults } as Record<string, unknown>;
+  for (const section of SITE_SETTINGS_SECTIONS) {
+    const base = defaults[section];
+    const value = (settings as Partial<SiteSettings>)[section];
+    filled[section] =
+      isPlainObject(base) && isPlainObject(value)
+        ? { ...base, ...value }
+        : (value ?? base);
+  }
+  return filled as SiteSettings;
+}
+
+/**
  * 1 セクション分の入力を検証する（管理画面の保存で使う）。
  * 失敗時は zod のエラーをそのまま投げる。
  */

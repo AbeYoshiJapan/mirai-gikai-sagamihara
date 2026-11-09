@@ -5,6 +5,7 @@ import type {
   VoteOutcome,
 } from "@mirai-gikai/shared/bill-stage/labels";
 import type { CouncilQuestionKind } from "@mirai-gikai/shared/council-questions/types";
+import type { ReaderQuestionKind } from "@mirai-gikai/shared/reader-posts/labels";
 
 /** 投稿の話題の種類（pr_post_logs.source_type と同じ） */
 export const PR_SOURCE_TYPES = [
@@ -60,6 +61,8 @@ export type PrOpinionsSource = {
 /** 下書きを作る材料：公開中の質問と回答 */
 export type PrQuestionSource = {
   id: string;
+  /** 質問か意見か */
+  kind: ReaderQuestionKind;
   billId: string | null;
   billTitle: string | null;
   question: string;

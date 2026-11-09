@@ -92,7 +92,7 @@ export async function loadPrPage(): Promise<PrPageData> {
         key: "reader-posts",
         title: "皆さんとのやりとり",
         description:
-          "公開中の意見（議案ごと）と、回答した質問です。意見は、投稿した方の文を X では引用しない下書きにしています。",
+          "公開中の意見（議案ごと）と、回答した質問・返事をした意見です。議案への意見は、投稿した方の文を X では引用しない下書きにしています。",
         emptyText: "公開中の意見・質問はまだありません。",
         drafts: [
           ...opinions.map((o) => buildReaderOpinionsDraft(o, ctx)),

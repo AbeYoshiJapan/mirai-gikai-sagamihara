@@ -1,6 +1,7 @@
 import type {
   ReaderOpinionAttributes,
   ReaderOpinionStance,
+  ReaderQuestionKind,
 } from "@mirai-gikai/shared/reader-posts/labels";
 
 export type SubmitReaderPostResult =
@@ -30,6 +31,8 @@ export type PublicReaderOpinion = {
 /** 公開ページに出す質問と回答（よくある質問） */
 export type PublicReaderQuestion = {
   id: string;
+  /** 質問か意見か（トップの窓から意見として届いたものは opinion） */
+  kind: ReaderQuestionKind;
   bill_id: string | null;
   bill_name: string | null;
   question: string;

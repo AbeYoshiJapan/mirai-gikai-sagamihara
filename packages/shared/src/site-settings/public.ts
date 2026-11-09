@@ -7,7 +7,11 @@ import {
 } from "./brand-presets";
 import type { SiteSettings } from "./schema";
 
-import { DEFAULT_EDITORIAL_POLICY_MD, renderTemplate } from "./templates";
+import {
+  DEFAULT_EDITORIAL_POLICY_MD,
+  DEFAULT_INQUIRY_INTRO,
+  renderTemplate,
+} from "./templates";
 
 export type { BrandAssetKey } from "./brand-presets";
 
@@ -194,6 +198,12 @@ export function councilWording(
 /** サイト名の由来（テンプレート展開済み）。空なら "" */
 export function renderSiteNameNote(s: SiteSettings): string {
   return renderTemplate(s.site.name_note_md, templateValues(s)).trim();
+}
+
+/** トップの「質問・意見の窓」の紹介文（テンプレート展開済み）。空なら既定文 */
+export function renderInquiryIntro(s: SiteSettings): string {
+  const text = s.site.inquiry_intro.trim() || DEFAULT_INQUIRY_INTRO;
+  return renderTemplate(text, templateValues(s)).trim();
 }
 
 /** 「これからの運営」（協力のお願い。テンプレート展開済み）。空なら空文字 */

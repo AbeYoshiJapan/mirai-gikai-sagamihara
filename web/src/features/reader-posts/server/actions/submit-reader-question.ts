@@ -1,5 +1,6 @@
 "use server";
 
+import type { ReaderQuestionKind } from "@mirai-gikai/shared/reader-posts/labels";
 import { headers } from "next/headers";
 import { createSlackWebhookNotifier } from "@/features/article-reports/server/utils/slack-webhook-notifier";
 import { getClientIp } from "@/features/open-data/shared/utils/client-ip";
@@ -15,6 +16,8 @@ export async function submitReaderQuestion(input: {
   body: string;
   contact?: string;
   consentToPublish?: boolean;
+  /** 質問か意見か（省略時は質問） */
+  kind?: ReaderQuestionKind;
 }): Promise<SubmitReaderPostResult> {
   if (!(await isFeatureEnabled("question_form"))) {
     return { ok: false, error: FEATURE_DISABLED_MESSAGE };

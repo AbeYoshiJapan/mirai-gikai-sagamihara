@@ -1,6 +1,7 @@
 import {
   READER_POST_BODY_MAX_LENGTH,
   READER_QUESTION_CONTACT_MAX_LENGTH,
+  READER_QUESTION_KINDS,
 } from "@mirai-gikai/shared/reader-posts/labels";
 import { z } from "zod";
 
@@ -25,6 +26,8 @@ export const readerQuestionInputSchema = z.object({
     .optional()
     .default(""),
   consentToPublish: z.boolean().optional().default(false),
+  /** 質問か意見か（トップの窓で選ぶ。ほかのフォームは質問） */
+  kind: z.enum(READER_QUESTION_KINDS).optional().default("question"),
 });
 
 export type ReaderQuestionInput = z.infer<typeof readerQuestionInputSchema>;

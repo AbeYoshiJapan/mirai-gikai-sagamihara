@@ -1,3 +1,4 @@
+import { renderInquiryIntro } from "@mirai-gikai/shared/site-settings/public";
 import type { Metadata } from "next";
 import { Container } from "@/components/layouts/container";
 import { About } from "@/components/top/about";
@@ -26,6 +27,8 @@ import { loadCouncilSchedule } from "@/features/council-meetings/server/loaders/
 import { takeFirstDays } from "@/features/council-meetings/shared/utils/council-period";
 import { CouncilQuestionsHomeSection } from "@/features/council-questions/server/components/council-questions-home-section";
 import { getCurrentDietSession } from "@/features/diet-sessions/server/loaders/get-current-diet-session";
+import { InquiryPanel } from "@/features/reader-posts/client/components/inquiry-panel";
+import { ReaderPostNotice } from "@/features/reader-posts/server/components/reader-post-notice";
 import { getSiteSettings } from "@/lib/site-settings/loader";
 import { getJapanTime } from "@/lib/utils/date";
 
@@ -57,7 +60,7 @@ export default async function Home() {
     currentDifficulty,
     suggestableBills,
     featuredTags,
-    { features },
+    settings,
   ] = await Promise.all([
     loadHomeData(),
     getCurrentDietSession(japanTime),
@@ -68,6 +71,7 @@ export default async function Home() {
     getSiteSettings(),
   ]);
 
+  const { features, council } = settings;
   const inSession = currentSession !== null;
 
   const { tagGroups, shownBills, featuredBillIds } = pickHomeSections({
@@ -198,6 +202,22 @@ export default async function Home() {
         <HomeChatClient
           currentDifficulty={currentDifficulty}
           bills={shownBills.map(toBillChatContext)}
+        />
+      )}
+
+      {/*
+        質問・意見の窓：AI ではなく運営者が受け取って答える。
+        AI チャットと同じ場所に出るので、AI チャットがオフのときだけ出す
+      */}
+      {features.question_form && !features.ai_chat && (
+        <InquiryPanel
+          intro={renderInquiryIntro(settings)}
+          notice={
+            <ReaderPostNotice
+              councilName={council.name}
+              showRecipient={false}
+            />
+          }
         />
       )}
     </>

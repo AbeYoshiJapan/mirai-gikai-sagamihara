@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SITE_SETTINGS } from "./defaults";
 import { SAGAMIHARA_PRESET } from "./presets/sagamihara";
-import { parseSection, resolveSiteSettings } from "./resolve";
+import {
+  parseSection,
+  resolveSiteSettings,
+  withSettingsDefaults,
+} from "./resolve";
 import { siteSettingsSchema } from "./schema";
 
 describe("resolveSiteSettings", () => {
@@ -65,6 +69,32 @@ describe("resolveSiteSettings", () => {
     expect(DEFAULT_SITE_SETTINGS.features.ai_chat).toBe(false);
     expect(DEFAULT_SITE_SETTINGS.features.ai_interview).toBe(false);
     expect(DEFAULT_SITE_SETTINGS.features.topic_analysis).toBe(false);
+  });
+});
+
+describe("withSettingsDefaults", () => {
+  it("前の版のキャッシュに無い項目は既定値で埋め、ある項目はそのまま残す", () => {
+    const cached = structuredClone(SAGAMIHARA_PRESET) as unknown as Record<
+      string,
+      Record<string, unknown>
+    >;
+    cached.site.name = "保存したサイト名";
+    delete cached.site.inquiry_intro;
+    delete cached.site.collaboration_md;
+    delete cached.features.council_questions;
+
+    const filled = withSettingsDefaults(
+      cached as unknown as typeof SAGAMIHARA_PRESET
+    );
+    expect(filled.site.name).toBe("保存したサイト名");
+    expect(filled.site.inquiry_intro).toBe(
+      DEFAULT_SITE_SETTINGS.site.inquiry_intro
+    );
+    expect(filled.site.collaboration_md).toBe(
+      DEFAULT_SITE_SETTINGS.site.collaboration_md
+    );
+    expect(filled.features.council_questions).toBe(false);
+    expect(siteSettingsSchema.safeParse(filled).success).toBe(true);
   });
 });
 

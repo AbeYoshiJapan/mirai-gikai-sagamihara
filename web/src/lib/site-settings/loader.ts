@@ -5,7 +5,10 @@ import {
   type PublicSiteSettings,
   toPublicSiteSettings,
 } from "@mirai-gikai/shared/site-settings/public";
-import { resolveSiteSettings } from "@mirai-gikai/shared/site-settings/resolve";
+import {
+  resolveSiteSettings,
+  withSettingsDefaults,
+} from "@mirai-gikai/shared/site-settings/resolve";
 import type {
   FeatureFlag,
   SiteSettings,
@@ -46,7 +49,8 @@ const _getCachedSiteSettings = unstable_cache(
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    return await _getCachedSiteSettings();
+    // 前の版で作ったキャッシュでも、新しく足した項目が欠けないように既定値を足す
+    return withSettingsDefaults(await _getCachedSiteSettings());
   } catch (error) {
     console.error("[site-settings] falling back to defaults:", error);
     return DEFAULT_SITE_SETTINGS;

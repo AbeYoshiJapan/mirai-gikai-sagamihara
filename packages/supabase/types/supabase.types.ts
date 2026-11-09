@@ -1572,6 +1572,7 @@ export type Database = {
           created_at: string
           id: string
           ip_hash: string | null
+          kind: string
           published_at: string | null
           question_summary: string
           status: Database["public"]["Enums"]["reader_question_status"]
@@ -1588,6 +1589,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          kind?: string
           published_at?: string | null
           question_summary?: string
           status?: Database["public"]["Enums"]["reader_question_status"]
@@ -1604,6 +1606,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          kind?: string
           published_at?: string | null
           question_summary?: string
           status?: Database["public"]["Enums"]["reader_question_status"]

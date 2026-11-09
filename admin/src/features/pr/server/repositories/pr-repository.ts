@@ -7,7 +7,10 @@ import type {
   VoteOutcome,
 } from "@mirai-gikai/shared/bill-stage/labels";
 import type { CouncilQuestionKind } from "@mirai-gikai/shared/council-questions/types";
-import { getPublicQuestionText } from "@mirai-gikai/shared/reader-posts/labels";
+import {
+  getPublicQuestionText,
+  toReaderQuestionKind,
+} from "@mirai-gikai/shared/reader-posts/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
 import {
@@ -174,7 +177,7 @@ export async function findRecentPublishedQuestions(
   const { data, error } = await supabase
     .from("reader_questions")
     .select(
-      "id, bill_id, body, question_summary, published_at, bills(name, bill_contents(title, difficulty_level))"
+      "id, kind, bill_id, body, question_summary, published_at, bills(name, bill_contents(title, difficulty_level))"
     )
     .eq("status", "published")
     .eq("consent_to_publish", true)
@@ -186,6 +189,7 @@ export async function findRecentPublishedQuestions(
     const bill = row.bills as unknown as BillRef;
     return {
       id: row.id,
+      kind: toReaderQuestionKind(row.kind),
       billId: row.bill_id,
       billTitle: bill ? pickBillTitle(bill.name, bill.bill_contents) : null,
       question: getPublicQuestionText(row),

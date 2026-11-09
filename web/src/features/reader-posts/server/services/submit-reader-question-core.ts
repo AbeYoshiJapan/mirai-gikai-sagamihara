@@ -58,6 +58,7 @@ export async function submitReaderQuestionCore(
       contact: data.contact,
       consentToPublish: data.consentToPublish,
       ipHash: hashClientIp(deps.clientIp, deps.ipHashSalt),
+      kind: data.kind,
     });
   } catch (error) {
     console.error("Failed to submit reader question:", error);
@@ -68,6 +69,7 @@ export async function submitReaderQuestionCore(
     try {
       await deps.notify(
         buildReaderQuestionSlackMessage({
+          kind: data.kind,
           billName,
           hasContact: data.contact.length > 0,
           body: data.body,

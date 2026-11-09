@@ -1,14 +1,16 @@
 import "server-only";
 
 import type { ReaderQuestionStatus } from "@mirai-gikai/shared/reader-posts/labels";
+import { toReaderQuestionKind } from "@mirai-gikai/shared/reader-posts/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { ReaderQuestionItem } from "../../shared/types";
 
 const QUESTION_SELECT =
-  "id, bill_id, body, contact, consent_to_publish, status, question_summary, answer_md, answered_at, published_at, created_at, bills(name)";
+  "id, kind, bill_id, body, contact, consent_to_publish, status, question_summary, answer_md, answered_at, published_at, created_at, bills(name)";
 
 type QuestionRow = {
   id: string;
+  kind: string;
   bill_id: string | null;
   body: string;
   contact: string;
@@ -25,6 +27,7 @@ type QuestionRow = {
 function toItem(row: QuestionRow): ReaderQuestionItem {
   return {
     id: row.id,
+    kind: toReaderQuestionKind(row.kind),
     bill_id: row.bill_id,
     bill_name: row.bills?.name ?? null,
     body: row.body,

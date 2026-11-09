@@ -8,6 +8,7 @@ import type { SiteSettingsSection } from "@mirai-gikai/shared/site-settings/sche
 import {
   DEFAULT_COLLABORATION_MD,
   DEFAULT_EDITORIAL_POLICY_MD,
+  DEFAULT_INQUIRY_INTRO,
 } from "@mirai-gikai/shared/site-settings/templates";
 import type { SiteAssetKind } from "./constants";
 
@@ -138,6 +139,17 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
             description:
               "トップの「このサイトについて」に出します。いまの運営の形と、協力をお願いしたいことを書きます。協力者が増えたら書き換えてください。空なら出しません",
             samples: [{ label: "既定の文", value: DEFAULT_COLLABORATION_MD }],
+          },
+          {
+            name: "inquiry_intro",
+            label: "質問・意見の窓の紹介文",
+            kind: "textarea",
+            rows: 2,
+            fullWidth: true,
+            templated: true,
+            description:
+              "トップの「質問・意見の窓」のいちばん上に出します。だれが対応しているかを書きます。協力者が増えたら書き換えてください",
+            samples: [{ label: "既定の文", value: DEFAULT_INQUIRY_INTRO }],
           },
           {
             name: "x_hashtags",

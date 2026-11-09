@@ -52,8 +52,8 @@ export function InboxTabs({
       <div className="flex flex-wrap items-center gap-2">
         {(
           [
-            ["opinions", "意見", pendingCounts.opinions],
-            ["questions", "質問", pendingCounts.questions],
+            ["opinions", "議案への意見", pendingCounts.opinions],
+            ["questions", "質問・窓からの意見", pendingCounts.questions],
           ] as const
         ).map(([k, label, pending]) => (
           <Link

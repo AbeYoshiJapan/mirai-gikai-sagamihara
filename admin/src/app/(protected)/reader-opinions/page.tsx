@@ -31,8 +31,8 @@ export default async function ReaderOpinionsPage({
     <div className="container mx-auto py-8">
       <h1 className="mb-2 text-2xl font-bold">意見・質問</h1>
       <p className="mb-6 text-sm text-gray-500">
-        サイトの意見フォームに届いた投稿です。投稿は届いた時点では公開されません。内容を確認し、投稿者が公開に同意しているものだけを公開できます。
-        返信を書くと、公開時に意見と一緒に表示されます。
+        議案ページの意見フォームに届いた投稿です。投稿は届いた時点では公開されません。内容を確認し、投稿者が公開に同意しているものだけを公開できます。
+        返信を書くと、公開時に意見と一緒に表示されます。トップページの「質問・意見の窓」から届いた意見は「質問・窓からの意見」に並びます。
       </p>
 
       <InboxTabs

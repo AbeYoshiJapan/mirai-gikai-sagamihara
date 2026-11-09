@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  READER_QUESTION_KIND_LABELS,
   READER_QUESTION_STATUS_LABELS,
   READER_QUESTION_SUMMARY_MAX_LENGTH,
   type ReaderQuestionStatus,
@@ -32,6 +33,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
   const [questionSummary, setQuestionSummary] = useState(item.question_summary);
   const [isPending, startTransition] = useTransition();
 
+  const kindLabel = READER_QUESTION_KIND_LABELS[item.kind];
   const hasAnswer = answerMd.trim().length > 0;
   const changed =
     answerMd.trim() !== item.answer_md.trim() ||
@@ -57,6 +59,16 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
   return (
     <li className="rounded-lg border bg-white p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+        <Badge
+          variant="outline"
+          className={
+            item.kind === "opinion"
+              ? "border-purple-300 bg-purple-50 text-purple-800"
+              : "border-gray-300 bg-white text-gray-700"
+          }
+        >
+          {kindLabel}
+        </Badge>
         <Badge className={STATUS_BADGE_CLASS[item.status]}>
           {READER_QUESTION_STATUS_LABELS[item.status]}
         </Badge>
@@ -81,7 +93,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             {item.bill_name}
           </Link>
         ) : (
-          "（議案に紐づかない質問）"
+          `（議案に紐づかない${kindLabel}）`
         )}
       </p>
       <p className="mb-2 text-xs text-gray-500">
@@ -108,7 +120,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             htmlFor={`summary-${item.id}`}
             className="mb-1 block text-xs font-semibold text-gray-700"
           >
-            公開用の質問文（任意。空なら原文をそのまま公開）
+            公開用の{kindLabel}文（任意。空なら原文をそのまま公開）
           </label>
           <Input
             id={`summary-${item.id}`}
@@ -116,7 +128,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             onChange={(e) => setQuestionSummary(e.target.value)}
             maxLength={READER_QUESTION_SUMMARY_MAX_LENGTH}
             disabled={isPending}
-            placeholder="個人が特定される部分を省くなど、公開向けに言い換えた質問文"
+            placeholder={`個人が特定される部分を省くなど、公開向けに言い換えた${kindLabel}文`}
           />
         </div>
         <div>
@@ -124,7 +136,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             htmlFor={`answer-${item.id}`}
             className="mb-1 block text-xs font-semibold text-gray-700"
           >
-            回答（Markdown）
+            {item.kind === "opinion" ? "返事" : "回答"}（Markdown）
           </label>
           <Textarea
             id={`answer-${item.id}`}
@@ -133,7 +145,7 @@ function QuestionCard({ item }: { item: ReaderQuestionItem }) {
             rows={5}
             maxLength={ANSWER_MAX_LENGTH}
             disabled={isPending}
-            placeholder="ご質問ありがとうございます。…"
+            placeholder={`ご${kindLabel}ありがとうございます。…`}
           />
         </div>
       </div>

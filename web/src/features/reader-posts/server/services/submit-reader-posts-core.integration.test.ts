@@ -222,6 +222,30 @@ describe("意見・質問フォーム 統合テスト", () => {
         .eq("body", "議会はいつ開かれますか");
     });
 
+    it("トップの窓から意見として送られたものは、種類を意見として保存する", async () => {
+      const body = `傍聴席を増やしてほしい ${crypto.randomUUID()}`;
+      const notified: string[] = [];
+      const result = await submitReaderQuestionCore(
+        { body, kind: "opinion" },
+        {
+          ...baseDeps,
+          notify: async (text) => {
+            notified.push(text);
+          },
+        }
+      );
+      expect(result).toEqual({ ok: true });
+      const { data } = await adminClient
+        .from("reader_questions")
+        .select("kind, bill_id, status")
+        .eq("body", body);
+      expect(data).toEqual([
+        { kind: "opinion", bill_id: null, status: "received" },
+      ]);
+      expect(notified[0]).toContain("意見が届きました");
+      await adminClient.from("reader_questions").delete().eq("body", body);
+    });
+
     it("回答のない質問は DB 制約で公開できない", async () => {
       const bill = await createBill();
       await submitReaderQuestionCore(

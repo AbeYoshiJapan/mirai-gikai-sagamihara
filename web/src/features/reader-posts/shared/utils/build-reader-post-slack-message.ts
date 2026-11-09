@@ -1,6 +1,8 @@
 import {
   READER_OPINION_STANCE_LABELS,
+  READER_QUESTION_KIND_LABELS,
   type ReaderOpinionStance,
+  type ReaderQuestionKind,
 } from "@mirai-gikai/shared/reader-posts/labels";
 
 export const SLACK_BODY_PREVIEW_LENGTH = 300;
@@ -52,14 +54,19 @@ export function buildReaderOpinionSlackMessage(params: {
 }
 
 export function buildReaderQuestionSlackMessage(params: {
+  /** 質問か意見か（省略時は質問） */
+  kind?: ReaderQuestionKind;
   billName: string | null;
   hasContact: boolean;
   body: string;
   adminInboxUrl: string;
 }): string {
+  const label = READER_QUESTION_KIND_LABELS[params.kind ?? "question"];
   return [
-    "質問が届きました（未回答）",
-    `議案: ${params.billName ? escapeSlackText(params.billName) : "（議案に紐づかない質問）"}`,
+    params.kind === "opinion"
+      ? "意見が届きました（未返信）"
+      : "質問が届きました（未回答）",
+    `議案: ${params.billName ? escapeSlackText(params.billName) : `（議案に紐づかない${label}）`}`,
     `連絡先: ${params.hasContact ? "あり" : "なし"}`,
     `確認: ${params.adminInboxUrl}`,
     "内容:",

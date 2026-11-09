@@ -60,4 +60,16 @@ describe("buildReaderQuestionSlackMessage", () => {
     expect(text).toContain("連絡先: あり");
     expect(text).toContain("> 議会はいつ開かれますか");
   });
+
+  it("意見として届いたものは、意見と分かるように知らせる", () => {
+    const text = buildReaderQuestionSlackMessage({
+      kind: "opinion",
+      billName: null,
+      hasContact: false,
+      body: "傍聴席をもっと増やしてほしい",
+      adminInboxUrl: "https://admin.example.com/reader-questions",
+    });
+    expect(text.split("\n")[0]).toBe("意見が届きました（未返信）");
+    expect(text).toContain("議案: （議案に紐づかない意見）");
+  });
 });

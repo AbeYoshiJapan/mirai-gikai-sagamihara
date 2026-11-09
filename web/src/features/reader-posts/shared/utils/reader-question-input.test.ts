@@ -10,7 +10,12 @@ describe("parseReaderQuestionInput", () => {
   it("有効な入力を受け付け、省略した項目は既定値になる", () => {
     expect(parseReaderQuestionInput(validInput)).toEqual({
       ok: true,
-      data: { ...validInput, contact: "", consentToPublish: false },
+      data: {
+        ...validInput,
+        contact: "",
+        consentToPublish: false,
+        kind: "question",
+      },
     });
   });
 
@@ -39,6 +44,14 @@ describe("parseReaderQuestionInput", () => {
       ok: false,
       error: "質問を入力してください",
     });
+  });
+
+  it("意見として送られたものは、種類を意見にする。知らない種類はエラー", () => {
+    const result = parseReaderQuestionInput({ ...validInput, kind: "opinion" });
+    expect(result.ok && result.data.kind).toBe("opinion");
+    expect(parseReaderQuestionInput({ ...validInput, kind: "other" }).ok).toBe(
+      false
+    );
   });
 
   it("連絡先が長すぎればエラー", () => {

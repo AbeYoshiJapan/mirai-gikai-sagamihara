@@ -5,6 +5,7 @@ import {
   type ReaderOpinionAttributes,
   type ReaderOpinionStance,
   type ReaderOpinionStatus,
+  type ReaderQuestionKind,
   type ReaderQuestionStatus,
 } from "@mirai-gikai/shared/reader-posts/labels";
 import { z } from "zod";
@@ -32,6 +33,8 @@ export type ReaderOpinionItem = {
 /** 管理画面の一覧に出す質問 */
 export type ReaderQuestionItem = {
   id: string;
+  /** 質問か意見か（トップの「質問・意見の窓」で送り手が選ぶ） */
+  kind: ReaderQuestionKind;
   bill_id: string | null;
   bill_name: string | null;
   body: string;

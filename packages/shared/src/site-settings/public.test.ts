@@ -8,6 +8,7 @@ import {
   hasSessionSystemPage,
   renderCollaborationNote,
   renderEditorialPolicy,
+  renderInquiryIntro,
   renderLegalText,
   renderOperatorDisclaimer,
   renderSessionSystemText,
@@ -38,6 +39,21 @@ describe("renderLegalText / renderOperatorDisclaimer", () => {
     expect(terms).not.toContain("{{");
     const disclaimer = renderOperatorDisclaimer(s);
     expect(disclaimer).toContain("相模原市議会・相模原市の公式サイトではありません");
+  });
+});
+
+describe("renderInquiryIntro", () => {
+  it("だれが対応しているかを、肩書と名前を入れて示す。空なら既定文", () => {
+    const s = structuredClone(SAGAMIHARA_PRESET);
+    s.operator.name = "運営太郎";
+    s.operator.title = "相模原市議会議員";
+    expect(renderInquiryIntro(s)).toBe(
+      "質問やご意見を受け付けています。対応は、現在、運営者（相模原市議会議員運営太郎）が行っています。"
+    );
+    s.site.inquiry_intro = " ";
+    expect(renderInquiryIntro(s)).toContain("運営者（相模原市議会議員運営太郎）");
+    s.site.inquiry_intro = "{{operator_name}}たちが答えます";
+    expect(renderInquiryIntro(s)).toBe("運営太郎たちが答えます");
   });
 });
 

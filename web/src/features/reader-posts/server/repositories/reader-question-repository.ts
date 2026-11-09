@@ -1,6 +1,10 @@
 import "server-only";
 
-import { getPublicQuestionText } from "@mirai-gikai/shared/reader-posts/labels";
+import {
+  getPublicQuestionText,
+  type ReaderQuestionKind,
+  toReaderQuestionKind,
+} from "@mirai-gikai/shared/reader-posts/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { PublicReaderQuestion } from "../../shared/types";
 
@@ -10,6 +14,7 @@ export async function createReaderQuestion(params: {
   contact: string;
   consentToPublish: boolean;
   ipHash: string | null;
+  kind: ReaderQuestionKind;
 }) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -20,6 +25,7 @@ export async function createReaderQuestion(params: {
       contact: params.contact,
       consent_to_publish: params.consentToPublish,
       ip_hash: params.ipHash,
+      kind: params.kind,
     })
     .select("id")
     .single();
@@ -31,10 +37,11 @@ export async function createReaderQuestion(params: {
 }
 
 const PUBLISHED_QUESTION_SELECT =
-  "id, bill_id, body, question_summary, answer_md, published_at, bills(name)";
+  "id, kind, bill_id, body, question_summary, answer_md, published_at, bills(name)";
 
 type PublishedQuestionRow = {
   id: string;
+  kind: string;
   bill_id: string | null;
   body: string;
   question_summary: string;
@@ -46,6 +53,7 @@ type PublishedQuestionRow = {
 function toPublicQuestion(row: PublishedQuestionRow): PublicReaderQuestion {
   return {
     id: row.id,
+    kind: toReaderQuestionKind(row.kind),
     bill_id: row.bill_id,
     bill_name: row.bills?.name ?? null,
     question: getPublicQuestionText(row),

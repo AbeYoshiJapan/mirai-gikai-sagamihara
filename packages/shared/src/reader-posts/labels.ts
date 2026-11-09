@@ -12,6 +12,20 @@ export const READER_QUESTION_SUMMARY_MAX_LENGTH = 1000;
 
 // ── 意見 ──────────────────────────────────────────
 
+/** 質問フォームから届くものの種類（reader_questions.kind） */
+export const READER_QUESTION_KINDS = ["question", "opinion"] as const;
+export type ReaderQuestionKind = (typeof READER_QUESTION_KINDS)[number];
+
+export const READER_QUESTION_KIND_LABELS: Record<ReaderQuestionKind, string> = {
+  question: "質問",
+  opinion: "意見",
+};
+
+/** DB の値を種類として読む（知らない値は質問として扱う） */
+export function toReaderQuestionKind(value: unknown): ReaderQuestionKind {
+  return value === "opinion" ? "opinion" : "question";
+}
+
 export const READER_OPINION_STANCES = [
   "for",
   "against",

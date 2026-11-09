@@ -34,6 +34,8 @@ export const siteSectionSchema = z.object({
   name_note_md: z.string().max(4000),
   /** これからの運営（協力のお願い。Markdown、{{key}} 差し込み可）。トップの「このサイトについて」に出す。空なら出さない */
   collaboration_md: z.string().max(4000),
+  /** トップの「質問・意見の窓」の紹介文（{{key}} 差し込み可）。だれが対応しているかを書く */
+  inquiry_intro: z.string().max(500),
   /** X（Twitter）に投稿するときのハッシュタグ（例: #相模原市議会）。管理画面の「PR・広報」の下書きに入れる */
   x_hashtags: shortText(100),
   /** メタ説明文・OGP の説明 */

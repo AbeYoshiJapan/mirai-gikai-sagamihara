@@ -1,6 +1,7 @@
 import type { SiteSettings } from "./schema";
 import {
   DEFAULT_COLLABORATION_MD,
+  DEFAULT_INQUIRY_INTRO,
   DEFAULT_DATA_TERMS_MD,
   DEFAULT_DISCLAIMER_SHORT,
   DEFAULT_EDITORIAL_POLICY_MD,
@@ -22,6 +23,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     tagline: "○○議会の議論をわかりやすく",
     name_note_md: "",
     collaboration_md: DEFAULT_COLLABORATION_MD,
+    inquiry_intro: DEFAULT_INQUIRY_INTRO,
     x_hashtags: "",
     description:
       "○○議会で今どんな議案が審議されているか、わかりやすく伝えるサイト。",

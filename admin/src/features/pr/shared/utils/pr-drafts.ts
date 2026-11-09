@@ -205,7 +205,7 @@ export function buildReaderOpinionsDraft(
   };
 }
 
-/** 公開中の質問と回答（質問は公開用の要約があればそれを使う） */
+/** 公開中の質問と回答、意見と返事（送られた文は公開用の要約があればそれを使う） */
 export function buildReaderQuestionDraft(
   source: PrQuestionSource,
   ctx: PrDraftContext
@@ -218,17 +218,24 @@ export function buildReaderQuestionDraft(
       )
     : toPublicUrl(ctx.baseUrl, publicPaths.questions());
   const question = source.question.replace(/\s+/g, " ").trim();
+  const isOpinion = source.kind === "opinion";
 
   return {
     sourceType: "reader_question",
     sourceId: source.id,
     heading: truncateToXWeight(question, 80),
-    note: source.billTitle ? `議案：${source.billTitle}` : "サイト全体への質問",
+    note: source.billTitle
+      ? `議案：${source.billTitle}`
+      : isOpinion
+        ? "サイト全体への意見"
+        : "サイト全体への質問",
     url,
     text: composeWithin(
       [
-        "【いただいた質問に回答しました】",
-        `Q. ${question}`,
+        isOpinion
+          ? "【いただいた意見にお返事しました】"
+          : "【いただいた質問に回答しました】",
+        isOpinion ? `意見：${question}` : `Q. ${question}`,
         source.billTitle ? `（議案：${source.billTitle}）` : null,
         url,
         hashtagLine(ctx),

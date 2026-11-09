@@ -138,6 +138,7 @@ describe("buildReaderQuestionDraft", () => {
     const onBill = buildReaderQuestionDraft(
       {
         id: "q1",
+        kind: "question",
         billId: "b1",
         billTitle: "手数料条例の改正",
         question: "手数料は\nいくら上がりますか？",
@@ -158,6 +159,7 @@ describe("buildReaderQuestionDraft", () => {
     const general = buildReaderQuestionDraft(
       {
         id: "q2",
+        kind: "question",
         billId: null,
         billTitle: null,
         question: "傍聴はできますか？",
@@ -169,10 +171,34 @@ describe("buildReaderQuestionDraft", () => {
     expect(general.note).toBe("サイト全体への質問");
   });
 
+  it("意見として届いたものは、意見への返事として紹介する", () => {
+    const draft = buildReaderQuestionDraft(
+      {
+        id: "q4",
+        kind: "opinion",
+        billId: null,
+        billTitle: null,
+        question: "傍聴席を増やしてほしい",
+        publishedAt: null,
+      },
+      ctx
+    );
+    expect(draft.text).toBe(
+      [
+        "【いただいた意見にお返事しました】",
+        "意見：傍聴席を増やしてほしい",
+        "https://example.jp/questions",
+        "#相模原市議会",
+      ].join("\n")
+    );
+    expect(draft.note).toBe("サイト全体への意見");
+  });
+
   it("長い質問は、全体が X の上限に収まるように質問の行だけを縮める", () => {
     const draft = buildReaderQuestionDraft(
       {
         id: "q3",
+        kind: "question",
         billId: null,
         billTitle: null,
         question: "あ".repeat(400),

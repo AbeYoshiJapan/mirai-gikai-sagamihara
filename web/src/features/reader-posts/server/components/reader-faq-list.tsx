@@ -2,6 +2,7 @@ import Link from "next/link";
 import { routes } from "@/lib/routes";
 import { formatDateWithDots } from "@/lib/utils/date";
 import type { PublicReaderQuestion } from "../../shared/types";
+import { INQUIRY_KIND_TEXTS } from "../../shared/utils/inquiry-texts";
 import { ReaderPostMarkdown } from "./reader-post-markdown";
 
 interface ReaderFaqListProps {
@@ -34,7 +35,7 @@ export function ReaderFaqList({
           )}
           <div className="flex gap-2">
             <span className="shrink-0 text-sm font-bold text-mirai-text">
-              Q.
+              {INQUIRY_KIND_TEXTS[question.kind].postMark}
             </span>
             <p className="whitespace-pre-wrap break-words text-sm font-bold leading-[1.8] text-mirai-text">
               {question.question}
@@ -42,7 +43,7 @@ export function ReaderFaqList({
           </div>
           <div className="mt-2 flex gap-2">
             <span className="shrink-0 text-sm font-bold text-mirai-text-subtle">
-              A.
+              {INQUIRY_KIND_TEXTS[question.kind].replyMark}
             </span>
             <div className="min-w-0 flex-1">
               <ReaderPostMarkdown markdown={question.answer_md} />

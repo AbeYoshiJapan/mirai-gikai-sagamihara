@@ -176,6 +176,10 @@ export const DEFAULT_COLLABORATION_MD = `このサイトは、いまは{{operato
 
 これからは、寄せられた質問への対応や意見の共有などに、ほかの議員や、議員ではない方にも協力をお願いし、参加していただきたいと考えています。関心のある方は、運営者の窓口（{{contact_label}}）までご連絡ください。`;
 
+/** トップの「質問・意見の窓」の紹介文の既定。だれが対応しているかを示す */
+export const DEFAULT_INQUIRY_INTRO =
+  "質問やご意見を受け付けています。対応は、現在、運営者（{{operator_title}}{{operator_name}}）が行っています。";
+
 export const DEFAULT_INTERVIEW_CONSENT_MD =`回答は、運営者の議会活動・政策検討に利用します。公開に同意いただいた回答は、個人がわからない形で本サービスに掲載することがあります。`;
 
 export const DEFAULT_DATA_TERMS_MD = `「{{site_name}}」が公開するデータ（議案の一覧・審議結果・会議予定など）は、{{council_name}}の公開資料をもとに運営者が整理したものです。出典を明記のうえ、自由に利用できます。正確な内容は公開元の資料でご確認ください。
