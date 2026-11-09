@@ -144,6 +144,10 @@
       "types": "./src/reader-posts/labels.ts",
       "default": "./src/reader-posts/labels.ts"
     },
+    "./db/missing-schema-error": {
+      "types": "./src/db/missing-schema-error.ts",
+      "default": "./src/db/missing-schema-error.ts"
+    },
     "./import/schema": {
       "types": "./src/import/schema.ts",
       "default": "./src/import/schema.ts"

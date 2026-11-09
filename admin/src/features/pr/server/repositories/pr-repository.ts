@@ -12,7 +12,7 @@ import {
   toReaderQuestionKind,
 } from "@mirai-gikai/shared/reader-posts/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
+import { isMissingSchemaError } from "@mirai-gikai/shared/db/missing-schema-error";
 import {
   PR_SOURCE_TYPES,
   type PrBillSource,
@@ -169,24 +169,42 @@ export async function findRecentPublishedOpinionsByBill(
   return [...byBill.values()].slice(0, limit);
 }
 
+type PublishedQuestionRow = {
+  id: string;
+  kind?: string;
+  bill_id: string | null;
+  body: string;
+  question_summary: string;
+  published_at: string | null;
+  bills: BillRef;
+};
+
 /** 公開中の質問と回答。公開の新しい順 */
 export async function findRecentPublishedQuestions(
   limit: number
 ): Promise<PrQuestionSource[]> {
   const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("reader_questions")
-    .select(
-      "id, kind, bill_id, body, question_summary, published_at, bills(name, bill_contents(title, difficulty_level))"
-    )
-    .eq("status", "published")
-    .eq("consent_to_publish", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
+  const columns =
+    "id, bill_id, body, question_summary, published_at, bills(name, bill_contents(title, difficulty_level))";
+  const run = (select: string) =>
+    supabase
+      .from("reader_questions")
+      .select(select)
+      .eq("status", "published")
+      .eq("consent_to_publish", true)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+  let { data, error } = await run(`kind, ${columns}`);
+  // kind 列がまだ無いとき（db push の前）は kind 抜きで読み直す（すべて質問として扱う）
+  if (isMissingSchemaError(error)) {
+    ({ data, error } = await run(columns));
+  }
   if (error) throw new Error(`質問の取得に失敗しました: ${error.message}`);
 
-  return (data ?? []).map((row) => {
-    const bill = row.bills as unknown as BillRef;
+  const rows = (data ?? []) as unknown as PublishedQuestionRow[];
+  return rows.map((row) => {
+    const bill = row.bills;
     return {
       id: row.id,
       kind: toReaderQuestionKind(row.kind),

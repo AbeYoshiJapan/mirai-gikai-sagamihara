@@ -6,7 +6,7 @@ import {
   type Database,
   type Json,
 } from "@mirai-gikai/supabase";
-import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
+import { isMissingSchemaError } from "@mirai-gikai/shared/db/missing-schema-error";
 import type {
   AdminCouncilQuestion,
   CouncilQuestionKind,

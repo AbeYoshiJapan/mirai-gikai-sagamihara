@@ -1,5 +1,6 @@
 import "server-only";
 
+import { isMissingSchemaError } from "@mirai-gikai/shared/db/missing-schema-error";
 import type { ReaderQuestionStatus } from "@mirai-gikai/shared/reader-posts/labels";
 import { toReaderQuestionKind } from "@mirai-gikai/shared/reader-posts/labels";
 import { createAdminClient } from "@mirai-gikai/supabase";
@@ -8,9 +9,13 @@ import type { ReaderQuestionItem } from "../../shared/types";
 const QUESTION_SELECT =
   "id, kind, bill_id, body, contact, consent_to_publish, status, question_summary, answer_md, answered_at, published_at, created_at, bills(name)";
 
+/** kind 列を足す db push の前に読むときの select（すべて質問として扱う） */
+const QUESTION_SELECT_WITHOUT_KIND =
+  "id, bill_id, body, contact, consent_to_publish, status, question_summary, answer_md, answered_at, published_at, created_at, bills(name)";
+
 type QuestionRow = {
   id: string;
-  kind: string;
+  kind?: string;
   bill_id: string | null;
   body: string;
   contact: string;
@@ -48,23 +53,30 @@ export async function findReaderQuestions(params: {
   limit: number;
 }): Promise<ReaderQuestionItem[]> {
   const supabase = createAdminClient();
-  let query = supabase
-    .from("reader_questions")
-    .select(QUESTION_SELECT)
-    .order("created_at", { ascending: false })
-    .limit(params.limit);
-  if (params.status !== "all") {
-    query = query.eq("status", params.status);
-  }
-  if (params.billId) {
-    query = query.eq("bill_id", params.billId);
-  }
+  const run = (select: string) => {
+    let query = supabase
+      .from("reader_questions")
+      .select(select)
+      .order("created_at", { ascending: false })
+      .limit(params.limit);
+    if (params.status !== "all") {
+      query = query.eq("status", params.status);
+    }
+    if (params.billId) {
+      query = query.eq("bill_id", params.billId);
+    }
+    return query;
+  };
 
-  const { data, error } = await query;
+  let { data, error } = await run(QUESTION_SELECT);
+  // kind 列がまだ無いとき（db push の前）は kind 抜きで読み直す
+  if (isMissingSchemaError(error)) {
+    ({ data, error } = await run(QUESTION_SELECT_WITHOUT_KIND));
+  }
   if (error) {
     throw new Error(`Failed to fetch reader questions: ${error.message}`);
   }
-  return ((data ?? []) as QuestionRow[]).map(toItem);
+  return ((data ?? []) as unknown as QuestionRow[]).map(toItem);
 }
 
 export async function countReaderQuestionsByStatus(

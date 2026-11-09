@@ -2,7 +2,7 @@ import "server-only";
 
 import type { Database } from "@mirai-gikai/supabase";
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { isMissingSchemaError } from "@/lib/utils/missing-schema-error";
+import { isMissingSchemaError } from "@mirai-gikai/shared/db/missing-schema-error";
 
 type TagUpdate = Database["public"]["Tables"]["tags"]["Update"];
 
