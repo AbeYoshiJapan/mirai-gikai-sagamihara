@@ -10,6 +10,7 @@ import {
 import {
   findBillsForImport,
   findCommitteeRefs,
+  findSessionMeetingPeriods,
 } from "../repositories/import-repository";
 import { buildImportPreview } from "../services/build-import-preview";
 
@@ -20,15 +21,17 @@ export async function previewImport(
   try {
     await requireAdmin();
     const { bundleJson, sessionId } = previewImportInputSchema.parse(input);
-    const [existing, committees] = await Promise.all([
+    const [existing, committees, meetingPeriods] = await Promise.all([
       findBillsForImport(),
       findCommitteeRefs(),
+      findSessionMeetingPeriods(sessionId),
     ]);
     const result = buildImportPreview(
       bundleJson,
       sessionId,
       existing,
-      committees
+      committees,
+      meetingPeriods
     );
     if (!result.ok) {
       return { error: result.error };

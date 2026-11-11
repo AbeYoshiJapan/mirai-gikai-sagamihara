@@ -8,6 +8,7 @@ import {
   planAgendaImport,
   planResultsImport,
 } from "./plan";
+import type { MeetingPeriod } from "../diet-sessions/meeting-periods";
 import { IMPORT_FORMAT, type ImportBundle, type ImportItem, parseImportBundle } from "./schema";
 
 const committees: CommitteeRef[] = [
@@ -213,6 +214,77 @@ describe("planAgendaImport", () => {
     const [entry] = plan.entries;
     expect(entry.action).toBe("update");
     expect(entry.sources[0]).toMatchObject({ action: "update_text", existingId: "src-1" });
+  });
+});
+
+describe("planAgendaImport の提出日", () => {
+  // 12月定例会議の付議事件一覧（11月10日現在・議案書なし）
+  const december: MeetingPeriod[] = [
+    { name: "9月定例会議", start_date: "2026-08-24", end_date: "2026-09-30" },
+    { name: "12月定例会議", start_date: "2026-11-17", end_date: "2026-12-18" },
+  ];
+  const agendaOnly = (overrides: Partial<ImportItem> = {}) =>
+    bundle({
+      meeting: {
+        council_year: 2026,
+        era_year_label: "令和8年",
+        session_name: "令和8年相模原市議会定例会",
+        label: "12月定例会議",
+        as_of: "2026-11-10",
+      },
+      items: [item({ submitted_on: null, document: null, ...overrides })],
+    });
+  const submittedChange = (plan: ReturnType<typeof planAgendaImport>) =>
+    plan.entries[0].changes.find((c) => c.field === "submitted_date");
+
+  it("議案書が無い新しい議案は、一覧の日付ではなく定例会議の初日を提出日にする", () => {
+    const plan = planAgendaImport(agendaOnly(), [], committees, "s-r8", december);
+    expect(plan.entries[0].draft?.submitted_date).toBe("2026-11-17");
+    expect(plan.meetingPeriod?.name).toBe("12月定例会議");
+  });
+
+  it("定例会議の期間が無ければ、これまでどおり一覧の日付を使う", () => {
+    const plan = planAgendaImport(agendaOnly(), [], committees, "s-r8");
+    expect(plan.entries[0].draft?.submitted_date).toBe("2026-11-10");
+    expect(plan.meetingPeriod).toBeNull();
+  });
+
+  it("前の取込で一覧の日付が入った議案は、定例会議の初日にする案を出す", () => {
+    const current = existing({ submitted_date: "2026-11-10T00:00:00+00:00", sources: [] });
+    const plan = planAgendaImport(agendaOnly(), [current], committees, "s-r8", december);
+    expect(submittedChange(plan)).toEqual({
+      field: "submitted_date",
+      label: "提出日（定例会議の初日）",
+      from: "2026-11-10",
+      to: "2026-11-17",
+    });
+  });
+
+  it("運営者が入れた日付は、議案書が無いかぎり変えない", () => {
+    const current = existing({ submitted_date: "2026-11-20T00:00:00+00:00", sources: [] });
+    const plan = planAgendaImport(agendaOnly(), [current], committees, "s-r8", december);
+    expect(submittedChange(plan)).toBeUndefined();
+  });
+
+  it("議案書の提出日と違えば、議案書の日付にする案を出す", () => {
+    const current = existing({ submitted_date: "2026-11-10T00:00:00+00:00" });
+    const withDocument = bundle({ items: [item({ submitted_on: "2026-11-17" })] });
+    const plan = planAgendaImport(withDocument, [current], committees, "s-r8", december);
+    expect(plan.entries[0].action).toBe("update");
+    expect(submittedChange(plan)).toEqual({
+      field: "submitted_date",
+      label: "提出日（議案書の日付）",
+      from: "2026-11-10",
+      to: "2026-11-17",
+    });
+  });
+
+  it("議案書の提出日と同じなら変えない（日本時間の日付で比べる）", () => {
+    // 2026-11-16T15:00Z = 日本時間 11/17 0 時
+    const current = existing({ submitted_date: "2026-11-16T15:00:00+00:00" });
+    const withDocument = bundle({ items: [item({ submitted_on: "2026-11-17" })] });
+    const plan = planAgendaImport(withDocument, [current], committees, "s-r8", december);
+    expect(submittedChange(plan)).toBeUndefined();
   });
 });
 

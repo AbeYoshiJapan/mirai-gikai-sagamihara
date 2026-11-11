@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { MeetingPeriod } from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import {
   type CommitteeRef,
   detectImportMode,
@@ -13,6 +14,7 @@ import {
   parseImportBundle,
 } from "@mirai-gikai/shared/import/schema";
 import type { ImportPreview } from "../../shared/types";
+import { describeSubmittedDates } from "../../shared/utils/describe-submitted-dates";
 
 export type BuildPreviewResult =
   | { ok: true; bundle: ImportBundle; plan: ImportPlan; preview: ImportPreview }
@@ -23,7 +25,8 @@ export function buildImportPreview(
   bundleJson: string,
   sessionId: string,
   existing: ExistingBill[],
-  committees: CommitteeRef[]
+  committees: CommitteeRef[],
+  meetingPeriods: MeetingPeriod[]
 ): BuildPreviewResult {
   const parsed = parseImportBundle(bundleJson);
   if (!parsed.ok) {
@@ -34,7 +37,14 @@ export function buildImportPreview(
   const plan =
     mode === "results"
       ? planResultsImport(bundle, existing, committees, sessionId)
-      : planAgendaImport(bundle, existing, committees, sessionId);
+      : planAgendaImport(
+          bundle,
+          existing,
+          committees,
+          sessionId,
+          meetingPeriods
+        );
+  const submittedDates = describeSubmittedDates(bundle, plan);
   return {
     ok: true,
     bundle,
@@ -47,7 +57,8 @@ export function buildImportPreview(
         as_of: bundle.meeting.as_of,
         adapter: bundle.source.adapter,
       },
-      bundleWarnings: bundle.warnings,
+      bundleWarnings: [...bundle.warnings, ...submittedDates.warnings],
+      notes: submittedDates.notes,
     },
   };
 }

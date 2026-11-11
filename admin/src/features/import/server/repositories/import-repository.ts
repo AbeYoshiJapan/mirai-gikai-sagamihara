@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  type MeetingPeriod,
+  parseMeetingPeriods,
+} from "@mirai-gikai/shared/diet-sessions/meeting-periods";
 import type {
   BillDraft,
   CommitteeRef,
@@ -63,6 +67,22 @@ export async function findCommitteeRefs(): Promise<CommitteeRef[]> {
     throw new Error(`委員会の取得に失敗しました: ${error.message}`);
   }
   return data ?? [];
+}
+
+/** 会期に入れた「定例会議などの期間」。議案書の無い議案の提出日を、定例会議の初日にするのに使う */
+export async function findSessionMeetingPeriods(
+  sessionId: string
+): Promise<MeetingPeriod[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("diet_sessions")
+    .select("meeting_periods")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`会期の取得に失敗しました: ${error.message}`);
+  }
+  return parseMeetingPeriods(data?.meeting_periods ?? []);
 }
 
 export async function insertDraftBill(draft: BillDraft): Promise<string> {

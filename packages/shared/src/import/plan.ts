@@ -1,3 +1,4 @@
+import { toJstDateKeyOf } from "../bill-stage/deliberation-timing";
 import type {
   BillKind,
   BillResult,
@@ -5,7 +6,12 @@ import type {
   ProposerKind,
   VoteOutcome,
 } from "../bill-stage/labels";
+import type { MeetingPeriod } from "../diet-sessions/meeting-periods";
 import type { ImportBundle, ImportItem, ImportResultItem } from "./schema";
+import {
+  findAgendaMeetingPeriod,
+  provisionalSubmittedDate,
+} from "./submitted-date";
 
 /**
  * 取込 JSON と DB の議案を突き合わせ、「何をどう変えるか」の計画を作る（純粋関数）。
@@ -17,6 +23,8 @@ import type { ImportBundle, ImportItem, ImportResultItem } from "./schema";
  * - 既存の件名・区分は上書きしない（管理者が直した値を守る）。空の項目だけ埋める
  * - 審議段階は前に進める方向にだけ更新する（議決済みは触らない）
  * - 一次資料（PDF の URL）は無ければ足し、本文（抽出テキスト）はハッシュが変わっていれば入れ替える
+ * - 提出日は議案書に書かれた日付を正とする。議案書がまだ無ければ定例会議の初日を仮に入れ
+ *   （submitted-date.ts）、議案書が載ったら議案書の日付にする案を出す
  */
 
 export type ExistingBillSource = {
@@ -95,6 +103,8 @@ export type ImportPlan = {
   mode: "agenda" | "results";
   entries: PlanEntry[];
   summary: { create: number; update: number; skip: number; warnings: number };
+  /** 付議事件一覧の会議に当たる定例会議の期間（仮の提出日に初日を使う）。見つからなければ null */
+  meetingPeriod?: MeetingPeriod | null;
 };
 
 const STAGE_ORDER: Record<BillStage, number> = {
@@ -217,15 +227,52 @@ function findAgendaUrl(bundle: ImportBundle): string | null {
   return bundle.source.files.find((f) => f.label === "付議事件一覧")?.url ?? null;
 }
 
+/**
+ * 既存の議案の提出日をどう直すか。
+ * - 空なら埋める（議案書の提出日、無ければ仮の提出日）
+ * - 議案書に書かれた提出日と違えば、議案書の日付にする案を出す
+ * - 議案書が無く、いまの提出日が一覧の日付（前の取込で入れた仮の日付）なら、定例会議の初日にする案を出す
+ * それ以外（運営者が入れた日付など）は、議案書が載るまで触らない。
+ */
+function planSubmittedDateChange(
+  current: string | null,
+  fromDocument: string | null,
+  provisional: string | null,
+  agendaAsOf: string | null
+): FieldChange | null {
+  const currentKey = toJstDateKeyOf(current);
+  if (!currentKey) {
+    const to = fromDocument ?? provisional;
+    return to ? { field: "submitted_date", label: "提出日", from: null, to } : null;
+  }
+  if (fromDocument) {
+    return currentKey === fromDocument
+      ? null
+      : { field: "submitted_date", label: "提出日（議案書の日付）", from: currentKey, to: fromDocument };
+  }
+  if (provisional && currentKey === agendaAsOf && provisional !== currentKey) {
+    return { field: "submitted_date", label: "提出日（定例会議の初日）", from: currentKey, to: provisional };
+  }
+  return null;
+}
+
 export function planAgendaImport(
   bundle: ImportBundle,
   existing: ExistingBill[],
   committees: CommitteeRef[],
-  sessionId: string
+  sessionId: string,
+  /** 選んだ会期の「定例会議などの期間」。議案書の無い議案の提出日を、定例会議の初日にするのに使う */
+  meetingPeriods: MeetingPeriod[] = []
 ): ImportPlan {
   const agendaUrl = findAgendaUrl(bundle);
+  const meetingPeriod = findAgendaMeetingPeriod(bundle.meeting, meetingPeriods);
   const entries: PlanEntry[] = bundle.items.map((item) => {
     const warnings = [...item.warnings];
+    const provisionalDate = provisionalSubmittedDate(
+      bundle.meeting,
+      meetingPeriod,
+      item.added_this_time
+    );
     const committee = item.committees[0]
       ? findCommittee(committees, item.committees[0])
       : null;
@@ -254,7 +301,7 @@ export function planAgendaImport(
           proposer_kind: item.proposer_kind,
           committee_id: committee?.id ?? null,
           stage,
-          submitted_date: item.submitted_on ?? bundle.meeting.as_of,
+          submitted_date: item.submitted_on ?? provisionalDate,
           diet_session_id: sessionId,
         },
         changes: [],
@@ -276,14 +323,13 @@ export function planAgendaImport(
     if (found.bill_kind === "other" && item.bill_kind !== "other") {
       changes.push({ field: "bill_kind", label: "種類", from: "other", to: item.bill_kind });
     }
-    if (!found.submitted_date && (item.submitted_on ?? bundle.meeting.as_of)) {
-      changes.push({
-        field: "submitted_date",
-        label: "提出日",
-        from: null,
-        to: item.submitted_on ?? bundle.meeting.as_of,
-      });
-    }
+    const submittedChange = planSubmittedDateChange(
+      found.submitted_date,
+      item.submitted_on,
+      provisionalDate,
+      bundle.meeting.as_of
+    );
+    if (submittedChange) changes.push(submittedChange);
     const currentStage = found.stage ?? "preparing";
     const nextStage: BillStage = committee || found.committee_id ? "referred" : "submitted";
     if (STAGE_ORDER[nextStage] > STAGE_ORDER[currentStage]) {
@@ -304,7 +350,7 @@ export function planAgendaImport(
       warnings,
     };
   });
-  return { mode: "agenda", entries, summary: summarize(entries) };
+  return { mode: "agenda", entries, summary: summarize(entries), meetingPeriod };
 }
 
 export function planResultsImport(

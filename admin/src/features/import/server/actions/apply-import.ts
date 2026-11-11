@@ -15,6 +15,7 @@ import {
   createImportRun,
   findBillsForImport,
   findCommitteeRefs,
+  findSessionMeetingPeriods,
   finishImportRun,
   insertBillSource,
   insertDraftBill,
@@ -33,15 +34,17 @@ export async function applyImport(input: unknown): Promise<ApplyImportResult> {
     const admin = await requireAdmin();
     const { bundleJson, sessionId, citations } =
       applyImportInputSchema.parse(input);
-    const [existing, committees] = await Promise.all([
+    const [existing, committees, meetingPeriods] = await Promise.all([
       findBillsForImport(),
       findCommitteeRefs(),
+      findSessionMeetingPeriods(sessionId),
     ]);
     const built = buildImportPreview(
       bundleJson,
       sessionId,
       existing,
-      committees
+      committees,
+      meetingPeriods
     );
     if (!built.ok) {
       return { error: built.error };

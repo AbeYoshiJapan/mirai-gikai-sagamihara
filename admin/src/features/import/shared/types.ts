@@ -25,6 +25,8 @@ export type ImportPreview = {
     adapter: string;
   };
   bundleWarnings: string[];
+  /** 取込の決まりごとの説明（提出日の入れ方など）。注意ではない */
+  notes: string[];
 };
 
 export type PreviewImportResult =

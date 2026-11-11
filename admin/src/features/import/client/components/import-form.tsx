@@ -351,6 +351,13 @@ export function ImportForm({ sessions }: { sessions: SessionOption[] }) {
                   : `選んだ ${selected.size} / ${selectableCount} 件を適用`}
               </Button>
             </div>
+            {preview.notes.length > 0 && (
+              <ul className="mt-3 space-y-1 text-xs text-gray-600">
+                {preview.notes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            )}
             {preview.bundleWarnings.length > 0 && (
               <ul className="mt-3 space-y-1 text-xs text-amber-800">
                 {preview.bundleWarnings.map((warning) => (
